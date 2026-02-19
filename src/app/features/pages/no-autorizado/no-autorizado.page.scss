@@ -1,0 +1,38 @@
+.no-autorizado-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--sagim-spacing-lg);
+  background: linear-gradient(135deg, #f4f6f8 0%, #e8ecf0 100%);
+}
+
+.error-card {
+  max-width: 500px;
+  text-align: center;
+  padding: var(--sagim-spacing-xl);
+
+  .error-icon {
+    margin-bottom: var(--sagim-spacing-lg);
+
+    mat-icon {
+      font-size: 80px;
+      width: 80px;
+      height: 80px;
+      color: var(--sagim-danger);
+    }
+  }
+
+  h1 {
+    margin-bottom: var(--sagim-spacing-md);
+    color: var(--sagim-text-dark);
+  }
+
+  p {
+    margin-bottom: var(--sagim-spacing-md);
+  }
+
+  button {
+    margin-top: var(--sagim-spacing-lg);
+  }
+}

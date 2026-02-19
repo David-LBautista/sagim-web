@@ -1,0 +1,118 @@
+.navbar {
+  background: var(--sagim-primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0;
+  min-height: 64px;
+
+  .navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 var(--sagim-spacing-lg);
+  }
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: var(--sagim-spacing-md);
+
+    .logo {
+      height: 50px;
+      width: auto;
+    }
+
+    .titles {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .municipality-name {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.2;
+        letter-spacing: 0.5px;
+        color: white;
+      }
+
+      .system-title {
+        font-size: 12px;
+        font-weight: 400;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.3;
+      }
+    }
+  }
+
+  .navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--sagim-spacing-md);
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      padding: var(--sagim-spacing-sm) var(--sagim-spacing-md);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--sagim-radius-md);
+
+      .user-name {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      .user-role {
+        font-size: 12px;
+        font-weight: 400;
+        opacity: 0.85;
+        line-height: 1.2;
+      }
+    }
+
+    button {
+      color: white;
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .navbar {
+    .navbar-content {
+      padding: 0 var(--sagim-spacing-md);
+    }
+
+    .logo-section {
+      .app-name {
+        font-size: 18px;
+      }
+
+      .logo {
+        height: 32px;
+      }
+    }
+
+    .navbar-actions {
+      .user-info {
+        .user-name {
+          display: none;
+        }
+      }
+    }
+  }
+}

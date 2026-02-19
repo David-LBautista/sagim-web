@@ -1,0 +1,79 @@
+<div class="filters-container">
+  <div class="filters-row">
+    <!-- Búsqueda -->
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar por nombre o email</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [(ngModel)]="filters.search"
+        (input)="onSearchChange($any($event.target).value)"
+        placeholder="Buscar usuario..."
+      />
+    </mat-form-field>
+
+    <!-- Filtro Módulo - Solo ADMIN_MUNICIPIO -->
+    @if (isAdminMunicipio) {
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Módulo</mat-label>
+        <mat-select
+          [(ngModel)]="filters.moduloId"
+          (selectionChange)="onModuloChange($event.value)"
+        >
+          <mat-option [value]="''">Todos los módulos</mat-option>
+          @for (modulo of modulos; track modulo._id) {
+            <mat-option [value]="modulo._id">{{ modulo.nombre }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
+    <!-- Filtro Rol - Solo SUPER_ADMIN -->
+    @if (isSuperAdmin) {
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Rol</mat-label>
+        <mat-select
+          [(ngModel)]="filters.rol"
+          (selectionChange)="onRolChange($event.value)"
+        >
+          @for (rol of roles; track rol.value) {
+            <mat-option [value]="rol.value">{{ rol.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
+    <!-- Filtro Estado - Solo SUPER_ADMIN -->
+    @if (isSuperAdmin) {
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Estado</mat-label>
+        <mat-select
+          [(ngModel)]="filters.activo"
+          (selectionChange)="onEstadoChange($event.value)"
+        >
+          @for (estado of estados; track estado.value) {
+            <mat-option [value]="estado.value">{{ estado.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
+    <!-- Filtro Municipio - Solo SUPER_ADMIN -->
+    @if (isSuperAdmin) {
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Municipio</mat-label>
+        <mat-select
+          [(ngModel)]="filters.municipioId"
+          (selectionChange)="onMunicipioChange($event.value)"
+        >
+          <mat-option [value]="''">Todos los municipios</mat-option>
+          @for (municipio of municipios; track municipio._id) {
+            <mat-option [value]="municipio._id">{{
+              municipio.nombre
+            }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+  </div>
+</div>

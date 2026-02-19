@@ -1,1 +1,385 @@
-/* You can add global styles to this file, and also import other style files */
+/* ========================================
+   SAGIM - Sistema de Atención y Gestión Institucional Municipal
+   Tema personalizado con Angular Material
+   ======================================== */
+
+@use '@angular/material' as mat;
+
+// Incluir estilos base de Material
+@include mat.core();
+
+// ========================================
+// PALETA DE COLORES SAGIM
+// ========================================
+
+// 🔵 Azul SAGIM (Institucional) - Primary
+$sagim-primary-palette: (
+  50: #e2e7ec,
+  100: #b6c4d0,
+  200: #869db0,
+  300: #567590,
+  400: #315779,
+  500: #0F2A44,  // Color principal
+  600: #0d253d,
+  700: #0b1f34,
+  800: #08192c,
+  900: #040f1e,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+// 🔷 Azul Digital - Secondary
+$sagim-secondary-palette: (
+  50: #e4f0f9,
+  100: #bbd9f0,
+  200: #8ec0e6,
+  300: #60a7dc,
+  400: #3e94d4,
+  500: #1F6FAE,  // Color secundario
+  600: #1b67a7,
+  700: #175c9d,
+  800: #135294,
+  900: #0b4084,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+// 🟢 Verde Gestión - Success/Warn (usaremos como accent)
+$sagim-accent-palette: (
+  50: #eef7e8,
+  100: #d4ecc5,
+  200: #b8df9f,
+  300: #9bd279,
+  400: #85c95c,
+  500: #6FAE3B,  // Verde gestión
+  600: #67a735,
+  700: #5c9d2d,
+  800: #529426,
+  900: #408419,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+// Crear el tema claro de SAGIM usando Angular Material 20
+$sagim-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$green-palette,
+  ),
+  typography: (
+    brand-family: 'Poppins, sans-serif',
+    plain-family: 'Poppins, sans-serif',
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+// Aplicar el tema
+html {
+  @include mat.all-component-themes($sagim-theme);
+}
+
+// ========================================
+// VARIABLES CSS PERSONALIZADAS SAGIM
+// ========================================
+:root {
+  // Colores principales
+  --sagim-primary: #0F2A44;
+  --sagim-secondary: #1F6FAE;
+  --sagim-success: #6FAE3B;
+  --sagim-warning: #F0A12A;
+  --sagim-danger: #D64545;
+  
+  // Grises
+  --sagim-text-dark: #3A3A3A;
+  --sagim-text-mid: #7A7A7A;
+  --sagim-bg-light: #F4F6F8;
+  
+  // Espaciados
+  --sagim-spacing-xs: 4px;
+  --sagim-spacing-sm: 8px;
+  --sagim-spacing-md: 16px;
+  --sagim-spacing-lg: 24px;
+  --sagim-spacing-xl: 32px;
+  
+  // Bordes
+  --sagim-radius-sm: 4px;
+  --sagim-radius-md: 8px;
+  --sagim-radius-lg: 12px;
+}
+
+// ========================================
+// ESTILOS GLOBALES
+// ========================================
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--sagim-bg-light);
+  color: var(--sagim-text-dark);
+  line-height: 1.6;
+}
+
+// ========================================
+// TIPOGRAFÍA SAGIM
+// ========================================
+
+// Títulos principales
+h1, .sagim-title-xl {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--sagim-primary);
+  margin: 0 0 var(--sagim-spacing-lg) 0;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+h2, .sagim-title-lg {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--sagim-primary);
+  margin: 0 0 var(--sagim-spacing-md) 0;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+}
+
+h3, .sagim-title-md {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--sagim-text-dark);
+  margin: 0 0 var(--sagim-spacing-md) 0;
+  line-height: 1.4;
+}
+
+h4, .sagim-title-sm {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--sagim-text-dark);
+  margin: 0 0 var(--sagim-spacing-sm) 0;
+  line-height: 1.4;
+}
+
+// Subtítulos
+.sagim-subtitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--sagim-secondary);
+  margin: 0 0 var(--sagim-spacing-sm) 0;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sagim-subtitle-light {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--sagim-text-mid);
+  margin: 0 0 var(--sagim-spacing-sm) 0;
+  line-height: 1.5;
+}
+
+// Texto normal
+p, .sagim-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--sagim-text-dark);
+  margin: 0 0 var(--sagim-spacing-md) 0;
+  line-height: 1.6;
+}
+
+.sagim-text-lg {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.sagim-text-sm {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sagim-text-xs {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+// Texto de ayuda/secundario
+.sagim-text-muted {
+  color: var(--sagim-text-mid);
+  font-size: 13px;
+  font-style: italic;
+}
+
+// Texto destacado
+.sagim-text-bold {
+  font-weight: 600;
+}
+
+.sagim-text-semibold {
+  font-weight: 500;
+}
+
+// Clases de utilidad para colores
+.text-primary { color: var(--sagim-primary) !important; }
+.text-secondary { color: var(--sagim-secondary) !important; }
+.text-success { color: var(--sagim-success) !important; }
+.text-warning { color: var(--sagim-warning) !important; }
+.text-danger { color: var(--sagim-danger) !important;}
+.text-dark { color: var(--sagim-text-dark) !important; }
+.text-mid { color: var(--sagim-text-mid) !important; }
+
+.bg-primary { background-color: var(--sagim-primary) !important; }
+.bg-secondary { background-color: var(--sagim-secondary) !important; }
+.bg-success { background-color: var(--sagim-success) !important; }
+.bg-warning { background-color: var(--sagim-warning) !important; }
+.bg-danger { background-color: var(--sagim-danger) !important; }
+.bg-light { background-color: var(--sagim-bg-light) !important; }
+
+// ========================================
+// NOTIFICACIONES PERSONALIZADAS SAGIM
+// ========================================
+.sagim-notification {
+  // Estilos base para todas las notificaciones
+  .mat-mdc-snack-bar-container {
+    --mdc-snackbar-container-shape: 8px;
+    --mat-snack-bar-button-color: white;
+    
+    .mdc-snackbar__surface {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15);
+      min-width: 380px;
+      max-width: 500px;
+      padding: 16px 20px;
+    }
+
+    .mat-mdc-snack-bar-label {
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.6;
+      letter-spacing: 0.2px;
+    }
+
+    .mat-mdc-button {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-size: 13px;
+      border-radius: 4px;
+      padding: 6px 12px;
+      margin-left: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+    }
+  }
+
+  // Success - Verde gestión
+  &--success {
+    .mat-mdc-snack-bar-container {
+      --mdc-snackbar-container-color: #6FAE3B;
+      --mdc-snackbar-supporting-text-color: white;
+      
+      .mdc-snackbar__surface {
+        border-left: 5px solid #4d8329;
+        background: linear-gradient(135deg, #6FAE3B 0%, #5c9d2d 100%);
+      }
+    }
+  }
+
+  // Error - Rojo alerta
+  &--error {
+    .mat-mdc-snack-bar-container {
+      --mdc-snackbar-container-color: #D64545;
+      --mdc-snackbar-supporting-text-color: white;
+      
+      .mdc-snackbar__surface {
+        border-left: 5px solid #a63333;
+        background: linear-gradient(135deg, #D64545 0%, #c23939 100%);
+      }
+    }
+  }
+
+  // Warning - Naranja atención
+  &--warning {
+    .mat-mdc-snack-bar-container {
+      --mdc-snackbar-container-color: #F0A12A;
+      --mdc-snackbar-supporting-text-color: rgba(0, 0, 0, 0.87);
+      --mat-snack-bar-button-color: rgba(0, 0, 0, 0.7);
+      
+      .mdc-snackbar__surface {
+        border-left: 5px solid #d18a1f;
+        background: linear-gradient(135deg, #F0A12A 0%, #e09420 100%);
+      }
+
+      .mat-mdc-button {
+        background: rgba(0, 0, 0, 0.1);
+        
+        &:hover {
+          background: rgba(0, 0, 0, 0.15);
+        }
+      }
+    }
+  }
+
+  // Info - Azul secundario
+  &--info {
+    .mat-mdc-snack-bar-container {
+      --mdc-snackbar-container-color: #1F6FAE;
+      --mdc-snackbar-supporting-text-color: white;
+      
+      .mdc-snackbar__surface {
+        border-left: 5px solid #175d8b;
+        background: linear-gradient(135deg, #1F6FAE 0%, #17609d 100%);
+      }
+    }
+  }
+}
+
+/* ============================================
+   Dialog Panels - Configuración de diálogos
+   ============================================ */
+.beneficiario-dialog-panel {
+  .mat-mdc-dialog-container {
+    .mdc-dialog__surface {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+  }
+}
+

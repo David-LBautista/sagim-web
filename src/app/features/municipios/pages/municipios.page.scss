@@ -1,0 +1,141 @@
+.municipios-page {
+  width: 100%;
+  padding: var(--sagim-spacing-lg);
+}
+
+.page-header {
+  margin-bottom: var(--sagim-spacing-xl);
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .header-text {
+      flex: 1;
+
+      h1 {
+        margin-bottom: var(--sagim-spacing-sm);
+      }
+    }
+
+    button {
+      margin-top: var(--sagim-spacing-sm);
+    }
+  }
+}
+
+.table-card {
+  padding: 0;
+  overflow: hidden;
+
+  .table-header {
+    padding: var(--sagim-spacing-lg);
+    background-color: #fafafa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+    .search-field {
+      width: 100%;
+      max-width: 500px;
+      margin: 0;
+
+      mat-icon {
+        color: var(--sagim-text-mid);
+      }
+    }
+  }
+
+  .table-container {
+    min-height: 400px;
+    position: relative;
+
+    .loading-spinner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sagim-spacing-xl);
+      gap: var(--sagim-spacing-md);
+
+      p {
+        color: var(--sagim-text-mid);
+        font-size: 14px;
+      }
+    }
+
+    .municipios-table {
+      width: 100%;
+
+      th {
+        background-color: #fafafa;
+        font-weight: 600;
+        color: var(--sagim-text-dark);
+        font-size: 14px;
+      }
+
+      td {
+        font-size: 14px;
+        color: var(--sagim-text-dark);
+      }
+
+      tr.mat-mdc-row:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+
+      .no-data {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--sagim-spacing-xl);
+        gap: var(--sagim-spacing-sm);
+        color: var(--sagim-text-mid);
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          opacity: 0.5;
+        }
+
+        p {
+          font-size: 14px;
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  mat-paginator {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .municipios-page {
+    padding: var(--sagim-spacing-md);
+  }
+
+  .page-header {
+    .header-content {
+      flex-direction: column;
+      gap: var(--sagim-spacing-md);
+
+      button {
+        width: 100%;
+        margin-top: 0;
+      }
+    }
+  }
+
+  .table-card {
+    .table-header {
+      padding: var(--sagim-spacing-md);
+
+      .search-field {
+        max-width: 100%;
+      }
+    }
+  }
+}

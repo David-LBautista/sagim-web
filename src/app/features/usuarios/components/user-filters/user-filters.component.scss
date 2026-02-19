@@ -1,0 +1,46 @@
+.filters-container {
+  .filters-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: var(--sagim-spacing-md);
+    align-items: start;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr 1fr;
+
+      .search-field {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+
+      .create-button {
+        width: 100%;
+      }
+    }
+
+    .search-field {
+      max-width: 33.333%;
+      min-width: 300px;
+
+      mat-icon {
+        color: var(--sagim-text-mid);
+      }
+    }
+
+    .filter-field {
+      min-width: 180px;
+    }
+
+    .create-button {
+      height: 56px;
+      white-space: nowrap;
+
+      mat-icon {
+        margin-right: var(--sagim-spacing-xs);
+      }
+    }
+  }
+}

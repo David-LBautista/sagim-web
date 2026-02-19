@@ -1,0 +1,276 @@
+<h2 mat-dialog-title cdkFocusInitial tabindex="-1">
+  {{ isEditMode ? "Editar Municipio" : "Nuevo Municipio" }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="municipioForm" class="municipio-form">
+    <!-- Información General -->
+    <div class="form-section">
+      <h3 class="section-title">Información General</h3>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <input
+            type="text"
+            matInput
+            [formControl]="estadoCtrl"
+            [matAutocomplete]="autoEstado"
+            placeholder="Buscar estado..."
+            [disabled]="isEditMode"
+          />
+          <mat-autocomplete
+            #autoEstado="matAutocomplete"
+            [displayWith]="displayEstado"
+            autoActiveFirstOption
+          >
+            @for (estado of filteredEstados | async; track estado._id) {
+              <mat-option [value]="estado">{{ estado.nombre }}</mat-option>
+            }
+          </mat-autocomplete>
+          @if (
+            municipioForm.get("estadoId")?.invalid &&
+            municipioForm.get("estadoId")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("estadoId") }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Municipio</mat-label>
+          <input
+            type="text"
+            matInput
+            [formControl]="municipioCtrl"
+            [matAutocomplete]="autoMunicipio"
+            placeholder="Buscar municipio..."
+            [disabled]="isLoadingMunicipios || isEditMode"
+          />
+          <mat-autocomplete
+            #autoMunicipio="matAutocomplete"
+            [displayWith]="displayMunicipio"
+          >
+            @if (isLoadingMunicipios) {
+              <mat-option disabled>Cargando...</mat-option>
+            } @else {
+              @for (
+                municipio of filteredMunicipios | async;
+                track municipio._id
+              ) {
+                <mat-option [value]="municipio">{{
+                  municipio.nombre
+                }}</mat-option>
+              }
+            }
+          </mat-autocomplete>
+          @if (
+            municipioForm.get("municipioId")?.invalid &&
+            municipioForm.get("municipioId")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("municipioId") }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Población</mat-label>
+          <input
+            matInput
+            type="text"
+            [value]="municipioForm.get('poblacion')?.value | number"
+            placeholder="Se carga automáticamente"
+            readonly
+          />
+        </mat-form-field>
+      </div>
+
+      <!-- Logo del Municipio -->
+      @if (!isEditMode) {
+        <div class="form-row logo-upload">
+          <div class="upload-container">
+            <div class="upload-actions">
+              <label class="upload-label">Logo del Municipio</label>
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="logoInput.click()"
+              >
+                <mat-icon>upload</mat-icon>
+                {{ selectedLogo ? "Cambiar logo" : "Seleccionar logo" }}
+              </button>
+              <input
+                #logoInput
+                type="file"
+                accept="image/png,image/jpeg,image/svg+xml"
+                (change)="onLogoSelected($event)"
+                style="display: none"
+              />
+              @if (selectedLogo) {
+                <span class="file-name">{{ selectedLogo.name }}</span>
+              }
+            </div>
+
+            <div class="preview-box">
+              @if (logoPreview) {
+                <div class="preview-content">
+                  <img [src]="logoPreview" alt="Preview del logo" />
+                </div>
+              } @else {
+                <div class="preview-placeholder">
+                  <mat-icon>image</mat-icon>
+                  <p>Vista previa del logo</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Información de Contacto -->
+    <div class="form-section">
+      <h3 class="section-title">Información de Contacto</h3>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Email de Contacto</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="contactoEmail"
+            placeholder="Ej. admin@laperla.gob.mx"
+          />
+          @if (
+            municipioForm.get("contactoEmail")?.invalid &&
+            municipioForm.get("contactoEmail")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("contactoEmail") }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Teléfono de Contacto</mat-label>
+          <input
+            matInput
+            formControlName="contactoTelefono"
+            placeholder="Ej. 2291234567"
+            maxlength="10"
+          />
+          @if (
+            municipioForm.get("contactoTelefono")?.invalid &&
+            municipioForm.get("contactoTelefono")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("contactoTelefono") }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Dirección</mat-label>
+          <input
+            matInput
+            formControlName="direccion"
+            placeholder="Ej. Av. Principal #123, Centro"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Datos del Administrador -->
+    @if (!isEditMode) {
+      <div class="form-section">
+        <h3 class="section-title">Datos del Administrador</h3>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre Completo del Administrador</mat-label>
+            <input
+              matInput
+              formControlName="adminNombre"
+              placeholder="Ej. Juan Pérez"
+            />
+            @if (
+              municipioForm.get("adminNombre")?.invalid &&
+              municipioForm.get("adminNombre")?.touched
+            ) {
+              <mat-error>{{ getErrorMessage("adminNombre") }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-row two-columns">
+          <mat-form-field appearance="outline">
+            <mat-label>Email del Administrador</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="adminEmail"
+              placeholder="Ej. admin@laperla.gob.mx"
+            />
+            @if (
+              municipioForm.get("adminEmail")?.invalid &&
+              municipioForm.get("adminEmail")?.touched
+            ) {
+              <mat-error>{{ getErrorMessage("adminEmail") }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Contraseña del Administrador</mat-label>
+            <input
+              matInput
+              type="password"
+              formControlName="adminPassword"
+              placeholder="Mínimo 8 caracteres"
+            />
+            @if (
+              municipioForm.get("adminPassword")?.invalid &&
+              municipioForm.get("adminPassword")?.touched
+            ) {
+              <mat-error>{{ getErrorMessage("adminPassword") }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+    }
+
+    <!-- Configuración de Módulos -->
+    <div class="form-section">
+      <h3 class="section-title">Módulos Habilitados</h3>
+
+      <div formGroupName="modulos" class="modulos-grid">
+        @for (modulo of availableModules; track modulo.key) {
+          <mat-checkbox [formControlName]="modulo.key">
+            {{ modulo.label }}
+          </mat-checkbox>
+        }
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-button
+    type="button"
+    (click)="onCancel()"
+    [disabled]="isSubmitting"
+  >
+    Cancelar
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="onSubmit()"
+    [disabled]="municipioForm.invalid || isSubmitting"
+  >
+    @if (isSubmitting) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      {{ isEditMode ? "Actualizar" : "Guardar" }}
+    }
+  </button>
+</mat-dialog-actions>

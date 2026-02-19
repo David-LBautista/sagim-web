@@ -1,0 +1,102 @@
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--sagim-spacing-lg);
+  margin-bottom: var(--sagim-spacing-xl);
+
+  .stat-card {
+    cursor: default;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: var(--sagim-spacing-md);
+      padding: var(--sagim-spacing-lg);
+
+      .stat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+
+        mat-icon {
+          font-size: 32px;
+          width: 32px;
+          height: 32px;
+        }
+      }
+
+      .stat-content {
+        flex: 1;
+
+        .stat-value {
+          font-size: 32px;
+          font-weight: 700;
+          line-height: 1;
+          margin-bottom: var(--sagim-spacing-xs);
+        }
+
+        .stat-label {
+          font-size: 14px;
+          color: var(--sagim-text-mid);
+          font-weight: 500;
+        }
+      }
+    }
+
+    &.stat-card-primary {
+      .stat-icon {
+        background-color: rgba(15, 42, 68, 0.1);
+        mat-icon {
+          color: var(--sagim-primary);
+        }
+      }
+      .stat-value {
+        color: var(--sagim-primary);
+      }
+    }
+
+    &.stat-card-success {
+      .stat-icon {
+        background-color: rgba(111, 174, 59, 0.1);
+        mat-icon {
+          color: var(--sagim-success);
+        }
+      }
+      .stat-value {
+        color: var(--sagim-success);
+      }
+    }
+
+    &.stat-card-danger {
+      .stat-icon {
+        background-color: rgba(214, 69, 69, 0.1);
+        mat-icon {
+          color: var(--sagim-danger);
+        }
+      }
+      .stat-value {
+        color: var(--sagim-danger);
+      }
+    }
+
+    &.stat-card-secondary {
+      .stat-icon {
+        background-color: rgba(31, 111, 174, 0.1);
+        mat-icon {
+          color: var(--sagim-secondary);
+        }
+      }
+      .stat-value {
+        color: var(--sagim-secondary);
+      }
+    }
+  }
+}

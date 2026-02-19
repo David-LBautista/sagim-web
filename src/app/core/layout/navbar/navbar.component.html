@@ -1,0 +1,28 @@
+<mat-toolbar class="navbar">
+  <div class="navbar-content">
+    <!-- Logo y títulos -->
+    <div class="logo-section">
+      <img [src]="getMunicipioLogo()" alt="Logo" class="logo" />
+      <div class="titles">
+        @if (getMunicipioName() && getMunicipioName() !== "SAGIM") {
+          <p class="municipality-name">Municipio de {{ getMunicipioName() }}</p>
+        } @else {
+          <p class="municipality-name">SAGIM</p>
+        }
+        <h1 class="system-title">
+          Sistema de Administración y Gestión Integral Municipal
+        </h1>
+      </div>
+    </div>
+
+    <!-- Información de usuario -->
+    <div class="navbar-actions">
+      @if (currentUser) {
+        <div class="user-info">
+          <span class="user-name">{{ currentUser.nombre }}</span>
+          <span class="user-role">{{ getRolLabel(currentUser.rol) }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</mat-toolbar>

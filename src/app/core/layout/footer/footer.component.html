@@ -1,0 +1,28 @@
+<footer class="sagim-footer">
+  <div class="footer-content">
+    <!-- System Status -->
+    <div class="footer-status">
+      <span class="status-label">Estado del Sistema:</span>
+      <span class="status-value" [style.color]="systemStatus.color">
+        {{ systemStatus.label }}
+      </span>
+    </div>
+
+    <!-- Copyright & Links -->
+    <div class="footer-info">
+      <span class="copyright">©{{ currentYear }} SAGIM</span>
+      
+      <nav class="footer-links">
+        <a 
+          *ngFor="let link of footerLinks" 
+          [href]="link.url"
+          [target]="link.external ? '_blank' : '_self'"
+          [rel]="link.external ? 'noopener noreferrer' : ''"
+          class="footer-link"
+        >
+          {{ link.label }}
+        </a>
+      </nav>
+    </div>
+  </div>
+</footer>

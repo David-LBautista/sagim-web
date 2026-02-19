@@ -1,0 +1,55 @@
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sagim-spacing-lg);
+  padding: var(--sagim-spacing-md) 0;
+  min-width: 600px;
+  max-height: 70vh;
+  overflow-y: auto;
+
+  .form-section {
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--sagim-primary);
+      margin: 0 0 var(--sagim-spacing-md) 0;
+      padding-bottom: var(--sagim-spacing-sm);
+      border-bottom: 2px solid var(--sagim-primary);
+    }
+
+    .form-row {
+      margin-bottom: var(--sagim-spacing-md);
+
+      &.two-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sagim-spacing-md);
+      }
+
+      mat-form-field {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.email-suffix {
+  color: #7a7a7a;
+  font-size: 14px;
+  white-space: nowrap;
+  padding-left: 4px;
+}
+
+mat-dialog-actions {
+  padding: var(--sagim-spacing-md) var(--sagim-spacing-lg);
+  gap: var(--sagim-spacing-sm);
+
+  button {
+    min-width: 100px;
+
+    mat-spinner {
+      display: inline-block;
+      margin: 0;
+    }
+  }
+}

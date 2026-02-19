@@ -1,0 +1,51 @@
+<div class="users-dashboard">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1 class="sagim-title-xl">Usuarios</h1>
+        <p class="sagim-subtitle-light">Administración de cuentas</p>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onCreateUser()"
+        class="create-button"
+      >
+        <mat-icon>add</mat-icon>
+        Crear Usuario
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-spinner">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando usuarios...</p>
+    </div>
+  }
+
+  @if (!isLoading) {
+    <mat-card class="table-card">
+      <!-- Filtros -->
+      <div class="table-header">
+        <app-user-filters
+          [showCreateButton]="false"
+          (filtersChanged)="onFiltersChanged($event)"
+          (createUser)="onCreateUser()"
+        ></app-user-filters>
+      </div>
+
+      <!-- Tabla -->
+      <div class="table-container">
+        <app-user-table
+          [usuarios]="filteredUsuarios"
+          [showMunicipioColumn]="isSuperAdmin"
+          (editUser)="onEditUser($event)"
+          (toggleUserStatus)="onToggleUserStatus($event)"
+          (deleteUser)="onDeleteUser($event)"
+        ></app-user-table>
+      </div>
+    </mat-card>
+  }
+</div>

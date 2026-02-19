@@ -1,0 +1,32 @@
+.layout-container {
+  height: calc(100vh - 64px);
+  width: 100%;
+}
+
+.layout-sidenav {
+  width: 260px;
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.layout-content {
+  background-color: var(--sagim-bg-light);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.content-wrapper {
+  padding: var(--sagim-spacing-lg);
+  flex: 1;
+  min-height: calc(100vh - 64px - 60px); // navbar height - footer height
+}
+
+@media (max-width: 768px) {
+  .layout-sidenav {
+    width: 240px;
+  }
+
+  .content-wrapper {
+    padding: var(--sagim-spacing-md);
+  }
+}

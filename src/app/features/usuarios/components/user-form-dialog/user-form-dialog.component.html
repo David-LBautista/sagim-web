@@ -1,0 +1,159 @@
+<mat-dialog-content>
+  <form [formGroup]="userForm" class="user-form">
+    <!-- Información Personal -->
+    <div class="form-section">
+      <h3 class="section-title">Información Personal</h3>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre Completo</mat-label>
+          <input
+            matInput
+            formControlName="nombre"
+            placeholder="Ej. Juan Pérez García"
+          />
+          @if (
+            userForm.get("nombre")?.invalid && userForm.get("nombre")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("nombre") }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Teléfono</mat-label>
+          <input
+            matInput
+            formControlName="telefono"
+            placeholder="2281234567"
+            maxlength="10"
+          />
+          @if (
+            userForm.get("telefono")?.invalid &&
+            userForm.get("telefono")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("telefono") }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Configuración de Cuenta -->
+    <div class="form-section">
+      <h3 class="section-title">Configuración de Cuenta</h3>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="emailUsername"
+            placeholder="juan.perez"
+            (keypress)="onEmailKeyPress($event)"
+          />
+          <span matTextSuffix class="email-suffix">{{ emailDomain }}</span>
+          @if (
+            userForm.get("emailUsername")?.invalid &&
+            userForm.get("emailUsername")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("emailUsername") }}</mat-error>
+          }
+          <mat-hint>Solo minúsculas, números, puntos, guiones</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="password"
+            [placeholder]="
+              isEditMode
+                ? 'Dejar vacío para mantener la actual'
+                : 'Mínimo 8 caracteres'
+            "
+          />
+          @if (
+            userForm.get("password")?.invalid &&
+            userForm.get("password")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("password") }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Rol</mat-label>
+          <mat-select formControlName="rol" placeholder="Seleccione un rol">
+            @for (rol of roles; track rol.value) {
+              <mat-option [value]="rol.value">{{ rol.label }}</mat-option>
+            }
+          </mat-select>
+          @if (userForm.get("rol")?.invalid && userForm.get("rol")?.touched) {
+            <mat-error>{{ getErrorMessage("rol") }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Municipio</mat-label>
+          <mat-select
+            formControlName="municipioId"
+            placeholder="Seleccione un municipio"
+          >
+            <mat-option [value]="''">Sin municipio</mat-option>
+            @for (municipio of municipios; track municipio._id) {
+              <mat-option [value]="municipio._id">{{
+                municipio.nombre
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Módulo</mat-label>
+          <mat-select
+            formControlName="moduloId"
+            placeholder="Seleccione un módulo"
+          >
+            @for (modulo of modulos; track modulo._id) {
+              <mat-option [value]="modulo._id">{{ modulo.nombre }}</mat-option>
+            }
+          </mat-select>
+          @if (
+            userForm.get("moduloId")?.invalid &&
+            userForm.get("moduloId")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("moduloId") }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-checkbox formControlName="activo"> Usuario activo </mat-checkbox>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
+    Cancelar
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="userForm.invalid || isSubmitting"
+  >
+    @if (isSubmitting) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      {{ isEditMode ? "Actualizar" : "Crear" }}
+    }
+  </button>
+</mat-dialog-actions>

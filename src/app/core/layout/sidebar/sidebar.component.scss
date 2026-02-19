@@ -1,0 +1,211 @@
+.sidebar-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-nav {
+  padding: var(--sagim-spacing-md);
+  flex: 1;
+  overflow-y: auto;
+
+  .section-header {
+    padding: var(--sagim-spacing-md) var(--sagim-spacing-sm);
+    margin-top: var(--sagim-spacing-lg);
+    margin-bottom: var(--sagim-spacing-sm);
+    border-bottom: 2px solid var(--sagim-primary);
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--sagim-primary);
+    }
+  }
+
+  .nav-item {
+    border-radius: var(--sagim-radius-md);
+    margin-bottom: var(--sagim-spacing-xs);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--sagim-text-dark);
+
+    mat-icon {
+      color: var(--sagim-text-mid);
+      margin-right: var(--sagim-spacing-md);
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &:hover {
+      background-color: var(--sagim-bg-light);
+      color: var(--sagim-primary);
+
+      mat-icon {
+        color: var(--sagim-primary);
+      }
+    }
+
+    &.active {
+      background-color: var(--sagim-primary);
+      color: white !important;
+
+      mat-icon {
+        color: white !important;
+      }
+
+      span {
+        color: white !important;
+      }
+    }
+  }
+
+  .nav-expansion {
+    margin-bottom: var(--sagim-spacing-xs);
+    box-shadow: none;
+    background: transparent;
+
+    &::before {
+      display: none;
+    }
+
+    ::ng-deep {
+      .mat-expansion-panel-header {
+        padding: 0 var(--sagim-spacing-md);
+        border-radius: var(--sagim-radius-md);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: var(--sagim-bg-light);
+        }
+
+        .mat-content {
+          display: flex;
+          align-items: center;
+        }
+
+        mat-panel-title {
+          display: flex;
+          align-items: center;
+          gap: var(--sagim-spacing-md);
+          color: var(--sagim-text-dark);
+
+          mat-icon {
+            color: var(--sagim-text-mid);
+          }
+
+          span {
+            font-size: 14px;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .mat-expansion-panel-body {
+        padding: 0;
+      }
+    }
+  }
+
+  .sub-nav-list {
+    padding: 0;
+    padding-left: var(--sagim-spacing-xl);
+
+    .sub-nav-item {
+      border-radius: var(--sagim-radius-md);
+      margin-bottom: var(--sagim-spacing-xs);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--sagim-text-dark);
+      font-size: 13px;
+
+      mat-icon {
+        color: var(--sagim-text-mid);
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      span {
+        font-size: 13px;
+      }
+
+      &:hover {
+        background-color: var(--sagim-bg-light);
+        color: var(--sagim-primary);
+
+        mat-icon {
+          color: var(--sagim-primary);
+        }
+      }
+
+      &.active {
+        background-color: var(--sagim-secondary);
+        color: white !important;
+
+        mat-icon {
+          color: white !important;
+        }
+
+        span {
+          color: white !important;
+        }
+      }
+    }
+  }
+}
+
+.sidebar-footer {
+  padding: var(--sagim-spacing-md);
+  border-top: 1px solid #e0e0e0;
+
+  .logout-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--sagim-spacing-sm);
+    padding: var(--sagim-spacing-md);
+    color: var(--sagim-danger);
+    transition: all 0.3s ease;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background-color: rgba(214, 69, 69, 0.1);
+    }
+  }
+}
+
+// Estilos globales para mat-list-item
+::ng-deep {
+  .sidebar-nav {
+    .mat-mdc-list-item {
+      &.active {
+        .mdc-list-item__content {
+          color: white !important;
+        }
+
+        .mat-mdc-list-item-title {
+          color: white !important;
+        }
+
+        mat-icon {
+          color: white !important;
+        }
+      }
+    }
+  }
+}

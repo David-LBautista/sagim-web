@@ -1,0 +1,45 @@
+.seguridad-page {
+  width: 100%;
+  padding: var(--sagim-spacing-lg);
+}
+
+.page-header {
+  margin-bottom: var(--sagim-spacing-xl);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--sagim-spacing-lg);
+}
+
+.stat-card {
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--sagim-spacing-md);
+    margin-bottom: var(--sagim-spacing-md);
+
+    .card-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: rgba(15, 42, 68, 0.1);
+
+      mat-icon {
+        color: var(--sagim-primary);
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    mat-card-title {
+      margin: 0;
+      color: var(--sagim-text-dark);
+    }
+  }
+}

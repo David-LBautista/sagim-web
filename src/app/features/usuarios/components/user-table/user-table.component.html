@@ -1,0 +1,108 @@
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" matSort class="users-table">
+    <!-- Columna Nombre -->
+    <ng-container matColumnDef="nombre">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+      <td mat-cell *matCellDef="let usuario">
+        <div class="user-name">
+          <mat-icon class="user-avatar">account_circle</mat-icon>
+          {{ usuario.nombre }}
+        </div>
+      </td>
+    </ng-container>
+
+    <!-- Columna Email -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+      <td mat-cell *matCellDef="let usuario">{{ usuario.email }}</td>
+    </ng-container>
+
+    <!-- Columna Rol -->
+    <ng-container matColumnDef="rol">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
+      <td mat-cell *matCellDef="let usuario">
+        <mat-chip [color]="getRolColor(usuario.rol)">
+          {{ getRolLabel(usuario.rol) }}
+        </mat-chip>
+      </td>
+    </ng-container>
+
+    <!-- Columna Municipio (condicional) -->
+    <ng-container matColumnDef="municipio">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Municipio</th>
+      <td mat-cell *matCellDef="let usuario">
+        {{ usuario.municipioId?.nombre || "-" }}
+      </td>
+    </ng-container>
+
+    <!-- Columna Estado -->
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+      <td mat-cell *matCellDef="let usuario">
+        <mat-chip [class]="usuario.activo ? 'chip-active' : 'chip-inactive'">
+          {{ usuario.activo ? "Activo" : "Inactivo" }}
+        </mat-chip>
+      </td>
+    </ng-container>
+
+    <!-- Columna Último Acceso -->
+    <ng-container matColumnDef="ultimoAcceso">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Último Acceso</th>
+      <td mat-cell *matCellDef="let usuario">
+        {{ formatDate(usuario.ultimoAcceso) }}
+      </td>
+    </ng-container>
+
+    <!-- Columna Acciones -->
+    <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <td mat-cell *matCellDef="let usuario">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="onEditUser(usuario)"
+          matTooltip="Editar"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          [color]="usuario.activo ? 'warn' : 'accent'"
+          (click)="onToggleStatus(usuario)"
+          [matTooltip]="usuario.activo ? 'Desactivar' : 'Activar'"
+        >
+          <mat-icon>{{ usuario.activo ? "lock" : "lock_open" }}</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="onDeleteUser(usuario)"
+          matTooltip="Eliminar"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    <!-- Fila cuando no hay datos -->
+    <tr class="mat-row no-data-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+        <div class="no-data">
+          <mat-icon>people_outline</mat-icon>
+          <p>No se encontraron usuarios</p>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <mat-paginator
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    [pageSize]="10"
+    showFirstLastButtons
+    aria-label="Seleccionar página de usuarios"
+  >
+  </mat-paginator>
+</div>

@@ -1,0 +1,158 @@
+.municipio-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sagim-spacing-lg);
+  padding: var(--sagim-spacing-md) 0;
+  min-width: 600px;
+
+  .form-section {
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--sagim-primary);
+      margin: 0 0 var(--sagim-spacing-md) 0;
+      padding-bottom: var(--sagim-spacing-sm);
+      border-bottom: 2px solid var(--sagim-primary);
+    }
+
+    .form-row {
+      margin-bottom: var(--sagim-spacing-md);
+
+      &.two-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sagim-spacing-md);
+      }
+
+      mat-form-field {
+        width: 100%;
+
+        &.full-width {
+          width: 100%;
+        }
+      }
+
+      &.logo-upload {
+        .upload-container {
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: var(--sagim-spacing-lg);
+          align-items: start;
+
+          .upload-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sagim-spacing-sm);
+
+            .upload-label {
+              font-weight: 600;
+              font-size: 14px;
+              color: var(--sagim-text-dark);
+              margin-bottom: var(--sagim-spacing-xs);
+            }
+
+            button {
+              width: fit-content;
+
+              mat-icon {
+                margin-right: 8px;
+              }
+            }
+
+            .file-name {
+              font-size: 13px;
+              color: var(--sagim-text-mid);
+              font-weight: 500;
+            }
+          }
+
+          .preview-box {
+            border: 1px dashed var(--sagim-primary);
+            border-radius: 12px;
+            padding: var(--sagim-spacing-lg);
+            background: white;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+            .preview-content {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              img {
+                max-width: 100%;
+                max-height: 180px;
+                object-fit: contain;
+              }
+            }
+
+            .preview-placeholder {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              gap: var(--sagim-spacing-sm);
+              color: var(--sagim-text-mid);
+
+              mat-icon {
+                font-size: 48px;
+                width: 48px;
+                height: 48px;
+                opacity: 0.3;
+              }
+
+              p {
+                margin: 0;
+                font-size: 13px;
+                opacity: 0.6;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .modulos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sagim-spacing-md);
+
+      mat-checkbox {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: var(--sagim-spacing-md) var(--sagim-spacing-lg);
+  gap: var(--sagim-spacing-sm);
+
+  button {
+    mat-spinner {
+      display: inline-block;
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .municipio-form {
+    min-width: 100%;
+
+    .form-section {
+      .form-row.two-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .modulos-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
