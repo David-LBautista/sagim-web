@@ -1,0 +1,57 @@
+<div class="inventario-page">
+  <!-- Header con acciones -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1 class="sagim-title-xl">Inventario DIF</h1>
+        <p class="sagim-subtitle-light">
+          Gestión de entradas y salidas de bienes
+        </p>
+      </div>
+
+      <div class="action-buttons">
+        <app-action-button
+          label="Registrar Entrada"
+          icon="add_circle"
+          color="accent"
+          (clicked)="onRegistrarEntrada()"
+        />
+
+        <app-action-button
+          label="Registrar Salida"
+          icon="remove_circle"
+          color="warn"
+          (clicked)="onRegistrarSalida()"
+        />
+
+        <app-action-button
+          label="Nuevo Item"
+          icon="inventory"
+          color="primary"
+          (clicked)="onCreateItem()"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs superiores -->
+  <app-dashboard-kpis [loading]="loading" [dashboardData]="dashboardData" />
+
+  <!-- Sección de Alertas Críticas -->
+  @if (!loading && dashboardData) {
+    <app-alertas-criticas [items]="dashboardData.stockCritico.items" />
+
+    <!-- Resumen de Movimientos del Mes -->
+    <app-resumen-movimientos [movimientos]="dashboardData.movimientosDelMes" />
+
+    <!-- Actividad Reciente -->
+    @if (
+      dashboardData.movimientosDelMes.ultimosMovimientos &&
+      dashboardData.movimientosDelMes.ultimosMovimientos.length > 0
+    ) {
+      <app-actividad-reciente
+        [movimientos]="dashboardData.movimientosDelMes.ultimosMovimientos"
+      />
+    }
+  }
+</div>

@@ -1,0 +1,20 @@
+.activity-section {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: white;
+
+  mat-card-header {
+    margin-bottom: 0.5rem;
+    padding: 16px 20px;
+
+    mat-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--sagim-text-dark);
+    }
+  }
+
+  mat-card-content {
+    padding-top: 0;
+  }
+}

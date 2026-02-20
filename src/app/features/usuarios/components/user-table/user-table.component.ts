@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
 import { Usuario } from '../../models/usuario.model';
 
 @Component({
@@ -29,6 +30,7 @@ import { Usuario } from '../../models/usuario.model';
     MatIconModule,
     MatChipsModule,
     MatTooltipModule,
+    StatusBadgeComponent,
   ],
   templateUrl: './user-table.component.html',
   styleUrls: ['./user-table.component.scss'],
@@ -104,5 +106,13 @@ export class UserTableComponent implements OnChanges {
       month: 'short',
       year: 'numeric',
     });
+  }
+
+  getEstadoBadgeVariant(activo: boolean): 'success' | 'danger' {
+    return activo ? 'success' : 'danger';
+  }
+
+  getEstadoLabel(activo: boolean): string {
+    return activo ? 'ACTIVO' : 'INACTIVO';
   }
 }

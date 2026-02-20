@@ -1,43 +1,50 @@
-.table-container {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+:host {
+  display: block;
+  width: 100%;
+}
 
-  .users-table {
+.table-wrapper {
+  width: 100%;
+  background: white;
+  overflow: hidden;
+
+  .data-table {
     width: 100%;
 
     th {
       background-color: #fafafa;
-      font-weight: 600;
       color: var(--sagim-text-dark);
+      font-weight: 600;
       font-size: 12px;
       padding: 8px 12px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+
+      &.text-center {
+        text-align: center;
+      }
+
+      &.text-right {
+        text-align: right;
+      }
     }
 
     td {
-      font-size: 13px;
-      color: var(--sagim-text-dark);
       padding: 8px 12px;
+      color: var(--sagim-text-dark);
+      font-size: 13px;
+
+      &.text-center {
+        text-align: center;
+      }
+
+      &.text-right {
+        text-align: right;
+      }
     }
 
     tr.mat-mdc-row:hover {
       background-color: rgba(0, 0, 0, 0.04);
-    }
-
-    .user-name {
-      display: flex;
-      align-items: center;
-      gap: var(--sagim-spacing-sm);
-
-      .user-avatar {
-        color: var(--sagim-text-mid);
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-      }
     }
 
     .no-data {
@@ -53,6 +60,7 @@
         width: 48px;
         height: 48px;
         color: var(--sagim-text-mid);
+        opacity: 0.5;
       }
 
       p {
@@ -62,8 +70,18 @@
       }
     }
   }
+}
 
-  mat-paginator {
-    border-top: 1px solid rgba(0, 0, 0, 0.12);
+@media (max-width: 768px) {
+  .table-wrapper {
+    overflow-x: auto;
+
+    .data-table {
+      th,
+      td {
+        padding: var(--sagim-spacing-sm);
+        font-size: 12px;
+      }
+    }
   }
 }

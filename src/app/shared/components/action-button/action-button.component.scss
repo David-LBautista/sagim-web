@@ -1,0 +1,9 @@
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: var(--sagim-spacing-xs);
+
+  mat-icon {
+    margin-right: var(--sagim-spacing-xs);
+  }
+}

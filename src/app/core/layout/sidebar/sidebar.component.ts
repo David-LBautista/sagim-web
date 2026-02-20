@@ -112,11 +112,26 @@ export class SidebarComponent implements OnInit {
             return;
           }
 
-          items.push({
-            icon: moduloConfig.icon,
-            label: moduloConfig.label,
-            route: moduloConfig.route,
-          });
+          // Módulos con submenús
+          if (moduloKey === 'DIF') {
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              children: [
+                {
+                  label: 'Inventario',
+                  route: '/dif/inventario',
+                  icon: 'inventory_2',
+                },
+              ],
+            });
+          } else {
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              route: moduloConfig.route,
+            });
+          }
         });
       }
     });

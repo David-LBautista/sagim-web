@@ -39,9 +39,10 @@
     <ng-container matColumnDef="estado">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
       <td mat-cell *matCellDef="let usuario">
-        <mat-chip [class]="usuario.activo ? 'chip-active' : 'chip-inactive'">
-          {{ usuario.activo ? "Activo" : "Inactivo" }}
-        </mat-chip>
+        <app-status-badge
+          [variant]="getEstadoBadgeVariant(usuario.activo)"
+          [label]="getEstadoLabel(usuario.activo)"
+        />
       </td>
     </ng-container>
 
@@ -72,14 +73,6 @@
           [matTooltip]="usuario.activo ? 'Desactivar' : 'Activar'"
         >
           <mat-icon>{{ usuario.activo ? "lock" : "lock_open" }}</mat-icon>
-        </button>
-        <button
-          mat-icon-button
-          color="warn"
-          (click)="onDeleteUser(usuario)"
-          matTooltip="Eliminar"
-        >
-          <mat-icon>delete</mat-icon>
         </button>
       </td>
     </ng-container>

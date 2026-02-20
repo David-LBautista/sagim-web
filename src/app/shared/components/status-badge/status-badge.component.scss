@@ -1,0 +1,54 @@
+// Status Badge Component
+// Componente reutilizable para badges de estado en todo SAGIM
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+
+  .badge-icon {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+  }
+
+  .badge-label {
+    line-height: 1.4;
+  }
+
+  // Variante Success (Verde) - Para estados positivos, entradas, activos
+  &--success {
+    background-color: #f1f8e9;
+    color: #6fae3b; // var(--sagim-success)
+  }
+
+  // Variante Warning (Naranja) - Para alertas, salidas
+  &--warning {
+    background-color: #fff3e0;
+    color: #f0a12a; // var(--sagim-warning)
+  }
+
+  // Variante Danger (Rojo) - Para estados negativos, inactivos, errores
+  &--danger {
+    background-color: #fde8e8;
+    color: #d64545; // var(--sagim-danger)
+  }
+
+  // Variante Info (Azul) - Para información general
+  &--info {
+    background-color: #e8f4ff;
+    color: #1f6fae; // var(--sagim-secondary)
+  }
+
+  // Variante Neutral (Gris) - Para estados neutrales
+  &--neutral {
+    background-color: #f5f5f5;
+    color: #7a7a7a; // var(--sagim-text-mid)
+  }
+}

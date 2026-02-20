@@ -11,6 +11,11 @@ export const DIF_ROUTES: Routes = [
         loadComponent: () => import('./pages/dif.page').then((m) => m.DifPage),
       },
       {
+        path: 'inventario',
+        loadComponent: () =>
+          import('./pages/inventario.page').then((m) => m.InventarioPage),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

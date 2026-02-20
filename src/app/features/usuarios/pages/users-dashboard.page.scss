@@ -1,9 +1,9 @@
 .users-dashboard {
   width: 100%;
-  padding: var(--sagim-spacing-lg);
+  padding: var(--sagim-spacing-md);
 
   .page-header {
-    margin-bottom: var(--sagim-spacing-xl);
+    margin-bottom: var(--sagim-spacing-md);
 
     .header-content {
       display: flex;
@@ -31,9 +31,10 @@
   .table-card {
     padding: 0;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
     .table-header {
-      padding: var(--sagim-spacing-lg);
+      padding: 16px 20px;
       background-color: #fafafa;
       border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     }

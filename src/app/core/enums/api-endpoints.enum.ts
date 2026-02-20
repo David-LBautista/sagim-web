@@ -38,4 +38,15 @@ export enum ApiEndpoints {
   USERS_CREATE = '/api/v1/users',
   USERS_UPDATE = '/api/v1/users/:id',
   USERS_DELETE = '/api/v1/users/:id',
+
+  // ========================================
+  // DIF INVENTARIO ENDPOINTS
+  // ========================================
+  DIF_INVENTARIO_ITEMS_LIST = '/api/v1/dif/inventario/items',
+  DIF_INVENTARIO_ITEMS_CREATE = '/api/v1/dif/inventario/items',
+  DIF_INVENTARIO_ITEMS_GET = '/api/v1/dif/inventario/items/:id',
+  DIF_INVENTARIO_ITEMS_UPDATE = '/api/v1/dif/inventario/items/:id',
+  DIF_INVENTARIO_ITEMS_DELETE = '/api/v1/dif/inventario/items/:id',
+  DIF_INVENTARIO_DASHBOARD = '/api/v1/dif/inventario/dashboard',
+  DIF_PROGRAMAS_LIST = '/api/v1/dif/programas',
 }

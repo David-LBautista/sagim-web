@@ -125,7 +125,7 @@ html {
   // Grises
   --sagim-text-dark: #3A3A3A;
   --sagim-text-mid: #7A7A7A;
-  --sagim-bg-light: #F4F6F8;
+  --sagim-bg-light: #fafbfc;
   
   // Espaciados
   --sagim-spacing-xs: 4px;
@@ -151,7 +151,7 @@ html {
 
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: var(--sagim-bg-light);
+  background-color: #fafbfc;
   color: var(--sagim-text-dark);
   line-height: 1.6;
 }

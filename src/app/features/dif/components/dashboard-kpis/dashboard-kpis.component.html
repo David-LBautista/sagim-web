@@ -1,0 +1,33 @@
+<div class="kpi-grid">
+  @if (loading) {
+    <app-kpi-card [value]="''" [label]="''" [icon]="''" [loading]="true" />
+  } @else if (dashboardData) {
+    <app-kpi-card
+      [value]="dashboardData.resumen.totalItems"
+      [label]="'Total de Artículos'"
+      [icon]="'inventory'"
+    />
+
+    <app-kpi-card
+      [value]="dashboardData.stockCritico.total"
+      [label]="'Stock Crítico'"
+      [icon]="'warning'"
+    />
+
+    <app-kpi-card
+      [value]="getTotalMovimientos()"
+      [label]="'Movimientos del Mes'"
+      [icon]="'bar_chart'"
+    />
+
+    <app-kpi-card
+      [value]="
+        '$' + dashboardData.resumen.valorTotalInventario.toLocaleString('es-MX')
+      "
+      [label]="'Valor Total Inventario'"
+      [icon]="'attach_money'"
+    />
+  } @else {
+    <app-kpi-card [value]="''" [label]="''" [icon]="''" [error]="true" />
+  }
+</div>

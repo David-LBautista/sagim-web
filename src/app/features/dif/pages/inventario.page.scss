@@ -1,0 +1,58 @@
+.inventario-page {
+  padding: var(--sagim-spacing-md);
+}
+
+.page-header {
+  margin-bottom: var(--sagim-spacing-md);
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sagim-spacing-lg);
+
+    .header-text {
+      flex: 1;
+      min-width: 250px;
+
+      h1 {
+        margin: 0;
+        color: var(--sagim-primary);
+      }
+
+      p {
+        margin: var(--sagim-spacing-xs) 0 0;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      gap: var(--sagim-spacing-md);
+      flex-wrap: wrap;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .inventario-page {
+    padding: var(--sagim-spacing-md);
+  }
+
+  .page-header {
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .action-buttons {
+        width: 100%;
+        flex-direction: column;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

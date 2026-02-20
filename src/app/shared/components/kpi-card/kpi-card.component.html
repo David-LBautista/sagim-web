@@ -1,0 +1,25 @@
+@if (loading) {
+  <mat-card appearance="outlined" class="kpi-card kpi-card--loading">
+    <mat-card-content>
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Cargando...</p>
+    </mat-card-content>
+  </mat-card>
+} @else if (error) {
+  <mat-card appearance="outlined" class="kpi-card kpi-card--error">
+    <mat-card-content>
+      <mat-icon>error_outline</mat-icon>
+      <p>Error</p>
+    </mat-card-content>
+  </mat-card>
+} @else {
+  <mat-card appearance="outlined" class="kpi-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>{{ icon }}</mat-icon>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-card-title>{{ value }}</mat-card-title>
+      <mat-card-subtitle>{{ label }}</mat-card-subtitle>
+    </mat-card-content>
+  </mat-card>
+}

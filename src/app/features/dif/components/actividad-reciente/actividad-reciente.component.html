@@ -1,0 +1,24 @@
+<mat-card appearance="outlined" class="activity-section">
+  <mat-card-header>
+    <mat-card-title> Actividad Reciente </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <app-data-table
+      [dataSource]="actividadTableData"
+      [columns]="actividadColumns"
+      noDataMessage="No hay movimientos recientes"
+      noDataIcon="inbox"
+    >
+      <ng-template #cellTemplate let-row let-column="column">
+        @if (column === "tipoMovimiento") {
+          <app-status-badge
+            [variant]="getBadgeVariant(row.tipoMovimiento)"
+            [label]="getBadgeLabel(row.tipoMovimiento)"
+          />
+        } @else {
+          {{ row[column] }}
+        }
+      </ng-template>
+    </app-data-table>
+  </mat-card-content>
+</mat-card>
