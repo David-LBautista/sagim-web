@@ -123,6 +123,16 @@ export class SidebarComponent implements OnInit {
                   route: '/dif/inventario',
                   icon: 'inventory_2',
                 },
+                {
+                  label: 'Beneficiarios',
+                  route: '/dif/beneficiarios',
+                  icon: 'groups',
+                },
+                {
+                  label: 'Apoyos',
+                  route: '/dif/apoyos',
+                  icon: 'volunteer_activism',
+                },
               ],
             });
           } else {

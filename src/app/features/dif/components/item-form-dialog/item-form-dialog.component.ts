@@ -21,6 +21,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { InventarioService } from '../../services/inventario.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
+import { CatalogosService } from '../../../../shared/services/catalogos.service';
 import {
   TipoItem,
   InventarioItem,
@@ -50,6 +51,7 @@ export class ItemFormDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
   private inventarioService = inject(InventarioService);
   private notificationService = inject(NotificationService);
+  private catalogosService = inject(CatalogosService);
   public dialogRef = inject(MatDialogRef<ItemFormDialogComponent>);
 
   itemForm: FormGroup;
@@ -58,15 +60,7 @@ export class ItemFormDialogComponent implements OnInit {
   isSubmitting = false;
   isEditMode = false;
 
-  tiposItem = [
-    { value: TipoItem.DESPENSA, label: 'Despensa' },
-    { value: TipoItem.MEDICAMENTO, label: 'Medicamento' },
-    { value: TipoItem.ROPA, label: 'Ropa' },
-    { value: TipoItem.UTENSILIO, label: 'Utensilio' },
-    { value: TipoItem.MOBILIARIO, label: 'Mobiliario' },
-    { value: TipoItem.EQUIPO, label: 'Equipo' },
-    { value: TipoItem.OTRO, label: 'Otro' },
-  ];
+  tiposItem: Array<{ value: string; label: string }> = [];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { item?: InventarioItem }) {
     this.isEditMode = !!data?.item;
@@ -85,9 +79,11 @@ export class ItemFormDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProgramas();
+    this.loadTiposItem();
 
     if (this.isEditMode && this.data.item) {
       this.populateForm(this.data.item);
+      this.ensureTipoEnOpciones(this.data.item.tipo);
     }
   }
 
@@ -117,6 +113,50 @@ export class ItemFormDialogComponent implements OnInit {
       observaciones: item.observaciones,
       valorUnitario: item.valorUnitario,
     });
+  }
+
+  private loadTiposItem(): void {
+    this.catalogosService.getTiposApoyo().subscribe({
+      next: (tipos) => {
+        this.tiposItem = tipos
+          .filter((tipo) => tipo.activo)
+          .map((tipo) => ({
+            value: tipo.clave,
+            label: tipo.nombre,
+          }));
+
+        if (this.tiposItem.length === 0) {
+          this.tiposItem = this.getTiposFallback();
+        }
+
+        if (this.data.item?.tipo) {
+          this.ensureTipoEnOpciones(this.data.item.tipo);
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar catálogo de tipos de apoyo:', error);
+        this.tiposItem = this.getTiposFallback();
+      },
+    });
+  }
+
+  private ensureTipoEnOpciones(tipo: string): void {
+    const existe = this.tiposItem.some((option) => option.value === tipo);
+    if (!existe) {
+      this.tiposItem = [...this.tiposItem, { value: tipo, label: tipo }];
+    }
+  }
+
+  private getTiposFallback(): Array<{ value: string; label: string }> {
+    return [
+      { value: TipoItem.DESPENSA, label: 'Despensa' },
+      { value: TipoItem.MEDICAMENTO, label: 'Medicamento' },
+      { value: TipoItem.ROPA, label: 'Ropa' },
+      { value: TipoItem.UTENSILIO, label: 'Utensilio' },
+      { value: TipoItem.MOBILIARIO, label: 'Mobiliario' },
+      { value: TipoItem.EQUIPO, label: 'Equipo' },
+      { value: TipoItem.OTRO, label: 'Otro' },
+    ];
   }
 
   onSubmit(): void {

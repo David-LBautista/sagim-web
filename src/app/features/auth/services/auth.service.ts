@@ -72,13 +72,13 @@ export class AuthService {
 
     switch (roleLower) {
       case 'dif':
-        return '/dif/dashboard';
+        return '/dif/beneficiarios';
       case 'tesoreria':
         return '/tesoreria/dashboard';
       case 'admin':
-        return '/dif/dashboard'; // El admin puede ver todos, por defecto DIF
+        return '/dif/beneficiarios'; // El admin puede ver todos, por defecto DIF
       default:
-        return '/dif/dashboard'; // Ruta por defecto
+        return '/dif/beneficiarios'; // Ruta por defecto
     }
   }
 

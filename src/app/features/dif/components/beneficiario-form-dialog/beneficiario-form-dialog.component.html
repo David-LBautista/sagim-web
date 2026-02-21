@@ -1,0 +1,102 @@
+<h2 mat-dialog-title>Nuevo Beneficiario</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="beneficiario-form">
+    <div class="row two-cols">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Apellido Paterno</mat-label>
+        <input matInput formControlName="apellidoPaterno" />
+      </mat-form-field>
+    </div>
+
+    <div class="row two-cols">
+      <mat-form-field appearance="outline">
+        <mat-label>Apellido Materno</mat-label>
+        <input matInput formControlName="apellidoMaterno" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>CURP</mat-label>
+        <input matInput formControlName="curp" maxlength="18" />
+      </mat-form-field>
+    </div>
+
+    <div class="row two-cols">
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha de Nacimiento</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Sexo</mat-label>
+        <mat-select formControlName="sexo">
+          @for (sexo of sexoOptions; track sexo.value) {
+            <mat-option [value]="sexo.value">{{ sexo.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="row two-cols">
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" maxlength="10" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Domicilio</mat-label>
+      <input matInput formControlName="domicilio" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Localidad</mat-label>
+      <input matInput formControlName="localidad" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Grupo Vulnerable</mat-label>
+      <mat-select formControlName="grupoVulnerable" multiple>
+        @for (grupo of gruposVulnerables; track grupo._id) {
+          <mat-option [value]="grupo.clave">{{ grupo.nombre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Observaciones</mat-label>
+      <textarea matInput formControlName="observaciones" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()" [disabled]="isSubmitting">
+    Cancelar
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="onSubmit()"
+    [disabled]="form.invalid || isSubmitting"
+  >
+    @if (isSubmitting) {
+      <mat-spinner diameter="18"></mat-spinner>
+    } @else {
+      Guardar
+    }
+  </button>
+</mat-dialog-actions>

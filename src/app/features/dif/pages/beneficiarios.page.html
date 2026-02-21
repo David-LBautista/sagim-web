@@ -1,0 +1,163 @@
+<div class="beneficiarios-page">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1 class="sagim-title-xl">Beneficiarios</h1>
+      </div>
+
+      <div class="action-buttons">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="onNuevoBeneficiario()"
+        >
+          <mat-icon>add</mat-icon>
+          Nuevo Beneficiario
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="beneficiarios-content">
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscador global (Nombre / CURP / Folio)</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [(ngModel)]="globalSearch"
+          placeholder="Buscar beneficiario..."
+        />
+      </mat-form-field>
+
+      <button mat-stroked-button type="button" (click)="toggleFilters()">
+        <mat-icon>tune</mat-icon>
+        Filtros
+      </button>
+    </div>
+
+    @if (showFilters) {
+      <form [formGroup]="filtrosForm" class="filters-inline">
+        <mat-form-field appearance="outline">
+          <mat-label>Municipio</mat-label>
+          <mat-select formControlName="municipio">
+            @for (municipio of municipios; track municipio.value) {
+              <mat-option [value]="municipio.value">{{
+                municipio.label
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Programa</mat-label>
+          <mat-select formControlName="programa">
+            @for (programa of programas; track programa.value) {
+              <mat-option [value]="programa.value">{{
+                programa.label
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha inicio</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerInicio"
+            formControlName="fechaInicio"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerInicio"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerInicio></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha fin</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerFin"
+            formControlName="fechaFin"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerFin"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerFin></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Sexo</mat-label>
+          <mat-select formControlName="sexo">
+            @for (sexo of sexos; track sexo.value) {
+              <mat-option [value]="sexo.value">{{ sexo.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Edad mínima</mat-label>
+          <input matInput type="number" formControlName="edadMin" min="0" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Edad máxima</mat-label>
+          <input matInput type="number" formControlName="edadMax" min="0" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estatus</mat-label>
+          <mat-select formControlName="estatus">
+            @for (status of estatusOptions; track status.value) {
+              <mat-option [value]="status.value">{{ status.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </form>
+    }
+
+    <div class="list-section">
+      <app-data-table
+        [dataSource]="tableData"
+        [columns]="tableColumns"
+        noDataMessage="No hay beneficiarios registrados"
+        noDataIcon="groups"
+      >
+        <ng-template #cellTemplate let-row let-column="column">
+          @if (column === "estatus") {
+            <app-status-badge
+              [variant]="getEstatusVariant(row.estatus)"
+              [label]="row.estatus"
+            />
+          } @else if (column === "acciones") {
+            <div class="table-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                type="button"
+                (click)="onVerBeneficiario(row._original)"
+                matTooltip="Ver"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                type="button"
+                (click)="onEditarBeneficiario(row._original)"
+                matTooltip="Editar"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+          } @else {
+            {{ row[column] }}
+          }
+        </ng-template>
+      </app-data-table>
+    </div>
+  </div>
+</div>

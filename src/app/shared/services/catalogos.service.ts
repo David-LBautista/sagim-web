@@ -3,7 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiEndpoints } from '../../core/enums/api-endpoints.enum';
-import { Estado, MunicipioCatalogo, Rol } from '../models/catalogo.model';
+import {
+  Estado,
+  MunicipioCatalogo,
+  Rol,
+  UnidadMedidaCatalogo,
+  TipoMovimientoCatalogo,
+  GrupoVulnerableCatalogo,
+  TipoApoyoCatalogo,
+} from '../models/catalogo.model';
 
 @Injectable({
   providedIn: 'root',
@@ -45,5 +53,87 @@ export class CatalogosService {
   getModulos(): Observable<Array<{ _id: string; nombre: string }>> {
     const url = `${environment.apiUrl}${ApiEndpoints.MODULOS_LIST}`;
     return this.http.get<Array<{ _id: string; nombre: string }>>(url);
+  }
+
+  /**
+   * Obtener catálogo de unidades de medida
+   */
+  getUnidadesMedida(): Observable<UnidadMedidaCatalogo[]> {
+    const url = `${environment.apiUrl}${ApiEndpoints.CATALOGOS_UNIDADES_MEDIDA}`;
+    return this.http.get<UnidadMedidaCatalogo[]>(url);
+  }
+
+  /**
+   * Obtener unidad de medida por clave
+   */
+  getUnidadMedidaPorClave(clave: string): Observable<UnidadMedidaCatalogo> {
+    const url =
+      `${environment.apiUrl}${ApiEndpoints.CATALOGOS_UNIDAD_MEDIDA_POR_CLAVE}`.replace(
+        ':clave',
+        clave,
+      );
+    return this.http.get<UnidadMedidaCatalogo>(url);
+  }
+
+  /**
+   * Obtener catálogo de tipos de movimiento
+   */
+  getTiposMovimiento(): Observable<TipoMovimientoCatalogo[]> {
+    const url = `${environment.apiUrl}${ApiEndpoints.CATALOGOS_TIPOS_MOVIMIENTO}`;
+    return this.http.get<TipoMovimientoCatalogo[]>(url);
+  }
+
+  /**
+   * Obtener tipo de movimiento por clave
+   */
+  getTipoMovimientoPorClave(clave: string): Observable<TipoMovimientoCatalogo> {
+    const url =
+      `${environment.apiUrl}${ApiEndpoints.CATALOGOS_TIPO_MOVIMIENTO_POR_CLAVE}`.replace(
+        ':clave',
+        clave,
+      );
+    return this.http.get<TipoMovimientoCatalogo>(url);
+  }
+
+  /**
+   * Obtener catálogo de grupos vulnerables
+   */
+  getGruposVulnerables(): Observable<GrupoVulnerableCatalogo[]> {
+    const url = `${environment.apiUrl}${ApiEndpoints.CATALOGOS_GRUPOS_VULNERABLES}`;
+    return this.http.get<GrupoVulnerableCatalogo[]>(url);
+  }
+
+  /**
+   * Obtener grupo vulnerable por clave
+   */
+  getGrupoVulnerablePorClave(
+    clave: string,
+  ): Observable<GrupoVulnerableCatalogo> {
+    const url =
+      `${environment.apiUrl}${ApiEndpoints.CATALOGOS_GRUPO_VULNERABLE_POR_CLAVE}`.replace(
+        ':clave',
+        clave,
+      );
+    return this.http.get<GrupoVulnerableCatalogo>(url);
+  }
+
+  /**
+   * Obtener catálogo de tipos de apoyo
+   */
+  getTiposApoyo(): Observable<TipoApoyoCatalogo[]> {
+    const url = `${environment.apiUrl}${ApiEndpoints.CATALOGOS_TIPOS_APOYO}`;
+    return this.http.get<TipoApoyoCatalogo[]>(url);
+  }
+
+  /**
+   * Obtener tipo de apoyo por clave
+   */
+  getTipoApoyoPorClave(clave: string): Observable<TipoApoyoCatalogo> {
+    const url =
+      `${environment.apiUrl}${ApiEndpoints.CATALOGOS_TIPO_APOYO_POR_CLAVE}`.replace(
+        ':clave',
+        clave,
+      );
+    return this.http.get<TipoApoyoCatalogo>(url);
   }
 }

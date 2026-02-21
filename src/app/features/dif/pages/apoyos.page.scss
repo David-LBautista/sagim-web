@@ -1,0 +1,16 @@
+.dif-subpage {
+  width: 100%;
+  padding: var(--sagim-spacing-lg);
+}
+
+.page-header {
+  margin-bottom: var(--sagim-spacing-xl);
+}
+
+.content-card {
+  background: var(--sagim-bg-light);
+  border: 1px solid rgba(15, 42, 68, 0.1);
+  border-radius: var(--sagim-radius-md);
+  padding: var(--sagim-spacing-lg);
+  color: var(--sagim-text-mid);
+}

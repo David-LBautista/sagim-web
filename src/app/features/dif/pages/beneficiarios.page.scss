@@ -1,0 +1,115 @@
+:host {
+  display: block;
+}
+
+.beneficiarios-page {
+  padding: var(--sagim-spacing-md);
+}
+
+.page-header {
+  margin-bottom: var(--sagim-spacing-md);
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sagim-spacing-lg);
+
+    .header-text {
+      flex: 1;
+      min-width: 250px;
+
+      h1 {
+        margin: 0;
+        color: var(--sagim-primary);
+      }
+
+      p {
+        margin: var(--sagim-spacing-xs) 0 0;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      gap: var(--sagim-spacing-md);
+    }
+  }
+}
+
+.search-section {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sagim-spacing-md);
+  margin-bottom: var(--sagim-spacing-sm);
+
+  .search-field {
+    flex: 1;
+    max-width: 720px;
+  }
+}
+
+.filters-inline {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: var(--sagim-spacing-sm);
+  padding: var(--sagim-spacing-sm);
+  background: #fff;
+  border: 1px solid rgba(15, 42, 68, 0.1);
+  border-radius: var(--sagim-radius-md);
+  margin-bottom: var(--sagim-spacing-md);
+}
+
+.beneficiarios-content {
+  width: 100%;
+}
+
+.list-section {
+  margin-top: var(--sagim-spacing-sm);
+  background: #fff;
+  border: 1px solid rgba(15, 42, 68, 0.1);
+  border-radius: var(--sagim-radius-md);
+  padding: var(--sagim-spacing-sm);
+}
+
+.table-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+@media (max-width: 768px) {
+  .beneficiarios-page {
+    padding: var(--sagim-spacing-md);
+  }
+
+  .page-header {
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .action-buttons {
+        width: 100%;
+      }
+    }
+  }
+
+  .search-section {
+    flex-direction: column;
+
+    .search-field {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
+  .filters-inline {
+    grid-template-columns: 1fr;
+  }
+
+  .list-section {
+    overflow-x: auto;
+  }
+}

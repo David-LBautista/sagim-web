@@ -1,12 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { KpiCardComponent } from '../../../../shared/components/kpi-card/kpi-card.component';
 import { DashboardInventario } from '../../models/inventario.model';
 
 @Component({
   selector: 'app-dashboard-kpis',
   standalone: true,
-  imports: [CommonModule, KpiCardComponent],
+  imports: [CommonModule, KpiCardComponent, MatProgressSpinnerModule],
   templateUrl: './dashboard-kpis.component.html',
   styleUrls: ['./dashboard-kpis.component.scss'],
 })

@@ -17,12 +17,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { forkJoin, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { Usuario, UsuarioRol } from '../../models/usuario.model';
 import { UsuariosService } from '../../services/usuarios.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
-import { MunicipiosService } from '../../../municipios/services/municipios.service';
-import { Municipio } from '../../../municipios/models/municipio.model';
 import { CatalogosService } from '../../../../shared/services/catalogos.service';
+import { MunicipioCatalogo } from '../../../../shared/models/catalogo.model';
 import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
@@ -47,14 +48,13 @@ export class UserFormDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<UserFormDialogComponent>);
   private usuariosService = inject(UsuariosService);
   private notificationService = inject(NotificationService);
-  private municipiosService = inject(MunicipiosService);
   private catalogosService = inject(CatalogosService);
   private authService = inject(AuthService);
 
   userForm: FormGroup;
   isEditMode: boolean = false;
   isSubmitting: boolean = false;
-  municipios: Municipio[] = [];
+  municipios: MunicipioCatalogo[] = [];
   modulos: Array<{ _id: string; nombre: string }> = [];
   roles: Array<{ value: string; label: string }> = [];
   emailDomain: string = '@municipio.sagim.com';
@@ -105,15 +105,38 @@ export class UserFormDialogComponent implements OnInit {
   }
 
   private loadMunicipios(): void {
-    this.municipiosService.getMunicipios().subscribe({
-      next: (municipios) => {
-        this.municipios = municipios;
-      },
-      error: (error) => {
-        console.error('Error al cargar municipios:', error);
-        this.notificationService.error('Error al cargar municipios');
-      },
-    });
+    this.catalogosService
+      .getEstados()
+      .pipe(
+        map((estados) => estados.filter((estado) => estado.activo)),
+        switchMap((estadosActivos) => {
+          if (estadosActivos.length === 0) {
+            return of([] as MunicipioCatalogo[][]);
+          }
+
+          return forkJoin(
+            estadosActivos.map((estado) =>
+              this.catalogosService
+                .getMunicipiosPorEstado(estado._id)
+                .pipe(map((municipios) => municipios.filter((m) => m.activo))),
+            ),
+          );
+        }),
+        map((municipiosPorEstado) =>
+          municipiosPorEstado
+            .flat()
+            .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es-MX')),
+        ),
+      )
+      .subscribe({
+        next: (municipios) => {
+          this.municipios = municipios;
+        },
+        error: (error) => {
+          console.error('Error al cargar municipios:', error);
+          this.notificationService.error('Error al cargar municipios');
+        },
+      });
   }
 
   private loadModulos(): void {

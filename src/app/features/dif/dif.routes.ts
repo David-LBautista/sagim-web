@@ -8,7 +8,8 @@ export const DIF_ROUTES: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./pages/dif.page').then((m) => m.DifPage),
+        redirectTo: 'beneficiarios',
+        pathMatch: 'full',
       },
       {
         path: 'inventario',
@@ -16,8 +17,18 @@ export const DIF_ROUTES: Routes = [
           import('./pages/inventario.page').then((m) => m.InventarioPage),
       },
       {
+        path: 'beneficiarios',
+        loadComponent: () =>
+          import('./pages/beneficiarios.page').then((m) => m.BeneficiariosPage),
+      },
+      {
+        path: 'apoyos',
+        loadComponent: () =>
+          import('./pages/apoyos.page').then((m) => m.ApoyosPage),
+      },
+      {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'beneficiarios',
         pathMatch: 'full',
       },
     ],

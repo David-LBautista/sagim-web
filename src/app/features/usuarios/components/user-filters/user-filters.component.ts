@@ -8,15 +8,16 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { UsuarioRol } from '../../models/usuario.model';
-import { MunicipiosService } from '../../../municipios/services/municipios.service';
-import { Municipio } from '../../../municipios/models/municipio.model';
 import { CatalogosService } from '../../../../shared/services/catalogos.service';
+import { MunicipioCatalogo } from '../../../../shared/models/catalogo.model';
 import { AuthService } from '../../../auth/services/auth.service';
 
 export interface UserFilters {
@@ -43,7 +44,6 @@ export interface UserFilters {
   styleUrls: ['./user-filters.component.scss'],
 })
 export class UserFiltersComponent implements OnInit {
-  private municipiosService = inject(MunicipiosService);
   private catalogosService = inject(CatalogosService);
   private authService = inject(AuthService);
 
@@ -62,7 +62,7 @@ export class UserFiltersComponent implements OnInit {
     moduloId: '',
   };
 
-  municipios: Municipio[] = [];
+  municipios: MunicipioCatalogo[] = [];
   modulos: Array<{ _id: string; nombre: string }> = [];
 
   roles: Array<{ value: string; label: string }> = [
@@ -91,14 +91,37 @@ export class UserFiltersComponent implements OnInit {
   }
 
   private loadMunicipios(): void {
-    this.municipiosService.getMunicipios().subscribe({
-      next: (municipios) => {
-        this.municipios = municipios;
-      },
-      error: (error) => {
-        console.error('Error al cargar municipios:', error);
-      },
-    });
+    this.catalogosService
+      .getEstados()
+      .pipe(
+        map((estados) => estados.filter((estado) => estado.activo)),
+        switchMap((estadosActivos) => {
+          if (estadosActivos.length === 0) {
+            return of([] as MunicipioCatalogo[][]);
+          }
+
+          return forkJoin(
+            estadosActivos.map((estado) =>
+              this.catalogosService
+                .getMunicipiosPorEstado(estado._id)
+                .pipe(map((municipios) => municipios.filter((m) => m.activo))),
+            ),
+          );
+        }),
+        map((municipiosPorEstado) =>
+          municipiosPorEstado
+            .flat()
+            .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es-MX')),
+        ),
+      )
+      .subscribe({
+        next: (municipios) => {
+          this.municipios = municipios;
+        },
+        error: (error) => {
+          console.error('Error al cargar municipios:', error);
+        },
+      });
   }
 
   private loadRoles(): void {

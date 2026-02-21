@@ -1,0 +1,22 @@
+.beneficiario-form {
+  margin-top: var(--sagim-spacing-sm);
+}
+
+.row {
+  display: grid;
+  gap: var(--sagim-spacing-sm);
+}
+
+.two-cols {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.full-width {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .two-cols {
+    grid-template-columns: 1fr;
+  }
+}

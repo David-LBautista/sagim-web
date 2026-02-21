@@ -5,6 +5,22 @@
   margin-bottom: 1.5rem;
 }
 
+.kpi-loading {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+  margin-bottom: 1.5rem;
+  gap: var(--sagim-spacing-sm);
+
+  .loading-text {
+    font-size: 12px;
+    color: var(--sagim-text-mid);
+  }
+}
+
 @media (max-width: 768px) {
   .kpi-grid {
     grid-template-columns: 1fr;

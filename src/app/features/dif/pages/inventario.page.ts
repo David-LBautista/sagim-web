@@ -58,38 +58,7 @@ export class InventarioPage implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Aquí recargaríamos la lista de items
-        console.log('Item creado:', result);
-      }
-    });
-  }
-
-  onRegistrarEntrada(): void {
-    const dialogRef = this.dialog.open(ItemFormDialogComponent, {
-      width: '700px',
-      maxWidth: '90vw',
-      disableClose: true,
-      data: { tipo: 'ENTRADA' },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        console.log('Entrada registrada:', result);
-      }
-    });
-  }
-
-  onRegistrarSalida(): void {
-    const dialogRef = this.dialog.open(ItemFormDialogComponent, {
-      width: '700px',
-      maxWidth: '90vw',
-      disableClose: true,
-      data: { tipo: 'SALIDA' },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        console.log('Salida registrada:', result);
+        this.loadDashboard();
       }
     });
   }

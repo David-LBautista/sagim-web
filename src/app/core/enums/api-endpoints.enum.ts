@@ -24,6 +24,14 @@ export enum ApiEndpoints {
   CATALOGOS_ESTADOS = '/api/v1/catalogos/estados',
   CATALOGOS_MUNICIPIOS_POR_ESTADO = '/api/v1/catalogos/estados/:estadoId/municipios',
   CATALOGOS_ROLES = '/api/v1/catalogos/roles',
+  CATALOGOS_UNIDADES_MEDIDA = '/api/v1/catalogos/unidades-medida',
+  CATALOGOS_UNIDAD_MEDIDA_POR_CLAVE = '/api/v1/catalogos/unidades-medida/:clave',
+  CATALOGOS_TIPOS_MOVIMIENTO = '/api/v1/catalogos/tipos-movimiento',
+  CATALOGOS_TIPO_MOVIMIENTO_POR_CLAVE = '/api/v1/catalogos/tipos-movimiento/:clave',
+  CATALOGOS_GRUPOS_VULNERABLES = '/api/v1/catalogos/grupos-vulnerables',
+  CATALOGOS_GRUPO_VULNERABLE_POR_CLAVE = '/api/v1/catalogos/grupos-vulnerables/:clave',
+  CATALOGOS_TIPOS_APOYO = '/api/v1/catalogos/tipos-apoyo',
+  CATALOGOS_TIPO_APOYO_POR_CLAVE = '/api/v1/catalogos/tipos-apoyo/:clave',
 
   // ========================================
   // MÓDULOS ENDPOINTS
@@ -49,4 +57,13 @@ export enum ApiEndpoints {
   DIF_INVENTARIO_ITEMS_DELETE = '/api/v1/dif/inventario/items/:id',
   DIF_INVENTARIO_DASHBOARD = '/api/v1/dif/inventario/dashboard',
   DIF_PROGRAMAS_LIST = '/api/v1/dif/programas',
+
+  // ========================================
+  // DIF BENEFICIARIOS ENDPOINTS
+  // ========================================
+  DIF_BENEFICIARIOS_LIST = '/api/v1/dif/beneficiarios',
+  DIF_BENEFICIARIOS_CREATE = '/api/v1/dif/beneficiarios',
+  DIF_BENEFICIARIOS_GET_BY_CURP = '/api/v1/dif/beneficiarios/curp/:curp',
+  DIF_BENEFICIARIOS_GET = '/api/v1/dif/beneficiarios/:id',
+  DIF_BENEFICIARIOS_UPDATE = '/api/v1/dif/beneficiarios/:id',
 }

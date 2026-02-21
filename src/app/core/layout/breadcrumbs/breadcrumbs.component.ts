@@ -31,6 +31,8 @@ export class BreadcrumbsComponent implements OnInit {
     municipios: 'Municipios',
     dif: 'DIF',
     inventario: 'Inventario',
+    beneficiarios: 'Beneficiarios',
+    apoyos: 'Apoyos',
     tesoreria: 'Tesorería',
     presidencia: 'Presidencia',
     reportes: 'Reportes',
