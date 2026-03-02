@@ -69,3 +69,14 @@ export interface GrupoVulnerableCatalogo extends CatalogoConClave {}
  * Catálogo de tipos de apoyo
  */
 export interface TipoApoyoCatalogo extends CatalogoConClave {}
+
+/**
+ * Catálogo de localidades por municipio
+ */
+export interface LocalidadCatalogo {
+  _id: string;
+  clave: string;
+  nombre: string;
+  municipioId?: string;
+  activo?: boolean;
+}

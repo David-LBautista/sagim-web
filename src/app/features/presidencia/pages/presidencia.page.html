@@ -1,22 +1,335 @@
 <div class="presidencia-page">
+
+  <!-- Header -->
   <div class="page-header">
-    <h1 class="sagim-title-xl">Presidencia</h1>
-    <p class="sagim-subtitle-light">
-      Panel de control y administración de Presidencia Municipal
-    </p>
+    <h1 class="sagim-title-xl">Mi Municipio</h1>
+    <p class="sagim-subtitle-light">Resumen general de indicadores municipales</p>
   </div>
 
-  <div class="dashboard-grid">
-    <mat-card class="stat-card">
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar" />
+  }
+
+  <!-- KPIs Generales -->
+  <div class="kpi-grid">
+
+    <!-- Card 1: Recaudación Total -->
+    <mat-card appearance="outlined" class="kpi-exec-card">
       <mat-card-header>
-        <div class="card-icon">
-          <mat-icon>account_balance</mat-icon>
-        </div>
-        <mat-card-title>Dashboard</mat-card-title>
+        <mat-icon mat-card-avatar>account_balance</mat-icon>
       </mat-card-header>
       <mat-card-content>
-        <p>Módulo de Presidencia en construcción</p>
+        <div class="kpi-value">{{ loading ? '...' : recaudacionTotal }}</div>
+        <div class="kpi-label">Recaudación Total</div>
+        @if (!loading && recaudacionTrend.label) {
+          <div class="kpi-trend kpi-trend--{{ recaudacionTrend.direction }}">
+            <mat-icon>{{ recaudacionTrend.direction === 'up' ? 'trending_up' : recaudacionTrend.direction === 'down' ? 'trending_down' : 'trending_flat' }}</mat-icon>
+            <span>{{ recaudacionTrend.label }}</span>
+          </div>
+        }
       </mat-card-content>
     </mat-card>
+
+    <!-- Card 2: Variación Mensual -->
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>bar_chart</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value kpi-value--trend-{{ variacionTrend }}">{{ loading ? '...' : variacionMensualLabel }}</div>
+        <div class="kpi-label">Variación Mensual</div>
+        @if (!loading) {
+          <div class="kpi-trend kpi-trend--{{ variacionTrend }}">
+            <mat-icon>{{ variacionTrend === 'up' ? 'trending_up' : variacionTrend === 'down' ? 'trending_down' : 'trending_flat' }}</mat-icon>
+            <span>vs mes anterior</span>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Card 3: Apoyos Entregados -->
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>volunteer_activism</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value">{{ loading ? '...' : apoyosEntregados }}</div>
+        <div class="kpi-label">Apoyos Entregados</div>
+        @if (!loading) {
+          <div class="kpi-meta">{{ programasActivos }} programas activos</div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Card 4: Beneficiarios Únicos -->
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>people</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value">{{ loading ? '...' : beneficiariosUnicos }}</div>
+        <div class="kpi-label">Beneficiarios Únicos</div>
+        @if (!loading) {
+          <div class="kpi-meta">{{ localidadesAtendidas }} localidades atendidas</div>
+        }
+      </mat-card-content>
+    </mat-card>
+
   </div>
+
+  <!-- BLOQUE 2: Recaudación Tesorería -->
+  <mat-card appearance="outlined" class="chart-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>show_chart</mat-icon>
+      <mat-card-title>Ingresos por Día</mat-card-title>
+      <mat-card-subtitle>Recaudación diaria del mes actual</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @if (loadingIngresos) {
+        <div class="chart-loading">
+          <mat-progress-bar mode="indeterminate" />
+        </div>
+      } @else {
+        <apx-chart
+          [series]="chartSeries"
+          [chart]="chartConfig"
+          [xaxis]="chartXaxis"
+          [yaxis]="chartYaxis"
+          [stroke]="chartStroke"
+          [fill]="chartFill"
+          [dataLabels]="chartDataLabels"
+          [grid]="chartGrid"
+          [tooltip]="chartTooltip"
+          [markers]="chartMarkers"
+          [colors]="chartColors"
+        />
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- BLOQUE 3: 2 columnas -->
+  <div class="bloque3-grid">
+
+    <!-- Ingresos por Área -->
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>business</mat-icon>
+        <mat-card-title>Ingresos por Área</mat-card-title>
+        <mat-card-subtitle>Recaudación por dependencia</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (loadingArea) {
+          <div class="chart-loading">
+            <mat-progress-bar mode="indeterminate" />
+          </div>
+        } @else {
+          <apx-chart
+            [series]="barSeries"
+            [chart]="barConfig"
+            [xaxis]="barXaxis"
+            [yaxis]="barYaxis"
+            [plotOptions]="barPlotOptions"
+            [dataLabels]="barDataLabels"
+            [grid]="barGrid"
+            [tooltip]="barTooltip"
+            [colors]="barColors"
+          />
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Servicios más cobrados -->
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>emoji_events</mat-icon>
+        <mat-card-title>Servicios más cobrados</mat-card-title>
+        <mat-card-subtitle>Top 5 del mes actual</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (loadingServicios) {
+          <div class="chart-loading">
+            <mat-progress-bar mode="indeterminate" />
+          </div>
+        } @else {
+          <ul class="ranking-list">
+            @for (item of serviciosTopConPct; track item.servicio; let i = $index) {
+              <li class="ranking-item">
+                <span class="ranking-pos">{{ i + 1 }}</span>
+                <div class="ranking-info">
+                  <span class="ranking-name">{{ item.servicio }}</span>
+                  <div class="ranking-bar-wrap">
+                    <div class="ranking-bar" [style.width.%]="item.pct"></div>
+                  </div>
+                </div>
+                <div class="ranking-stats">
+                  <span class="ranking-total">{{ item.total | number }}</span>
+                  <span class="ranking-pct">{{ item.pct }}%</span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- BLOQUE 4: Impacto Social DIF -->
+
+  <div class="bloque4-grid">
+
+    <!-- Apoyos por Programa -->
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>bar_chart</mat-icon>
+        <mat-card-title>Apoyos por Programa</mat-card-title>
+        <mat-card-subtitle>Distribución por programa DIF</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (loadingApoyos) {
+          <div class="chart-loading">
+            <mat-progress-bar mode="indeterminate" />
+          </div>
+        } @else {
+          <apx-chart
+            [series]="hBarSeries"
+            [chart]="hBarConfig"
+            [xaxis]="hBarXaxis"
+            [yaxis]="hBarYaxis"
+            [plotOptions]="hBarPlotOptions"
+            [dataLabels]="hBarDataLabels"
+            [grid]="hBarGrid"
+            [tooltip]="hBarTooltip"
+            [colors]="hBarColors"
+          />
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Comparativo Mensual DIF -->
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>show_chart</mat-icon>
+        <mat-card-title>Comparativo Mensual</mat-card-title>
+        <mat-card-subtitle>Apoyos entregados últimos 6 meses</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (loadingComparativoDif) {
+          <div class="chart-loading">
+            <mat-progress-bar mode="indeterminate" />
+          </div>
+        } @else {
+          <apx-chart
+            [series]="difLineSeries"
+            [chart]="difLineConfig"
+            [xaxis]="difLineXaxis"
+            [yaxis]="difLineYaxis"
+            [stroke]="difLineStroke"
+            [dataLabels]="difLineDataLabels"
+            [grid]="difLineGrid"
+            [tooltip]="difLineTooltip"
+            [markers]="difLineMarkers"
+            [colors]="difLineColors"
+          />
+        }
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- Beneficiarios por Localidad -->
+  <mat-card appearance="outlined" class="chart-card localidad-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>location_on</mat-icon>
+      <mat-card-title>Beneficiarios por Localidad</mat-card-title>
+      <mat-card-subtitle>Cobertura territorial del DIF</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @if (loading) {
+        <div class="chart-loading chart-loading--sm">
+          <mat-progress-bar mode="indeterminate" />
+        </div>
+      } @else {
+        <ul class="localidad-list">
+          @for (item of beneficiariosConPct; track item.localidad) {
+            <li class="localidad-item">
+              <span class="localidad-name">{{ item.localidad }}</span>
+              <div class="localidad-bar-wrap">
+                <div class="localidad-bar" [style.width.%]="item.pct"></div>
+              </div>
+              <span class="localidad-total">{{ item.total | number }}</span>
+              <span class="localidad-pct">{{ item.pct }}%</span>
+            </li>
+          }
+        </ul>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- BLOQUE 5: Alertas Estratégicas -->
+
+  <div class="alertas-grid">
+
+    <!-- Alertas Tesorería -->
+    <mat-card appearance="outlined" class="alertas-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="alertas-icon--tesoreria">account_balance</mat-icon>
+        <mat-card-title>Tesorería</mat-card-title>
+        <mat-card-subtitle>Indicadores financieros críticos</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (loadingAlertasTesoreria) {
+          <mat-progress-bar mode="indeterminate" />
+        } @else if (alertasTesoreria.length === 0) {
+          <p class="alertas-empty">
+            <mat-icon>check_circle</mat-icon> Sin alertas activas
+          </p>
+        } @else {
+          <ul class="alertas-list">
+            @for (a of alertasTesoreria; track a.tipo) {
+              <li class="alerta-item alerta-item--{{ alertaConfig(a.tipo).severity }}">
+                <mat-icon class="alerta-icon">{{ alertaConfig(a.tipo).icon }}</mat-icon>
+                <div class="alerta-body">
+                  <span class="alerta-tipo">{{ a.tipo | titlecase }}</span>
+                  <span class="alerta-mensaje">{{ a.mensaje }}</span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Alertas DIF -->
+    <mat-card appearance="outlined" class="alertas-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="alertas-icon--dif">volunteer_activism</mat-icon>
+        <mat-card-title>DIF</mat-card-title>
+        <mat-card-subtitle>Indicadores de impacto social</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (loadingAlertasDif) {
+          <mat-progress-bar mode="indeterminate" />
+        } @else if (alertasDif.length === 0) {
+          <p class="alertas-empty">
+            <mat-icon>check_circle</mat-icon> Sin alertas activas
+          </p>
+        } @else {
+          <ul class="alertas-list">
+            @for (a of alertasDif; track a.tipo) {
+              <li class="alerta-item alerta-item--{{ alertaConfig(a.tipo).severity }}">
+                <mat-icon class="alerta-icon">{{ alertaConfig(a.tipo).icon }}</mat-icon>
+                <div class="alerta-body">
+                  <span class="alerta-tipo">{{ a.tipo | titlecase }}</span>
+                  <span class="alerta-mensaje">{{ a.mensaje }}</span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
 </div>

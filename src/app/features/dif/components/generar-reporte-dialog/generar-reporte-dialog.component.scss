@@ -1,0 +1,53 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f2a44;
+
+  mat-icon {
+    color: #d64545;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.dialog-content {
+  padding-top: 8px !important;
+  min-width: 380px;
+}
+
+.dialog-hint {
+  font-size: 0.85rem;
+  color: #7a7a7a;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.reporte-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.dialog-actions {
+  padding: 16px 24px !important;
+  gap: 8px;
+
+  button[mat-flat-button] {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 150px;
+
+    mat-spinner {
+      display: inline-block;
+    }
+  }
+}

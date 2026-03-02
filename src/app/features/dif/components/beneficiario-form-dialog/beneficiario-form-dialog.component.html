@@ -63,7 +63,18 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Localidad</mat-label>
-      <input matInput formControlName="localidad" />
+      <mat-select formControlName="localidad">
+        @if (isLoadingLocalidades) {
+          <mat-option disabled>Cargando localidades...</mat-option>
+        } @else {
+          @for (localidad of localidades; track localidad._id) {
+            <mat-option [value]="localidad.nombre">{{ localidad.nombre }}</mat-option>
+          }
+        }
+      </mat-select>
+      @if (isLoadingLocalidades) {
+        <mat-hint>Cargando localidades...</mat-hint>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">

@@ -47,6 +47,8 @@ export class MunicipiosPage implements OnInit {
     'poblacion',
     'contactoEmail',
     'contactoTelefono',
+    'adminNombre',
+    'adminEmail',
     'acciones',
   ];
   dataSource = new MatTableDataSource<Municipio>([]);

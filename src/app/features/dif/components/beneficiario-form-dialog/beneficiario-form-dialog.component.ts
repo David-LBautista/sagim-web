@@ -18,7 +18,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CatalogosService } from '../../../../shared/services/catalogos.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { BeneficiariosService } from '../../services/beneficiarios.service';
-import type { GrupoVulnerableCatalogo } from '../../../../shared/models/catalogo.model';
+import { AuthService } from '../../../auth/services/auth.service';
+import type {
+  GrupoVulnerableCatalogo,
+  LocalidadCatalogo,
+} from '../../../../shared/models/catalogo.model';
 
 @Component({
   selector: 'app-beneficiario-form-dialog',
@@ -45,12 +49,16 @@ export class BeneficiarioFormDialogComponent implements OnInit {
   private catalogosService = inject(CatalogosService);
   private beneficiariosService = inject(BeneficiariosService);
   private notificationService = inject(NotificationService);
+  private authService = inject(AuthService);
 
   form: FormGroup = this.fb.group({
     nombre: ['', [Validators.required]],
     apellidoPaterno: ['', [Validators.required]],
     apellidoMaterno: ['', [Validators.required]],
-    curp: ['', [Validators.required, Validators.minLength(18), Validators.maxLength(18)]],
+    curp: [
+      '',
+      [Validators.required, Validators.minLength(18), Validators.maxLength(18)],
+    ],
     fechaNacimiento: [null, [Validators.required]],
     sexo: ['', [Validators.required]],
     telefono: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
@@ -63,6 +71,8 @@ export class BeneficiarioFormDialogComponent implements OnInit {
 
   isSubmitting = false;
   gruposVulnerables: GrupoVulnerableCatalogo[] = [];
+  localidades: LocalidadCatalogo[] = [];
+  isLoadingLocalidades = false;
 
   sexoOptions = [
     { value: 'F', label: 'Femenino' },
@@ -72,6 +82,7 @@ export class BeneficiarioFormDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadGruposVulnerables();
+    this.loadLocalidades();
   }
 
   private loadGruposVulnerables(): void {
@@ -82,6 +93,27 @@ export class BeneficiarioFormDialogComponent implements OnInit {
       error: (error) => {
         console.error('Error al cargar grupos vulnerables:', error);
         this.notificationService.error('Error al cargar grupos vulnerables');
+      },
+    });
+  }
+
+  private loadLocalidades(): void {
+    const municipioId = this.authService.getCurrentUser()?.municipioId;
+    if (!municipioId) return;
+
+    this.isLoadingLocalidades = true;
+    this.form.get('localidad')?.disable();
+    this.catalogosService.getLocalidadesPorMunicipio(municipioId).subscribe({
+      next: (localidades) => {
+        this.localidades = localidades;
+        this.isLoadingLocalidades = false;
+        this.form.get('localidad')?.enable();
+      },
+      error: (error) => {
+        console.error('Error al cargar localidades:', error);
+        this.notificationService.error('Error al cargar localidades');
+        this.isLoadingLocalidades = false;
+        this.form.get('localidad')?.enable();
       },
     });
   }

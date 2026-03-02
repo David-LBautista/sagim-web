@@ -1,7 +1,7 @@
 @if (movimientos) {
   <mat-card appearance="outlined" class="movements-section">
     <mat-card-header>
-      <mat-card-title> Resumen de Movimientos del Mes </mat-card-title>
+      <mat-card-title> {{ titulo }} </mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <div class="movements-grid">
@@ -18,16 +18,12 @@
               <h3>Entradas</h3>
               <div class="movement-stats">
                 <div class="stat-item">
-                  <span class="stat-value">{{
-                    movimientos.entradas.totalMovimientos
-                  }}</span>
+                  <span class="stat-value">{{ movimientos.entradas.totalMovimientos }}</span>
                   <span class="stat-label">movimientos</span>
                 </div>
                 <div class="stat-item">
-                  <span class="stat-value">{{
-                    movimientos.entradas.cantidadTotal.toLocaleString("es-MX")
-                  }}</span>
-                  <span class="stat-label">unidades</span>
+                  <span class="stat-value">{{ entradasValor }}</span>
+                  <span class="stat-label">{{ unidadLabel }}</span>
                 </div>
               </div>
             </div>
@@ -47,16 +43,12 @@
               <h3>Salidas</h3>
               <div class="movement-stats">
                 <div class="stat-item">
-                  <span class="stat-value">{{
-                    movimientos.salidas.totalMovimientos
-                  }}</span>
+                  <span class="stat-value">{{ movimientos.salidas.totalMovimientos }}</span>
                   <span class="stat-label">movimientos</span>
                 </div>
                 <div class="stat-item">
-                  <span class="stat-value">{{
-                    movimientos.salidas.cantidadTotal.toLocaleString("es-MX")
-                  }}</span>
-                  <span class="stat-label">unidades</span>
+                  <span class="stat-value">{{ salidasValor }}</span>
+                  <span class="stat-label">{{ unidadLabel }}</span>
                 </div>
               </div>
             </div>
@@ -64,13 +56,10 @@
         </mat-card>
       </div>
 
-      <!-- Balance simple como texto -->
+      <!-- Balance -->
       <div [class]="'balance-summary ' + getBalanceClass(movimientos.balance)">
         <span class="balance-label">Balance del mes</span>
-        <span class="balance-value">
-          {{ movimientos.balance > 0 ? "+" : ""
-          }}{{ movimientos.balance.toLocaleString("es-MX") }} unidades
-        </span>
+        <span class="balance-value">{{ balanceLabel }}</span>
       </div>
     </mat-card-content>
   </mat-card>

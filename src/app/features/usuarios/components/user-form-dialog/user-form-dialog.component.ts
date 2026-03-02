@@ -17,13 +17,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { forkJoin, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
 import { Usuario, UsuarioRol } from '../../models/usuario.model';
 import { UsuariosService } from '../../services/usuarios.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { CatalogosService } from '../../../../shared/services/catalogos.service';
-import { MunicipioCatalogo } from '../../../../shared/models/catalogo.model';
+import { MunicipiosService } from '../../../municipios/services/municipios.service';
+import { Municipio } from '../../../municipios/models/municipio.model';
 import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
@@ -54,10 +53,18 @@ export class UserFormDialogComponent implements OnInit {
   userForm: FormGroup;
   isEditMode: boolean = false;
   isSubmitting: boolean = false;
-  municipios: MunicipioCatalogo[] = [];
+  rolDisabled: boolean = false;
+
+  get isAdminMunicipio(): boolean {
+    return this.userForm?.getRawValue()?.rol === 'ADMIN_MUNICIPIO';
+  }
+
+  municipios: Municipio[] = [];
   modulos: Array<{ _id: string; nombre: string }> = [];
   roles: Array<{ value: string; label: string }> = [];
   emailDomain: string = '@municipio.sagim.com';
+
+  private municipiosService = inject(MunicipiosService);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { usuario?: Usuario }) {
     this.isEditMode = !!data?.usuario;
@@ -92,6 +99,18 @@ export class UserFormDialogComponent implements OnInit {
     this.userForm.get('municipioId')?.valueChanges.subscribe(() => {
       this.emailDomain = this.getEmailDomain();
     });
+
+    // Cuando cambie el rol, ajustar validadores de moduloId
+    this.userForm.get('rol')?.valueChanges.subscribe((rol) => {
+      const moduloControl = this.userForm.get('moduloId');
+      if (rol === 'ADMIN_MUNICIPIO') {
+        moduloControl?.clearValidators();
+        moduloControl?.setValue('');
+      } else {
+        moduloControl?.setValidators([Validators.required]);
+      }
+      moduloControl?.updateValueAndValidity();
+    });
   }
 
   ngOnInit(): void {
@@ -102,47 +121,43 @@ export class UserFormDialogComponent implements OnInit {
     if (this.userForm.get('municipioId')?.value) {
       this.emailDomain = this.getEmailDomain();
     }
+    // Si al abrir ya es ADMIN_MUNICIPIO, quitar validador de módulo
+    if (this.isAdminMunicipio) {
+      this.userForm.get('moduloId')?.clearValidators();
+      this.userForm.get('moduloId')?.updateValueAndValidity();
+    }
   }
 
   private loadMunicipios(): void {
-    this.catalogosService
-      .getEstados()
-      .pipe(
-        map((estados) => estados.filter((estado) => estado.activo)),
-        switchMap((estadosActivos) => {
-          if (estadosActivos.length === 0) {
-            return of([] as MunicipioCatalogo[][]);
-          }
-
-          return forkJoin(
-            estadosActivos.map((estado) =>
-              this.catalogosService
-                .getMunicipiosPorEstado(estado._id)
-                .pipe(map((municipios) => municipios.filter((m) => m.activo))),
-            ),
-          );
-        }),
-        map((municipiosPorEstado) =>
-          municipiosPorEstado
-            .flat()
-            .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es-MX')),
-        ),
-      )
-      .subscribe({
-        next: (municipios) => {
-          this.municipios = municipios;
-        },
-        error: (error) => {
-          console.error('Error al cargar municipios:', error);
-          this.notificationService.error('Error al cargar municipios');
-        },
-      });
+    this.municipiosService.getMunicipios().subscribe({
+      next: (municipios) => {
+        this.municipios = municipios
+          .filter((m) => m.activo !== false)
+          .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es-MX'));
+        // Reasignar municipioId tras cargar para que mat-select encuentre el valor
+        if (this.isEditMode && this.data.usuario?.municipioId) {
+          this.userForm.patchValue({
+            municipioId: this.data.usuario.municipioId._id,
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar municipios:', error);
+        this.notificationService.error('Error al cargar municipios');
+      },
+    });
   }
 
   private loadModulos(): void {
     this.catalogosService.getModulos().subscribe({
       next: (modulos) => {
         this.modulos = modulos;
+        // Reasignar moduloId tras cargar para que mat-select encuentre el valor
+        if (this.isEditMode && this.data.usuario?.moduloId) {
+          this.userForm.patchValue({
+            moduloId: this.data.usuario.moduloId._id,
+          });
+        }
       },
       error: (error) => {
         console.error('Error al cargar módulos:', error);
@@ -176,6 +191,22 @@ export class UserFormDialogComponent implements OnInit {
           value: rol.nombre,
           label: this.formatRolName(rol.nombre),
         }));
+
+        // En modo edición: si el rol actual del usuario editado no está
+        // entre los disponibles (permisos insuficientes), mostrar bloqueado
+        if (this.isEditMode && this.data.usuario?.rol) {
+          const rolActual = this.data.usuario.rol;
+          const puedeAsignar = this.roles.some((r) => r.value === rolActual);
+          if (!puedeAsignar) {
+            this.roles = [
+              { value: rolActual, label: this.formatRolName(rolActual) },
+              ...this.roles,
+            ];
+            this.rolDisabled = true;
+            this.userForm.get('rol')?.disable();
+          }
+          this.userForm.patchValue({ rol: rolActual });
+        }
       },
       error: (error) => {
         console.error('Error al cargar roles:', error);
@@ -221,7 +252,7 @@ export class UserFormDialogComponent implements OnInit {
   onSubmit(): void {
     if (this.userForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
-      const formValue = this.userForm.value;
+      const formValue = this.userForm.getRawValue(); // getRawValue incluye campos disabled
 
       // Construir el email completo
       const emailUsername = formValue.emailUsername;

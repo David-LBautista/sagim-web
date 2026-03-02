@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -19,13 +19,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { Subject, takeUntil } from 'rxjs';
 import { InventarioService } from '../../services/inventario.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
-import { CatalogosService } from '../../../../shared/services/catalogos.service';
 import {
-  TipoItem,
   InventarioItem,
   Programa,
+  TipoInventario,
 } from '../../models/inventario.model';
 
 @Component({
@@ -47,26 +47,27 @@ import {
   templateUrl: './item-form-dialog.component.html',
   styleUrls: ['./item-form-dialog.component.scss'],
 })
-export class ItemFormDialogComponent implements OnInit {
+export class ItemFormDialogComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private inventarioService = inject(InventarioService);
   private notificationService = inject(NotificationService);
-  private catalogosService = inject(CatalogosService);
   public dialogRef = inject(MatDialogRef<ItemFormDialogComponent>);
+  private destroy$ = new Subject<void>();
 
   itemForm: FormGroup;
   programas: Programa[] = [];
+  tiposApoyoDisponibles: string[] = [];
+  readonly TipoInventario = TipoInventario;
   isLoading = false;
   isSubmitting = false;
   isEditMode = false;
-
-  tiposItem: Array<{ value: string; label: string }> = [];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { item?: InventarioItem }) {
     this.isEditMode = !!data?.item;
 
     this.itemForm = this.fb.group({
       programaId: ['', Validators.required],
+      tipoInventario: [TipoInventario.FISICO, Validators.required],
       tipo: ['', Validators.required],
       cantidad: [1, [Validators.required, Validators.min(1)]],
       concepto: ['', [Validators.required, Validators.maxLength(200)]],
@@ -79,12 +80,41 @@ export class ItemFormDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProgramas();
-    this.loadTiposItem();
 
-    if (this.isEditMode && this.data.item) {
-      this.populateForm(this.data.item);
-      this.ensureTipoEnOpciones(this.data.item.tipo);
+    this.itemForm
+      .get('tipoInventario')!
+      .valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((tipo: TipoInventario) => {
+        this.applyTipoInventarioRules(tipo);
+      });
+
+    this.itemForm
+      .get('programaId')!
+      .valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((programaId: string) => {
+        const programa = this.programas.find((p) => p._id === programaId);
+        this.tiposApoyoDisponibles = programa?.tiposApoyo ?? [];
+        this.itemForm.get('tipo')!.setValue('');
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private applyTipoInventarioRules(tipo: TipoInventario): void {
+    const valorUnitarioCtrl = this.itemForm.get('valorUnitario')!;
+    const cantidadCtrl = this.itemForm.get('cantidad')!;
+    if (tipo === TipoInventario.MONETARIO) {
+      valorUnitarioCtrl.setValue(1);
+      valorUnitarioCtrl.disable();
+      cantidadCtrl.setValidators([Validators.required, Validators.min(0)]);
+    } else {
+      valorUnitarioCtrl.enable();
+      cantidadCtrl.setValidators([Validators.required, Validators.min(1)]);
     }
+    cantidadCtrl.updateValueAndValidity();
   }
 
   private loadProgramas(): void {
@@ -93,6 +123,17 @@ export class ItemFormDialogComponent implements OnInit {
       next: (programas) => {
         this.programas = programas.filter((p) => p.activo);
         this.isLoading = false;
+
+        if (this.isEditMode && this.data.item) {
+          this.populateForm(this.data.item);
+          const programa = this.programas.find(
+            (p) => p._id === this.data.item!.programaId._id,
+          );
+          this.tiposApoyoDisponibles = programa?.tiposApoyo ?? [];
+          this.applyTipoInventarioRules(
+            this.data.item.tipoInventario ?? TipoInventario.FISICO,
+          );
+        }
       },
       error: (error) => {
         console.error('Error al cargar programas:', error);
@@ -105,6 +146,7 @@ export class ItemFormDialogComponent implements OnInit {
   private populateForm(item: InventarioItem): void {
     this.itemForm.patchValue({
       programaId: item.programaId._id,
+      tipoInventario: item.tipoInventario ?? TipoInventario.FISICO,
       tipo: item.tipo,
       cantidad: item.cantidad,
       concepto: item.concepto,
@@ -115,57 +157,13 @@ export class ItemFormDialogComponent implements OnInit {
     });
   }
 
-  private loadTiposItem(): void {
-    this.catalogosService.getTiposApoyo().subscribe({
-      next: (tipos) => {
-        this.tiposItem = tipos
-          .filter((tipo) => tipo.activo)
-          .map((tipo) => ({
-            value: tipo.clave,
-            label: tipo.nombre,
-          }));
-
-        if (this.tiposItem.length === 0) {
-          this.tiposItem = this.getTiposFallback();
-        }
-
-        if (this.data.item?.tipo) {
-          this.ensureTipoEnOpciones(this.data.item.tipo);
-        }
-      },
-      error: (error) => {
-        console.error('Error al cargar catálogo de tipos de apoyo:', error);
-        this.tiposItem = this.getTiposFallback();
-      },
-    });
-  }
-
-  private ensureTipoEnOpciones(tipo: string): void {
-    const existe = this.tiposItem.some((option) => option.value === tipo);
-    if (!existe) {
-      this.tiposItem = [...this.tiposItem, { value: tipo, label: tipo }];
-    }
-  }
-
-  private getTiposFallback(): Array<{ value: string; label: string }> {
-    return [
-      { value: TipoItem.DESPENSA, label: 'Despensa' },
-      { value: TipoItem.MEDICAMENTO, label: 'Medicamento' },
-      { value: TipoItem.ROPA, label: 'Ropa' },
-      { value: TipoItem.UTENSILIO, label: 'Utensilio' },
-      { value: TipoItem.MOBILIARIO, label: 'Mobiliario' },
-      { value: TipoItem.EQUIPO, label: 'Equipo' },
-      { value: TipoItem.OTRO, label: 'Otro' },
-    ];
-  }
-
   onSubmit(): void {
     if (this.itemForm.invalid || this.isSubmitting) {
       return;
     }
 
     this.isSubmitting = true;
-    const formValue = this.itemForm.value;
+    const formValue = this.itemForm.getRawValue();
 
     // Convertir fecha a formato ISO string
     const itemData = {

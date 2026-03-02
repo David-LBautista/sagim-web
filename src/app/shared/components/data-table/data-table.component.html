@@ -32,7 +32,9 @@
     }
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"
+        [class.clickable-row]="clickableRows"
+        (click)="onRowClick(row)"></tr>
 
     <!-- Fila cuando no hay datos -->
     <tr class="mat-row no-data-row" *matNoDataRow>

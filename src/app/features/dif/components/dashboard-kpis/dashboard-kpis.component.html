@@ -7,13 +7,13 @@
   <div class="kpi-grid">
     @if (dashboardData) {
     <app-kpi-card
-      [value]="dashboardData.resumen.totalItems"
-      [label]="'Total de Artículos'"
+      [value]="dashboardData.resumen.totalArticulosFisicos"
+      [label]="'Artículos Físicos'"
       [icon]="'inventory'"
     />
 
     <app-kpi-card
-      [value]="dashboardData.stockCritico.total"
+      [value]="dashboardData.inventarioFisico.stockCritico.total"
       [label]="'Stock Crítico'"
       [icon]="'warning'"
     />
@@ -25,11 +25,9 @@
     />
 
     <app-kpi-card
-      [value]="
-        '$' + dashboardData.resumen.valorTotalInventario.toLocaleString('es-MX')
-      "
-      [label]="'Valor Total Inventario'"
-      [icon]="'attach_money'"
+      [value]="'$' + dashboardData.resumen.fondosDisponibles.toLocaleString('es-MX')"
+      [label]="'Fondos Disponibles'"
+      [icon]="'account_balance_wallet'"
     />
     } @else {
       <app-kpi-card [value]="''" [label]="''" [icon]="''" [error]="true" />

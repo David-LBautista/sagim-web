@@ -6,11 +6,19 @@ import { ApiEndpoints } from '../../../core/enums/api-endpoints.enum';
 import type {
   Beneficiario,
   BeneficiarioCreateDto,
+  BeneficiarioDetalle,
   BeneficiariosListResponse,
 } from '../models/beneficiarios.model';
 
 export interface BeneficiariosQueryParams {
-  curp?: string;
+  search?: string;
+  sexo?: string;
+  activo?: boolean;
+  fechaInicio?: string;
+  fechaFin?: string;
+  edadMin?: number;
+  edadMax?: number;
+  programaId?: string;
   page?: number;
   limit?: number;
 }
@@ -32,18 +40,38 @@ export class BeneficiariosService {
     const url = `${environment.apiUrl}${ApiEndpoints.DIF_BENEFICIARIOS_LIST}`;
 
     let httpParams = new HttpParams();
-    if (params?.curp) {
-      httpParams = httpParams.set('curp', params.curp);
-    }
-    if (params?.page) {
-      httpParams = httpParams.set('page', params.page.toString());
-    }
-    if (params?.limit) {
-      httpParams = httpParams.set('limit', params.limit.toString());
-    }
+    if (params?.search) httpParams = httpParams.set('search', params.search);
+    if (params?.sexo) httpParams = httpParams.set('sexo', params.sexo);
+    if (params?.activo !== undefined)
+      httpParams = httpParams.set('activo', String(params.activo));
+    if (params?.fechaInicio)
+      httpParams = httpParams.set('fechaInicio', params.fechaInicio);
+    if (params?.fechaFin)
+      httpParams = httpParams.set('fechaFin', params.fechaFin);
+    if (params?.edadMin != null)
+      httpParams = httpParams.set('edadMin', String(params.edadMin));
+    if (params?.edadMax != null)
+      httpParams = httpParams.set('edadMax', String(params.edadMax));
+    if (params?.programaId)
+      httpParams = httpParams.set('programaId', params.programaId);
+    if (params?.page) httpParams = httpParams.set('page', String(params.page));
+    if (params?.limit)
+      httpParams = httpParams.set('limit', String(params.limit));
 
     return this.http.get<BeneficiariosListResponse>(url, {
       params: httpParams,
     });
+  }
+
+  getBeneficiarioByCurp(
+    curp: string,
+    page = 1,
+    limit = 10,
+  ): Observable<BeneficiarioDetalle> {
+    const url = `${environment.apiUrl}${ApiEndpoints.DIF_BENEFICIARIOS_GET_BY_CURP.replace(':curp', encodeURIComponent(curp))}`;
+    const httpParams = new HttpParams()
+      .set('page', String(page))
+      .set('limit', String(limit));
+    return this.http.get<BeneficiarioDetalle>(url, { params: httpParams });
   }
 }

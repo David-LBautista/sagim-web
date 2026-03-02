@@ -8,8 +8,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -17,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { UsuarioRol } from '../../models/usuario.model';
 import { CatalogosService } from '../../../../shared/services/catalogos.service';
-import { MunicipioCatalogo } from '../../../../shared/models/catalogo.model';
+import { MunicipiosService } from '../../../municipios/services/municipios.service';
 import { AuthService } from '../../../auth/services/auth.service';
 
 export interface UserFilters {
@@ -45,6 +43,7 @@ export interface UserFilters {
 })
 export class UserFiltersComponent implements OnInit {
   private catalogosService = inject(CatalogosService);
+  private municipiosService = inject(MunicipiosService);
   private authService = inject(AuthService);
 
   @Input() showCreateButton: boolean = true;
@@ -62,7 +61,7 @@ export class UserFiltersComponent implements OnInit {
     moduloId: '',
   };
 
-  municipios: MunicipioCatalogo[] = [];
+  municipios: Array<{ _id: string; nombre: string }> = [];
   modulos: Array<{ _id: string; nombre: string }> = [];
 
   roles: Array<{ value: string; label: string }> = [
@@ -91,37 +90,17 @@ export class UserFiltersComponent implements OnInit {
   }
 
   private loadMunicipios(): void {
-    this.catalogosService
-      .getEstados()
-      .pipe(
-        map((estados) => estados.filter((estado) => estado.activo)),
-        switchMap((estadosActivos) => {
-          if (estadosActivos.length === 0) {
-            return of([] as MunicipioCatalogo[][]);
-          }
-
-          return forkJoin(
-            estadosActivos.map((estado) =>
-              this.catalogosService
-                .getMunicipiosPorEstado(estado._id)
-                .pipe(map((municipios) => municipios.filter((m) => m.activo))),
-            ),
-          );
-        }),
-        map((municipiosPorEstado) =>
-          municipiosPorEstado
-            .flat()
-            .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es-MX')),
-        ),
-      )
-      .subscribe({
-        next: (municipios) => {
-          this.municipios = municipios;
-        },
-        error: (error) => {
-          console.error('Error al cargar municipios:', error);
-        },
-      });
+    this.municipiosService.getMunicipios().subscribe({
+      next: (municipios) => {
+        this.municipios = municipios
+          .filter((m) => m.activo !== false)
+          .map((m) => ({ _id: m._id, nombre: m.nombre }))
+          .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es-MX'));
+      },
+      error: (error) => {
+        console.error('Error al cargar municipios:', error);
+      },
+    });
   }
 
   private loadRoles(): void {

@@ -17,7 +17,13 @@ export class DashboardKpisComponent {
 
   getTotalMovimientos(): number {
     if (!this.dashboardData) return 0;
-    const { entradas, salidas } = this.dashboardData.movimientosDelMes;
-    return entradas.totalMovimientos + salidas.totalMovimientos;
+    const fisico = this.dashboardData.inventarioFisico.movimientosDelMes;
+    const monetario = this.dashboardData.fondosMonetarios.movimientosDelMes;
+    return (
+      fisico.entradas.totalMovimientos +
+      fisico.salidas.totalMovimientos +
+      monetario.entradas.totalMovimientos +
+      monetario.salidas.totalMovimientos
+    );
   }
 }

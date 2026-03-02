@@ -22,6 +22,13 @@ export const DIF_ROUTES: Routes = [
           import('./pages/beneficiarios.page').then((m) => m.BeneficiariosPage),
       },
       {
+        path: 'beneficiarios/:curp',
+        loadComponent: () =>
+          import('./pages/beneficiario-detalle.page').then(
+            (m) => m.BeneficiarioDetallePage,
+          ),
+      },
+      {
         path: 'apoyos',
         loadComponent: () =>
           import('./pages/apoyos.page').then((m) => m.ApoyosPage),

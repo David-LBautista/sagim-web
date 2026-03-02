@@ -50,7 +50,7 @@
           <!-- Columna Estado -->
           <ng-container matColumnDef="estado">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-            <td mat-cell *matCellDef="let municipio">{{ municipio.estado }}</td>
+            <td mat-cell *matCellDef="let municipio">{{ municipio.estadoId?.nombre || municipio.estado || '-' }}</td>
           </ng-container>
 
           <!-- Columna Población -->
@@ -75,6 +75,18 @@
             <td mat-cell *matCellDef="let municipio">
               {{ municipio.contactoTelefono || "-" }}
             </td>
+          </ng-container>
+
+          <!-- Columna Admin Nombre -->
+          <ng-container matColumnDef="adminNombre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Administrador</th>
+            <td mat-cell *matCellDef="let municipio">{{ municipio.admin?.nombre || '-' }}</td>
+          </ng-container>
+
+          <!-- Columna Admin Email -->
+          <ng-container matColumnDef="adminEmail">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email Admin</th>
+            <td mat-cell *matCellDef="let municipio">{{ municipio.admin?.email || '-' }}</td>
           </ng-container>
 
           <!-- Columna Acciones -->

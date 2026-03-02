@@ -99,14 +99,19 @@ export class MunicipioFormDialogComponent implements OnInit {
       ],
       direccion: [data?.municipio?.direccion || ''],
       adminEmail: [
-        '',
-        this.isEditMode ? [] : [Validators.required, Validators.email],
+        data?.municipio?.admin?.email || '',
+        this.isEditMode
+          ? [Validators.email]
+          : [Validators.required, Validators.email],
       ],
       adminPassword: [
         '',
         this.isEditMode ? [] : [Validators.required, Validators.minLength(8)],
       ],
-      adminNombre: ['', this.isEditMode ? [] : [Validators.required]],
+      adminNombre: [
+        data?.municipio?.admin?.nombre || '',
+        this.isEditMode ? [] : [Validators.required],
+      ],
       modulos: modulosGroup,
     });
 
@@ -150,14 +155,23 @@ export class MunicipioFormDialogComponent implements OnInit {
   private loadMunicipioDataForEdit(): void {
     if (!this.data.municipio) return;
 
+    // Si hay logo existente, mostrarlo en la preview
+    if (this.data.municipio.logoUrl) {
+      this.logoPreview = this.data.municipio.logoUrl;
+    }
+
     // Esperar a que se carguen los estados
     const checkEstados = setInterval(() => {
       if (this.estados.length > 0) {
         clearInterval(checkEstados);
 
-        // Buscar el estado por nombre
+        // Buscar el estado usando el objeto poblado estadoId
+        const estadoRef = this.data.municipio?.estadoId;
         const estado = this.estados.find(
-          (e) => e.nombre === this.data.municipio?.estado,
+          (e) =>
+            (estadoRef?._id && e._id === estadoRef._id) ||
+            (estadoRef?.nombre && e.nombre === estadoRef.nombre) ||
+            e.nombre === this.data.municipio?.estado,
         );
 
         if (estado) {
@@ -165,22 +179,49 @@ export class MunicipioFormDialogComponent implements OnInit {
           this.estadoCtrl.setValue(estado);
           this.municipioForm.patchValue({ estadoId: estado._id });
 
-          // Cargar los municipios de ese estado
+          // Cargar los municipios de ese estado (sin filtrar por activo para edición)
           this.catalogosService.getMunicipiosPorEstado(estado._id).subscribe({
             next: (municipios) => {
-              this.municipiosCatalogo = municipios.filter((m) => m.activo);
+              this.municipiosCatalogo = municipios;
 
-              // Buscar el municipio por nombre
-              const municipio = this.municipiosCatalogo.find(
-                (m) => m.nombre === this.data.municipio?.nombre,
+              // Buscar el municipio por claveInegi primero, luego por nombre
+              const municipioData = this.data.municipio!;
+              let municipio = this.municipiosCatalogo.find(
+                (m) => m.claveInegi === municipioData.claveInegi,
               );
+              if (!municipio) {
+                municipio = this.municipiosCatalogo.find(
+                  (m) => m.nombre === municipioData.nombre,
+                );
+              }
 
               if (municipio) {
                 // Setear el municipio en el autocomplete
                 this.municipioCtrl.setValue(municipio);
                 this.municipioForm.patchValue({
                   municipioId: municipio._id,
-                  poblacion: municipio.poblacion,
+                  poblacion: municipio.poblacion ?? municipioData.poblacion,
+                });
+              } else {
+                // No está en catálogo: construir entrada sintética desde los datos del sistema
+                const sintetico: MunicipioCatalogo = {
+                  _id: municipioData._id,
+                  nombre: municipioData.nombre,
+                  claveInegi: municipioData.claveInegi,
+                  poblacion: municipioData.poblacion ?? 0,
+                  estadoId: estado._id,
+                  activo: true,
+                  createdAt: '',
+                  updatedAt: '',
+                };
+                this.municipiosCatalogo = [
+                  sintetico,
+                  ...this.municipiosCatalogo,
+                ];
+                this.municipioCtrl.setValue(sintetico);
+                this.municipioForm.patchValue({
+                  municipioId: sintetico._id,
+                  poblacion: municipioData.poblacion,
                 });
               }
 
@@ -329,14 +370,25 @@ export class MunicipioFormDialogComponent implements OnInit {
           return;
         }
 
-        const configData = {
-          config: {
-            modulos: formValue.modulos,
-          },
-        };
+        // Construir FormData para soportar logo opcional
+        const updateFd = new FormData();
+        updateFd.append('contactoEmail', formValue.contactoEmail || '');
+        updateFd.append('contactoTelefono', formValue.contactoTelefono || '');
+        updateFd.append('direccion', formValue.direccion || '');
+        updateFd.append(
+          'config',
+          JSON.stringify({ modulos: formValue.modulos }),
+        );
+        if (formValue.adminNombre)
+          updateFd.append('adminNombre', formValue.adminNombre);
+        if (formValue.adminEmail)
+          updateFd.append('adminEmail', formValue.adminEmail);
+        if (formValue.adminPassword)
+          updateFd.append('adminPassword', formValue.adminPassword);
+        if (this.selectedLogo) updateFd.append('logo', this.selectedLogo);
 
         this.municipiosService
-          .updateMunicipio(municipioId, configData)
+          .updateMunicipioWithFormData(municipioId, updateFd)
           .subscribe({
             next: (response) => {
               this.notificationService.success(

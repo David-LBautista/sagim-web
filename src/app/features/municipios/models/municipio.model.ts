@@ -1,8 +1,23 @@
+export interface EstadoRef {
+  _id: string;
+  clave: string;
+  nombre: string;
+}
+
+export interface AdminRef {
+  _id: string;
+  municipioId: string;
+  nombre: string;
+  email: string;
+  activo: boolean;
+}
+
 export interface Municipio {
   id?: number;
   _id: string;
   nombre: string;
-  estado: string;
+  estadoId?: EstadoRef;
+  estado?: string;
   claveInegi: string;
   poblacion?: number;
   config?: MunicipioConfig;
@@ -10,6 +25,8 @@ export interface Municipio {
   contactoTelefono?: string;
   direccion?: string;
   activo?: boolean;
+  logoUrl?: string;
+  admin?: AdminRef;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -41,4 +58,7 @@ export interface MunicipioUpdateDto {
   contactoTelefono?: string;
   direccion?: string;
   activo?: boolean;
+  adminNombre?: string;
+  adminEmail?: string;
+  adminPassword?: string;
 }

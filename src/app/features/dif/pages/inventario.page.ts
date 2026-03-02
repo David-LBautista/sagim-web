@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemFormDialogComponent } from '../components/item-form-dialog/item-form-dialog.component';
+import { GenerarReporteDialogComponent } from '../components/generar-reporte-dialog/generar-reporte-dialog.component';
 import { InventarioService } from '../services/inventario.service';
 import { DashboardInventario } from '../models/inventario.model';
 import { ActionButtonComponent } from '../../../shared/components/action-button/action-button.component';
@@ -60,6 +61,14 @@ export class InventarioPage implements OnInit {
       if (result) {
         this.loadDashboard();
       }
+    });
+  }
+
+  onGenerarReporte(): void {
+    this.dialog.open(GenerarReporteDialogComponent, {
+      width: '480px',
+      maxWidth: '95vw',
+      data: { tipo: 'inventario' },
     });
   }
 }

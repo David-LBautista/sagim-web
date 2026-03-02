@@ -1,16 +1,184 @@
-.dif-subpage {
-  width: 100%;
-  padding: var(--sagim-spacing-lg);
+:host {
+  display: block;
+}
+
+.apoyos-page {
+  padding: var(--sagim-spacing-md);
 }
 
 .page-header {
-  margin-bottom: var(--sagim-spacing-xl);
+  margin-bottom: var(--sagim-spacing-md);
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sagim-spacing-lg);
+
+    .header-text {
+      flex: 1;
+      min-width: 250px;
+
+      h1 { margin: 0; color: var(--sagim-primary); }
+      p { margin: var(--sagim-spacing-xs) 0 0; }
+    }
+
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      gap: var(--sagim-spacing-md);
+    }
+  }
 }
 
-.content-card {
-  background: var(--sagim-bg-light);
+// KPIs grid — misma estructura que inventario
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sagim-spacing-md);
+  margin-bottom: var(--sagim-spacing-lg);
+}
+
+.apoyos-content {
+  width: 100%;
+}
+
+.search-section {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sagim-spacing-md);
+  margin-bottom: var(--sagim-spacing-sm);
+
+  .search-field {
+    flex: 1;
+    max-width: 720px;
+  }
+}
+
+.filters-inline {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: var(--sagim-spacing-sm);
+  padding: var(--sagim-spacing-sm);
+  background: #fff;
   border: 1px solid rgba(15, 42, 68, 0.1);
   border-radius: var(--sagim-radius-md);
-  padding: var(--sagim-spacing-lg);
-  color: var(--sagim-text-mid);
+  margin-bottom: var(--sagim-spacing-xs);
+}
+
+.filters-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--sagim-spacing-md);
+}
+
+.list-section {
+  margin-top: var(--sagim-spacing-sm);
+  background: #fff;
+  border: 1px solid rgba(15, 42, 68, 0.1);
+  border-radius: var(--sagim-radius-md);
+  padding: var(--sagim-spacing-sm);
+}
+
+.table-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+@media (max-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .apoyos-page {
+    padding: var(--sagim-spacing-md);
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .page-header .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .action-buttons { width: 100%; }
+  }
+
+  .search-section {
+    flex-direction: column;
+
+    .search-field {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
+  .filters-inline {
+    grid-template-columns: 1fr;
+  }
+
+  .list-section {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── Tabla de apoyos ───────────────────────────────────────────────────────────
+.activity-section {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: white;
+
+  mat-card-header {
+    margin-bottom: 0.5rem;
+    padding: 16px 20px;
+
+    mat-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--sagim-text-dark);
+    }
+  }
+
+  mat-card-content {
+    padding-top: 0;
+  }
+}
+
+.folio-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(31, 111, 174, 0.1);
+  color: var(--sagim-secondary);
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.tipo-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(111, 174, 59, 0.12);
+  color: #4a7d1e;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.monto-value {
+  color: var(--sagim-primary);
+  font-weight: 700;
 }

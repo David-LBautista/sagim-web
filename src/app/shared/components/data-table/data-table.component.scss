@@ -47,6 +47,10 @@
       background-color: rgba(0, 0, 0, 0.04);
     }
 
+    tr.clickable-row {
+      cursor: pointer;
+    }
+
     .no-data {
       display: flex;
       flex-direction: column;

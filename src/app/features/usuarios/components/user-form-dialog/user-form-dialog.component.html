@@ -92,6 +92,9 @@
               <mat-option [value]="rol.value">{{ rol.label }}</mat-option>
             }
           </mat-select>
+          @if (rolDisabled) {
+            <mat-hint>No tienes permisos para cambiar este rol</mat-hint>
+          }
           @if (userForm.get("rol")?.invalid && userForm.get("rol")?.touched) {
             <mat-error>{{ getErrorMessage("rol") }}</mat-error>
           }
@@ -113,25 +116,27 @@
         </mat-form-field>
       </div>
 
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Módulo</mat-label>
-          <mat-select
-            formControlName="moduloId"
-            placeholder="Seleccione un módulo"
-          >
-            @for (modulo of modulos; track modulo._id) {
-              <mat-option [value]="modulo._id">{{ modulo.nombre }}</mat-option>
+      @if (!isAdminMunicipio) {
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Módulo</mat-label>
+            <mat-select
+              formControlName="moduloId"
+              placeholder="Seleccione un módulo"
+            >
+              @for (modulo of modulos; track modulo._id) {
+                <mat-option [value]="modulo._id">{{ modulo.nombre }}</mat-option>
+              }
+            </mat-select>
+            @if (
+              userForm.get("moduloId")?.invalid &&
+              userForm.get("moduloId")?.touched
+            ) {
+              <mat-error>{{ getErrorMessage("moduloId") }}</mat-error>
             }
-          </mat-select>
-          @if (
-            userForm.get("moduloId")?.invalid &&
-            userForm.get("moduloId")?.touched
-          ) {
-            <mat-error>{{ getErrorMessage("moduloId") }}</mat-error>
-          }
-        </mat-form-field>
-      </div>
+          </mat-form-field>
+        </div>
+      }
 
       <div class="form-row">
         <mat-checkbox formControlName="activo"> Usuario activo </mat-checkbox>

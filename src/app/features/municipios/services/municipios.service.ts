@@ -66,6 +66,21 @@ export class MunicipiosService {
   }
 
   /**
+   * Actualizar un municipio con FormData (soporta logo)
+   */
+  updateMunicipioWithFormData(
+    id: string,
+    formData: FormData,
+  ): Observable<Municipio> {
+    const url =
+      `${environment.apiUrl}${ApiEndpoints.MUNICIPIOS_UPDATE}`.replace(
+        ':id',
+        id,
+      );
+    return this.http.patch<Municipio>(url, formData);
+  }
+
+  /**
    * Eliminar un municipio
    */
   deleteMunicipio(id: string): Observable<void> {

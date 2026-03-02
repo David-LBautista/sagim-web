@@ -1,8 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,21 +13,21 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  DataTableComponent,
-  TableColumn,
-} from '../../../shared/components/data-table/data-table.component';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { ActionButtonComponent } from '../../../shared/components/action-button/action-button.component';
 import { BeneficiariosService } from '../services/beneficiarios.service';
 import { NotificationService } from '../../../shared/services/notification.service';
-import type { Beneficiario } from '../models/beneficiarios.model';
+import type { Beneficiario, MunicipioRef } from '../models/beneficiarios.model';
 import { BeneficiarioFormDialogComponent } from '../components/beneficiario-form-dialog/beneficiario-form-dialog.component';
+import { GenerarReporteDialogComponent } from '../components/generar-reporte-dialog/generar-reporte-dialog.component';
 
 interface BeneficiarioListItem {
   folio: string;
   nombreCompleto: string;
   curp: string;
-  programa: string;
+  localidad: string;
   municipio: string;
   fechaRegistro: string;
   estatus: 'ACTIVO' | 'INACTIVO';
@@ -38,6 +40,7 @@ interface BeneficiarioListItem {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
@@ -46,17 +49,22 @@ interface BeneficiarioListItem {
     MatDatepickerModule,
     MatNativeDateModule,
     MatTooltipModule,
-    DataTableComponent,
+    MatTableModule,
     StatusBadgeComponent,
+    ActionButtonComponent,
   ],
   templateUrl: './beneficiarios.page.html',
   styleUrls: ['./beneficiarios.page.scss'],
 })
-export class BeneficiariosPage implements OnInit {
+export class BeneficiariosPage implements OnInit, OnDestroy {
   private fb = new FormBuilder();
   private dialog = inject(MatDialog);
+  private router = inject(Router);
   private beneficiariosService = inject(BeneficiariosService);
   private notificationService = inject(NotificationService);
+
+  private destroy$ = new Subject<void>();
+  private searchSubject = new Subject<string>();
 
   globalSearch = '';
   showFilters = false;
@@ -85,7 +93,6 @@ export class BeneficiariosPage implements OnInit {
   ];
 
   filtrosForm: FormGroup = this.fb.group({
-    municipio: [''],
     programa: [''],
     fechaInicio: [null],
     fechaFin: [null],
@@ -95,18 +102,18 @@ export class BeneficiariosPage implements OnInit {
     estatus: [''],
   });
 
-  tableColumns: TableColumn[] = [
-    { key: 'folio', label: 'Folio beneficiario' },
-    { key: 'nombreCompleto', label: 'Nombre completo' },
-    { key: 'curp', label: 'CURP' },
-    { key: 'programa', label: 'Programa' },
-    { key: 'municipio', label: 'Municipio' },
-    { key: 'fechaRegistro', label: 'Fecha de registro' },
-    { key: 'estatus', label: 'Estatus', align: 'center' },
-    { key: 'acciones', label: 'Acciones', align: 'center' },
+  readonly displayedColumns = [
+    'folio',
+    'nombreCompleto',
+    'curp',
+    'localidad',
+    'municipio',
+    'fechaRegistro',
+    'estatus',
+    'acciones',
   ];
 
-  beneficiarios: BeneficiarioListItem[] = [];
+  dataSource = new MatTableDataSource<BeneficiarioListItem>([]);
   total = 0;
   page = 1;
   limit = 20;
@@ -114,6 +121,19 @@ export class BeneficiariosPage implements OnInit {
 
   ngOnInit(): void {
     this.loadBeneficiarios();
+
+    // Debounce global search
+    this.searchSubject
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.page = 1;
+        this.loadBeneficiarios();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onNuevoBeneficiario(): void {
@@ -130,36 +150,68 @@ export class BeneficiariosPage implements OnInit {
     });
   }
 
+  onGenerarReporte(): void {
+    this.dialog.open(GenerarReporteDialogComponent, {
+      width: '480px',
+      maxWidth: '95vw',
+      data: { tipo: 'beneficiarios' },
+    });
+  }
+
   toggleFilters(): void {
     this.showFilters = !this.showFilters;
   }
 
-  loadBeneficiarios(): void {
-    this.beneficiariosService.getBeneficiarios().subscribe({
-      next: (response) => {
-        this.beneficiarios = response.data.map((item: Beneficiario) =>
-          this.mapBeneficiario(item),
-        );
-        this.total = response.total;
-        this.page = response.page;
-        this.limit = response.limit;
-        this.totalPages = response.totalPages;
-      },
-      error: (error) => {
-        console.error('Error al cargar beneficiarios:', error);
-        this.notificationService.error('Error al cargar beneficiarios');
-      },
-    });
+  onSearchChange(): void {
+    this.searchSubject.next(this.globalSearch);
   }
 
-  get tableData(): Array<
-    BeneficiarioListItem & { _original: BeneficiarioListItem }
-  > {
-    return this.beneficiarios.map((item) => ({
-      ...item,
-      fechaRegistro: this.formatDate(item.fechaRegistro),
-      _original: item,
-    }));
+  aplicarFiltros(): void {
+    this.page = 1;
+    this.loadBeneficiarios();
+  }
+
+  limpiarFiltros(): void {
+    this.filtrosForm.reset({
+      programa: '',
+      fechaInicio: null,
+      fechaFin: null,
+      sexo: '',
+      edadMin: null,
+      edadMax: null,
+      estatus: '',
+    });
+    this.globalSearch = '';
+    this.page = 1;
+    this.loadBeneficiarios();
+  }
+
+  loadBeneficiarios(): void {
+    this.beneficiariosService
+      .getBeneficiarios(this.buildQueryParams())
+      .subscribe({
+        next: (response) => {
+          this.dataSource.data = response.data.map((item: Beneficiario) =>
+            this.mapBeneficiario(item),
+          );
+          this.total = response.total;
+          this.page = response.page;
+          this.limit = response.limit;
+          this.totalPages = response.totalPages;
+        },
+        error: (error) => {
+          console.error('Error al cargar beneficiarios:', error);
+          this.notificationService.error('Error al cargar beneficiarios');
+        },
+      });
+  }
+
+  get resumenActivos(): number {
+    return this.dataSource.data.filter((b) => b.estatus === 'ACTIVO').length;
+  }
+
+  get resumenInactivos(): number {
+    return this.dataSource.data.filter((b) => b.estatus === 'INACTIVO').length;
   }
 
   getEstatusVariant(
@@ -169,7 +221,7 @@ export class BeneficiariosPage implements OnInit {
   }
 
   onVerBeneficiario(item: BeneficiarioListItem): void {
-    console.log('Ver beneficiario:', item);
+    this.router.navigate(['/dif/beneficiarios', item.curp]);
   }
 
   onEditarBeneficiario(item: BeneficiarioListItem): void {
@@ -189,18 +241,44 @@ export class BeneficiariosPage implements OnInit {
     const estatus = this.resolveEstatus(item);
 
     return {
-      folio: this.buildFolio(item._id),
+      folio: item.folio ?? this.buildFolio(item._id),
       nombreCompleto: this.buildNombreCompleto(item),
       curp: item.curp,
-      programa: '-',
-      municipio: item.municipioId,
-      fechaRegistro: item.createdAt,
+      localidad: item.localidad ?? '-',
+      municipio:
+        typeof item.municipioId === 'object'
+          ? (item.municipioId as MunicipioRef).nombre
+          : (item.municipioId ?? '-'),
+      fechaRegistro: this.formatDate(item.fechaRegistro ?? item.createdAt),
       estatus,
     };
   }
 
   private buildFolio(id: string): string {
     return `BEN-${id.slice(-8).toUpperCase()}`;
+  }
+
+  private buildQueryParams() {
+    const f = this.filtrosForm.value;
+    const params: Record<string, unknown> = {
+      page: this.page,
+      limit: this.limit,
+    };
+    if (this.globalSearch?.trim()) params['search'] = this.globalSearch.trim();
+    if (f.sexo) params['sexo'] = f.sexo;
+    if (f.programa) params['programaId'] = f.programa;
+    if (f.fechaInicio) params['fechaInicio'] = this.toDateString(f.fechaInicio);
+    if (f.fechaFin) params['fechaFin'] = this.toDateString(f.fechaFin);
+    if (f.edadMin != null && f.edadMin !== '') params['edadMin'] = f.edadMin;
+    if (f.edadMax != null && f.edadMax !== '') params['edadMax'] = f.edadMax;
+    if (f.estatus === 'INACTIVO') params['activo'] = false;
+    else if (f.estatus === 'ACTIVO') params['activo'] = true;
+    return params;
+  }
+
+  private toDateString(date: Date | string): string {
+    const d = new Date(date);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
   private buildNombreCompleto(item: Beneficiario): string {

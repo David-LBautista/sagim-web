@@ -11,6 +11,12 @@
 
       <div class="action-buttons">
         <app-action-button
+          label="Generar reporte"
+          icon="picture_as_pdf"
+          color="accent"
+          (clicked)="onGenerarReporte()"
+        />
+        <app-action-button
           label="Nuevo Item"
           icon="inventory"
           color="primary"
@@ -25,18 +31,24 @@
 
   <!-- Sección de Alertas Críticas -->
   @if (!loading && dashboardData) {
-    <app-alertas-criticas [items]="dashboardData.stockCritico.items" />
+    <app-alertas-criticas [items]="dashboardData.inventarioFisico.stockCritico.items" />
 
     <!-- Resumen de Movimientos del Mes -->
-    <app-resumen-movimientos [movimientos]="dashboardData.movimientosDelMes" />
+    <app-resumen-movimientos
+      [movimientos]="dashboardData.inventarioFisico.movimientosDelMes"
+      titulo="Movimientos Físicos del Mes"
+      modo="fisico"
+    />
+    <app-resumen-movimientos
+      [movimientos]="dashboardData.fondosMonetarios.movimientosDelMes"
+      titulo="Movimientos de Fondos del Mes"
+      modo="monetario"
+    />
 
     <!-- Actividad Reciente -->
-    @if (
-      dashboardData.movimientosDelMes.ultimosMovimientos &&
-      dashboardData.movimientosDelMes.ultimosMovimientos.length > 0
-    ) {
+    @if (dashboardData.ultimosMovimientos && dashboardData.ultimosMovimientos.length > 0) {
       <app-actividad-reciente
-        [movimientos]="dashboardData.movimientosDelMes.ultimosMovimientos"
+        [movimientos]="dashboardData.ultimosMovimientos"
       />
     }
   }

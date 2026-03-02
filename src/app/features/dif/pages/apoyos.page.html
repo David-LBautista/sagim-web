@@ -1,12 +1,91 @@
-<div class="dif-subpage">
+<div class="apoyos-page">
+
+  <!-- Header -->
   <div class="page-header">
-    <h1 class="sagim-title-xl">Apoyos</h1>
-    <p class="sagim-subtitle-light">
-      Gestión de apoyos y asistencias otorgadas por el DIF
-    </p>
+    <div class="header-content">
+      <div class="header-text">
+        <h1 class="sagim-title-xl">Apoyos</h1>
+        <p class="sagim-subtitle-light">Gestión de apoyos y asistencias otorgadas por el DIF</p>
+      </div>
+      <div class="action-buttons">
+        <app-action-button
+          label="Generar reporte"
+          icon="picture_as_pdf"
+          color="accent"
+          (clicked)="onGenerarReporte()"
+        />
+        <app-action-button
+          label="Nuevo Apoyo"
+          icon="volunteer_activism"
+          color="primary"
+          (clicked)="onNuevoApoyo()"
+        />
+      </div>
+    </div>
   </div>
 
-  <div class="content-card">
-    <p>Módulo de apoyos en construcción.</p>
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <app-kpi-card
+      [value]="loadingKpis ? '...' : (dashboard?.resumen?.totalApoyos ?? 0)"
+      label="Total apoyos otorgados"
+      icon="volunteer_activism"
+      [loading]="loadingKpis"
+    />
+    <app-kpi-card
+      [value]="loadingKpis ? '...' : totalMontoLabel"
+      label="Monto total entregado"
+      icon="attach_money"
+      [loading]="loadingKpis"
+    />
+    <app-kpi-card
+      [value]="loadingKpis ? '...' : (dashboard?.resumen?.apoyosMes ?? 0)"
+      label="Apoyos este mes"
+      icon="calendar_today"
+      [loading]="loadingKpis"
+    />
+    <app-kpi-card
+      [value]="loadingKpis ? '...' : (dashboard?.resumen?.beneficiariosAtenidosMes ?? 0)"
+      label="Beneficiarios atendidos"
+      icon="people"
+      [loading]="loadingKpis"
+    />
   </div>
+
+  <!-- Tabla de apoyos recientes -->
+  <mat-card appearance="outlined" class="activity-section">
+    <mat-card-header>
+      <mat-card-title>Apoyos recientes</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loadingKpis) {
+        <mat-progress-bar mode="indeterminate" />
+      }
+
+      <app-data-table
+        [dataSource]="tableData"
+        [columns]="tableColumns"
+        noDataMessage="Sin apoyos registrados aún"
+        noDataIcon="volunteer_activism"
+      >
+        <ng-template #cellTemplate let-row let-column="column">
+          @if (column === 'folio') {
+            <span class="folio-chip">{{ row.folio }}</span>
+          } @else if (column === 'tipo') {
+            <span class="tipo-badge">{{ row.tipo }}</span>
+          } @else if (column === 'monto') {
+            @if (row.monto) {
+              <strong class="monto-value">{{ row.monto | currency:'MXN':'symbol':'1.0-0' }}</strong>
+            } @else {
+              <span>—</span>
+            }
+          } @else {
+            {{ row[column] }}
+          }
+        </ng-template>
+      </app-data-table>
+    </mat-card-content>
+  </mat-card>
+
 </div>

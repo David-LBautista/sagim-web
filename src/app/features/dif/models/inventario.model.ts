@@ -8,6 +8,11 @@ export enum TipoItem {
   OTRO = 'OTRO',
 }
 
+export enum TipoInventario {
+  FISICO = 'FISICO',
+  MONETARIO = 'MONETARIO',
+}
+
 export interface InventarioItem {
   _id: string;
   programaId: {
@@ -15,7 +20,8 @@ export interface InventarioItem {
     nombre: string;
     descripcion?: string;
   };
-  tipo: TipoItem;
+  tipo: string;
+  tipoInventario: TipoInventario;
   cantidad: number;
   concepto: string;
   fecha: string;
@@ -30,7 +36,8 @@ export interface InventarioItem {
 
 export interface InventarioItemCreateDto {
   programaId: string;
-  tipo: TipoItem;
+  tipo: string;
+  tipoInventario?: TipoInventario;
   cantidad: number;
   concepto: string;
   fecha: string;
@@ -41,7 +48,8 @@ export interface InventarioItemCreateDto {
 
 export interface InventarioItemUpdateDto {
   programaId?: string;
-  tipo?: TipoItem;
+  tipo?: string;
+  tipoInventario?: TipoInventario;
   cantidad?: number;
   concepto?: string;
   fecha?: string;
@@ -56,6 +64,9 @@ export interface Programa {
   nombre: string;
   descripcion?: string;
   activo: boolean;
+  tiposApoyo: string[];
+  clave?: string;
+  categoria?: string;
 }
 
 export interface StockCriticoItem {
@@ -73,11 +84,25 @@ export interface StockCriticoItem {
   valorUnitario: number;
 }
 
+export interface FondoMonetario {
+  id: string;
+  tipo: string;
+  programa: {
+    id: string;
+    nombre: string;
+  };
+  disponible: number;
+  totalIngresado: number;
+  utilizado: number;
+  porcentajeUtilizado: number;
+}
+
 export interface MovimientoReciente {
   id: string;
   fecha: string;
   tipoMovimiento: 'IN' | 'OUT';
-  tipo: TipoItem;
+  tipoInventario: TipoInventario;
+  tipo: string;
   programa: {
     id: string;
     nombre: string;
@@ -92,29 +117,34 @@ export interface MovimientoReciente {
   };
   folio: string;
   apoyoFolio: string | null;
-  comprobante: string;
+  comprobante?: string;
 }
 
 export interface DashboardInventario {
   resumen: {
-    totalItems: number;
-    valorTotalInventario: number;
+    totalArticulosFisicos: number;
+    totalFondosMonetarios: number;
+    valorTotalInventarioFisico: number;
+    fondosDisponibles: number;
   };
-  stockCritico: {
-    total: number;
-    items: StockCriticoItem[];
-  };
-  movimientosDelMes: {
-    entradas: {
-      totalMovimientos: number;
-      cantidadTotal: number;
+  inventarioFisico: {
+    stockCritico: {
+      total: number;
+      items: StockCriticoItem[];
     };
-    salidas: {
-      totalMovimientos: number;
-      cantidadTotal: number;
+    movimientosDelMes: {
+      entradas: { totalMovimientos: number; cantidadTotal: number };
+      salidas: { totalMovimientos: number; cantidadTotal: number };
+      balance: number;
     };
-    balance: number;
-    ultimosMovimientos: MovimientoReciente[];
   };
-  actividadReciente?: MovimientoReciente[];
+  fondosMonetarios: {
+    fondos: FondoMonetario[];
+    movimientosDelMes: {
+      entradas: { totalMovimientos: number; montoTotal: number };
+      salidas: { totalMovimientos: number; montoTotal: number };
+      balance: number;
+    };
+  };
+  ultimosMovimientos: MovimientoReciente[];
 }

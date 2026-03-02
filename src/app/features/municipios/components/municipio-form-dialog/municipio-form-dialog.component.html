@@ -86,46 +86,44 @@
       </div>
 
       <!-- Logo del Municipio -->
-      @if (!isEditMode) {
-        <div class="form-row logo-upload">
-          <div class="upload-container">
-            <div class="upload-actions">
-              <label class="upload-label">Logo del Municipio</label>
-              <button
-                mat-stroked-button
-                type="button"
-                (click)="logoInput.click()"
-              >
-                <mat-icon>upload</mat-icon>
-                {{ selectedLogo ? "Cambiar logo" : "Seleccionar logo" }}
-              </button>
-              <input
-                #logoInput
-                type="file"
-                accept="image/png,image/jpeg,image/svg+xml"
-                (change)="onLogoSelected($event)"
-                style="display: none"
-              />
-              @if (selectedLogo) {
-                <span class="file-name">{{ selectedLogo.name }}</span>
-              }
-            </div>
+      <div class="form-row logo-upload">
+        <div class="upload-container">
+          <div class="upload-actions">
+            <label class="upload-label">Logo del Municipio</label>
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="logoInput.click()"
+            >
+              <mat-icon>upload</mat-icon>
+              {{ selectedLogo ? "Cambiar logo" : "Seleccionar logo" }}
+            </button>
+            <input
+              #logoInput
+              type="file"
+              accept="image/png,image/jpeg,image/svg+xml"
+              (change)="onLogoSelected($event)"
+              style="display: none"
+            />
+            @if (selectedLogo) {
+              <span class="file-name">{{ selectedLogo.name }}</span>
+            }
+          </div>
 
-            <div class="preview-box">
-              @if (logoPreview) {
-                <div class="preview-content">
-                  <img [src]="logoPreview" alt="Preview del logo" />
-                </div>
-              } @else {
-                <div class="preview-placeholder">
-                  <mat-icon>image</mat-icon>
-                  <p>Vista previa del logo</p>
-                </div>
-              }
-            </div>
+          <div class="preview-box">
+            @if (logoPreview) {
+              <div class="preview-content">
+                <img [src]="logoPreview" alt="Preview del logo" />
+              </div>
+            } @else {
+              <div class="preview-placeholder">
+                <mat-icon>image</mat-icon>
+                <p>Vista previa del logo</p>
+              </div>
+            }
           </div>
         </div>
-      }
+      </div>
     </div>
 
     <!-- Información de Contacto -->
@@ -179,62 +177,63 @@
     </div>
 
     <!-- Datos del Administrador -->
-    @if (!isEditMode) {
-      <div class="form-section">
-        <h3 class="section-title">Datos del Administrador</h3>
+    <div class="form-section">
+      <h3 class="section-title">Datos del Administrador</h3>
 
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Nombre Completo del Administrador</mat-label>
-            <input
-              matInput
-              formControlName="adminNombre"
-              placeholder="Ej. Juan Pérez"
-            />
-            @if (
-              municipioForm.get("adminNombre")?.invalid &&
-              municipioForm.get("adminNombre")?.touched
-            ) {
-              <mat-error>{{ getErrorMessage("adminNombre") }}</mat-error>
-            }
-          </mat-form-field>
-        </div>
-
-        <div class="form-row two-columns">
-          <mat-form-field appearance="outline">
-            <mat-label>Email del Administrador</mat-label>
-            <input
-              matInput
-              type="email"
-              formControlName="adminEmail"
-              placeholder="Ej. admin@laperla.gob.mx"
-            />
-            @if (
-              municipioForm.get("adminEmail")?.invalid &&
-              municipioForm.get("adminEmail")?.touched
-            ) {
-              <mat-error>{{ getErrorMessage("adminEmail") }}</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Contraseña del Administrador</mat-label>
-            <input
-              matInput
-              type="password"
-              formControlName="adminPassword"
-              placeholder="Mínimo 8 caracteres"
-            />
-            @if (
-              municipioForm.get("adminPassword")?.invalid &&
-              municipioForm.get("adminPassword")?.touched
-            ) {
-              <mat-error>{{ getErrorMessage("adminPassword") }}</mat-error>
-            }
-          </mat-form-field>
-        </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre Completo del Administrador</mat-label>
+          <input
+            matInput
+            formControlName="adminNombre"
+            placeholder="Ej. Juan Pérez"
+          />
+          @if (
+            municipioForm.get("adminNombre")?.invalid &&
+            municipioForm.get("adminNombre")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("adminNombre") }}</mat-error>
+          }
+        </mat-form-field>
       </div>
-    }
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Email del Administrador</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="adminEmail"
+            placeholder="Ej. admin@laperla.gob.mx"
+          />
+          @if (
+            municipioForm.get("adminEmail")?.invalid &&
+            municipioForm.get("adminEmail")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("adminEmail") }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña del Administrador</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="adminPassword"
+            [placeholder]="isEditMode ? 'Dejar vacío para no cambiar' : 'Mínimo 8 caracteres'"
+          />
+          @if (isEditMode) {
+            <mat-hint>Dejar vacío para mantener la contraseña actual</mat-hint>
+          }
+          @if (
+            municipioForm.get("adminPassword")?.invalid &&
+            municipioForm.get("adminPassword")?.touched
+          ) {
+            <mat-error>{{ getErrorMessage("adminPassword") }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
 
     <!-- Configuración de Módulos -->
     <div class="form-section">

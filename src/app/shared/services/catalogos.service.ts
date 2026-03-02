@@ -11,6 +11,7 @@ import {
   TipoMovimientoCatalogo,
   GrupoVulnerableCatalogo,
   TipoApoyoCatalogo,
+  LocalidadCatalogo,
 } from '../models/catalogo.model';
 
 @Injectable({
@@ -135,5 +136,19 @@ export class CatalogosService {
         clave,
       );
     return this.http.get<TipoApoyoCatalogo>(url);
+  }
+
+  /**
+   * Obtener localidades por municipio
+   */
+  getLocalidadesPorMunicipio(
+    municipioId: string,
+  ): Observable<LocalidadCatalogo[]> {
+    const url =
+      `${environment.apiUrl}${ApiEndpoints.CATALOGOS_LOCALIDADES_POR_MUNICIPIO}`.replace(
+        ':municipioId',
+        municipioId,
+      );
+    return this.http.get<LocalidadCatalogo[]>(url);
   }
 }

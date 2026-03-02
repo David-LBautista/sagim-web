@@ -1,0 +1,69 @@
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon>picture_as_pdf</mat-icon>
+  {{ titulo }}
+</h2>
+
+<mat-dialog-content class="dialog-content">
+  <p class="dialog-hint">
+    Selecciona el rango de fechas para generar el reporte en PDF. El enlace de
+    descarga estará disponible durante 5 minutos.
+  </p>
+
+  <form [formGroup]="form" class="reporte-form">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Fecha inicio</mat-label>
+      <input
+        matInput
+        [matDatepicker]="pickerInicio"
+        formControlName="fechaInicio"
+        [max]="maxDate"
+        placeholder="dd/mm/aaaa"
+        readonly
+      />
+      <mat-datepicker-toggle matIconSuffix [for]="pickerInicio" />
+      <mat-datepicker #pickerInicio />
+      @if (form.get("fechaInicio")?.hasError("required")) {
+        <mat-error>Requerido</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Fecha fin</mat-label>
+      <input
+        matInput
+        [matDatepicker]="pickerFin"
+        formControlName="fechaFin"
+        [max]="maxDate"
+        placeholder="dd/mm/aaaa"
+        readonly
+      />
+      <mat-datepicker-toggle matIconSuffix [for]="pickerFin" />
+      <mat-datepicker #pickerFin />
+      @if (form.get("fechaFin")?.hasError("required")) {
+        <mat-error>Requerido</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-stroked-button (click)="onCancelar()" [disabled]="generando">
+    Cancelar
+  </button>
+  @if (generando) {
+    <button mat-flat-button color="primary" disabled>
+      <mat-spinner diameter="18" />
+      Generando…
+    </button>
+  } @else {
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="onGenerar()"
+      [disabled]="form.invalid"
+    >
+      <mat-icon>download</mat-icon>
+      Generar reporte
+    </button>
+  }
+</mat-dialog-actions>
