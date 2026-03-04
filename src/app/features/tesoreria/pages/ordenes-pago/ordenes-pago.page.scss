@@ -108,6 +108,25 @@ $radius: 10px;
     color: $text-mid;
     margin-left: 4px;
   }
+
+  .tabla-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.refresh-btn {
+  color: $text-mid;
+  transition: color 0.2s;
+
+  &:hover:not(:disabled) {
+    color: $secondary;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
 }
 
 // ── Columnas específicas ──────────────────────────────────────────────────

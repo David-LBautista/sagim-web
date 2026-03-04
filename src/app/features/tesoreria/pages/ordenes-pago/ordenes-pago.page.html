@@ -124,9 +124,20 @@
           <span class="tabla-count">({{ ordenes().length }})</span>
         }
       </span>
-      @if (loadingOrdenes()) {
-        <mat-spinner diameter="20"></mat-spinner>
-      }
+      <div class="tabla-header-actions">
+        @if (loadingOrdenes()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        }
+        <button
+          mat-icon-button
+          (click)="cargarOrdenes()"
+          [disabled]="loadingOrdenes()"
+          matTooltip="Actualizar tabla"
+          class="refresh-btn"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
     </div>
     <mat-divider></mat-divider>
 

@@ -259,6 +259,75 @@ $bg: #f4f6f8;
   }
 }
 
+// ── Sección de tarjeta de pago ────────────────────────────────────────────
+.card-payment-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.06),
+    0 4px 16px rgba(15, 42, 68, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: $text-dark;
+  letter-spacing: 0.01em;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: $secondary;
+  }
+}
+
+.card-brands {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 4px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+
+  &.brand-visa {
+    background: #1a1f71;
+    color: #fff;
+  }
+
+  &.brand-mc {
+    background: linear-gradient(90deg, #eb001b 40%, #f79e1b 60%);
+    color: #fff;
+  }
+
+  &.brand-amex {
+    background: #007bc1;
+    color: #fff;
+  }
+}
+
 // ── Error inline de Stripe ─────────────────────────────────────────────────
 .stripe-error {
   display: flex;
@@ -266,7 +335,7 @@ $bg: #f4f6f8;
   gap: 8px;
   background: #fce4e4;
   border: 1px solid #f5c6c6;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 10px 14px;
   font-size: 0.88rem;
   color: $danger;
@@ -279,20 +348,64 @@ $bg: #f4f6f8;
   }
 }
 
-// ── Contenedor del elemento Stripe ────────────────────────────────────────
-.stripe-element-wrap {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  min-height: 48px; // evita colapso antes de que Stripe monte el iframe
+// ── Campo del elemento Stripe ──────────────────────────────────────────────
+.stripe-field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.stripe-row {
+  display: flex;
+  gap: 12px;
+
+  .stripe-field-wrap {
+    flex: 1;
+  }
+}
+
+.stripe-field-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: $text-mid;
+  text-transform: uppercase;
+}
+
+.stripe-element-field {
+  border: 1.5px solid #dce3ec;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #f9fafc;
+  min-height: 48px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+
+  &:hover {
+    border-color: #b0bec5;
+    background: #fff;
+  }
+
+  &.StripeElement--focus {
+    border-color: $secondary;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(31, 111, 174, 0.15);
+  }
+
+  &.StripeElement--invalid {
+    border-color: $danger;
+    box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.12);
+  }
 }
 
 .btn-recibo {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 4px;
+  margin: 16px 0 16px 0;
   padding: 10px 18px;
   background: $secondary;
   color: #fff;

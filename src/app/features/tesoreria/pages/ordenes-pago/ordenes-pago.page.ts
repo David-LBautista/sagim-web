@@ -291,7 +291,7 @@ export class OrdenesPagoPage implements OnInit, OnDestroy {
       case 'PAGADA':
         return { variant: 'success', label: 'Pagada' };
       case 'CANCELADA':
-        return { variant: 'neutral', label: 'Cancelada' };
+        return { variant: 'danger', label: 'Cancelada' };
       case 'EXPIRADA':
         return { variant: 'danger', label: 'Expirada' };
     }
@@ -309,8 +309,9 @@ export class OrdenesPagoPage implements OnInit, OnDestroy {
 
   nombreCiudadano(orden: OrdenPago): string {
     const c = orden.ciudadanoId;
-    if (!c) return '—';
-    return `${c.nombre} ${c.apellidoPaterno}`;
+    if (c) return `${c.nombre} ${c.apellidoPaterno}`;
+    if (orden.nombreContribuyente) return orden.nombreContribuyente;
+    return '—';
   }
 
   formatMonto(n: number): string {

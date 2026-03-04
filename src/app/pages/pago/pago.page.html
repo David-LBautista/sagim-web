@@ -4,13 +4,13 @@
     <div class="header-content">
       <img
         class="logo"
-        src="/assets/logo/sagim_logo_white.png"
+        [src]="orden()?.municipio?.logoUrl || '/assets/logo/sagim_logo_white.png'"
         alt="SAGIM"
         onerror="this.style.display = 'none'"
       />
       <div class="header-text">
-        <span class="municipio">{{
-          orden()?.municipioNombre || "Municipio"
+        <span class="municipio">Municipio de {{
+          orden()?.municipio?.nombre || "Municipio"
         }}</span>
         <span class="subtitulo">Sistema de Pagos Municipales — SAGIM</span>
       </div>
@@ -35,8 +35,8 @@
         </div>
         <h2>¡Pago realizado!</h2>
         <p>
-          Tu pago se procesó correctamente. Recibirás una confirmación en tu
-          correo electrónico.
+          Tu pago se procesó correctamente.
+          Guarda o descarga tu recibo como comprobante.
         </p>
         @if (orden(); as o) {
           <div class="recibo-resumen">
@@ -65,10 +65,13 @@
             target="_blank"
             rel="noopener"
           >
-            <mat-icon>picture_as_pdf</mat-icon>
             Descargar recibo
           </a>
         }
+
+        <p class="aviso-seguridad">
+          Puedes cerrar esta ventana de forma segura.
+        </p>
       </div>
     }
 
@@ -166,36 +169,68 @@
         </div>
       </div>
 
-      <!-- Error inline de Stripe -->
-      @if (errorMsg()) {
-        <div class="stripe-error">
-          <mat-icon>warning</mat-icon>
-          {{ errorMsg() }}
+      <!-- Sección de tarjeta de pago -->
+      <div class="card-payment-section">
+
+        <!-- Cabecera: label + marcas aceptadas -->
+        <div class="card-section-header">
+          <span class="card-section-title">
+            <mat-icon>credit_card</mat-icon>
+            Información de pago
+          </span>
+          <div class="card-brands">
+            <span class="brand brand-visa">VISA</span>
+            <span class="brand brand-mc">MC</span>
+            <span class="brand brand-amex">AMEX</span>
+          </div>
         </div>
-      }
 
-      <!-- Elemento de tarjeta de Stripe -->
-      <div id="stripe-card-element" class="stripe-element-wrap"></div>
-
-      <!-- Botón de pago -->
-      <button
-        class="btn-pagar"
-        (click)="onPagar()"
-        [disabled]="estado() === 'procesando'"
-      >
-        @if (estado() === "procesando") {
-          <mat-spinner diameter="20" [style.display]="'inline-block'" />
-          <span>Procesando…</span>
-        } @else {
-          <mat-icon>lock</mat-icon>
-          <span>Pagar ahora</span>
+        <!-- Error inline de Stripe -->
+        @if (errorMsg()) {
+          <div class="stripe-error">
+            <mat-icon>warning</mat-icon>
+            {{ errorMsg() }}
+          </div>
         }
-      </button>
 
-      <p class="aviso-seguridad">
-        <mat-icon>security</mat-icon>
-        Pago seguro procesado por Stripe. Este enlace es de uso único.
-      </p>
+        <!-- Stripe: campos separados -->
+        <div class="stripe-field-wrap">
+          <div class="stripe-field-label">Número de tarjeta</div>
+          <div id="stripe-card-number" class="stripe-element-field"></div>
+        </div>
+
+        <div class="stripe-row">
+          <div class="stripe-field-wrap">
+            <div class="stripe-field-label">Fecha de vencimiento</div>
+            <div id="stripe-card-expiry" class="stripe-element-field"></div>
+          </div>
+          <div class="stripe-field-wrap">
+            <div class="stripe-field-label">Código de seguridad</div>
+            <div id="stripe-card-cvc" class="stripe-element-field"></div>
+          </div>
+        </div>
+
+        <!-- Botón de pago -->
+        <button
+          class="btn-pagar"
+          (click)="onPagar()"
+          [disabled]="estado() === 'procesando'"
+        >
+          @if (estado() === "procesando") {
+            <mat-spinner diameter="20" [style.display]="'inline-block'" />
+            <span>Procesando…</span>
+          } @else {
+            <mat-icon>lock</mat-icon>
+            <span>Pagar ahora</span>
+          }
+        </button>
+
+        <p class="aviso-seguridad">
+          <mat-icon>security</mat-icon>
+          Pago seguro procesado por Stripe. Este enlace es de uso único.
+        </p>
+
+      </div>
     }
   </main>
 

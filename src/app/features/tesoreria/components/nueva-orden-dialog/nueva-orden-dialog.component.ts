@@ -108,6 +108,7 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
       [Validators.required, Validators.min(1), Validators.max(72)],
     ],
     emailExterno: ['', [Validators.email]],
+    nombreContribuyente: [''],
   });
 
   ciudadanoBusquedaCtrl = new FormControl('');
@@ -225,8 +226,14 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
   onGenerarOrden(): void {
     if (this.form.invalid || this.submitting() || !this.servicioSeleccionado())
       return;
-    const { descripcion, monto, areaResponsable, horasValidez, emailExterno } =
-      this.form.getRawValue();
+    const {
+      descripcion,
+      monto,
+      areaResponsable,
+      horasValidez,
+      emailExterno,
+      nombreContribuyente,
+    } = this.form.getRawValue();
     const ciudadano = this.ciudadanoSeleccionado();
 
     this.submitting.set(true);
@@ -239,6 +246,10 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
         ...(ciudadano && { ciudadanoId: ciudadano._id }),
         ...(!ciudadano &&
           emailExterno?.trim() && { emailCiudadano: emailExterno.trim() }),
+        ...(!ciudadano &&
+          nombreContribuyente?.trim() && {
+            nombreContribuyente: nombreContribuyente.trim(),
+          }),
         ...(this.servicioSeleccionado() && {
           servicioId: this.servicioSeleccionado()!._id,
         }),

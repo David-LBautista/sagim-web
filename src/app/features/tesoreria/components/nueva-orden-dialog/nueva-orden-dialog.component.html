@@ -207,6 +207,19 @@
             <mat-error>Email inválido</mat-error>
           }
         </mat-form-field>
+
+        <!-- Nombre del contribuyente (si no hay ciudadano vinculado) -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre del contribuyente</mat-label>
+          <mat-icon matPrefix>badge</mat-icon>
+          <input
+            matInput
+            formControlName="nombreContribuyente"
+            placeholder="Ej. Juan Pérez García"
+            maxlength="120"
+          />
+          <mat-hint>Aparecerá en la tabla y en el recibo</mat-hint>
+        </mat-form-field>
       } @else {
         <!-- Ciudadano seleccionado -->
         <div class="ciudadano-chip">

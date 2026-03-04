@@ -8,7 +8,9 @@ import {
   loadStripe,
   type Stripe,
   type StripeElements,
-  type StripeCardElement,
+  type StripeCardNumberElement,
+  type StripeCardExpiryElement,
+  type StripeCardCvcElement,
 } from '@stripe/stripe-js';
 import { PagoService } from './pago.service';
 import { environment } from '../../../environments/environment';
@@ -47,7 +49,9 @@ export class PagoPage implements OnInit {
   // ── Stripe internals ──────────────────────────────────────────────────
   private stripe: Stripe | null = null;
   private elements: StripeElements | null = null;
-  private cardElement: StripeCardElement | null = null;
+  private cardNumberElement: StripeCardNumberElement | null = null;
+  private cardExpiryElement: StripeCardExpiryElement | null = null;
+  private cardCvcElement: StripeCardCvcElement | null = null;
   private clientSecret = '';
 
   // ── Init ─────────────────────────────────────────────────────────────
@@ -97,32 +101,53 @@ export class PagoPage implements OnInit {
               this.elements = this.stripe.elements({
                 locale: 'es-419',
                 appearance: {
-                  theme: 'stripe',
+                  theme: 'flat',
                   variables: {
                     colorPrimary: '#1F6FAE',
-                    colorBackground: '#ffffff',
-                    borderRadius: '8px',
-                    fontFamily: '"Inter", sans-serif',
+                    colorBackground: '#f9fafc',
+                    colorText: '#3A3A3A',
+                    colorDanger: '#D64545',
+                    fontFamily: '"Inter", "Roboto", sans-serif',
+                    borderRadius: '10px',
+                    spacingUnit: '4px',
                   },
                 },
               });
 
               this.estado.set('listo');
 
+              const cardStyle = {
+                base: {
+                  fontSize: '15px',
+                  fontFamily: '"Inter", "Roboto", sans-serif',
+                  fontWeight: '500',
+                  color: '#3A3A3A',
+                  letterSpacing: '0.01em',
+                  '::placeholder': { color: '#b0bec5' },
+                  iconColor: '#1F6FAE',
+                },
+                invalid: { color: '#D64545', iconColor: '#D64545' },
+                complete: { color: '#3A3A3A', iconColor: '#6FAE3B' },
+              };
+
               setTimeout(() => {
-                this.cardElement = this.elements!.create('card', {
-                  hidePostalCode: true,
-                  style: {
-                    base: {
-                      fontSize: '16px',
-                      fontFamily: '"Inter", sans-serif',
-                      color: '#3A3A3A',
-                      '::placeholder': { color: '#aab7c4' },
-                    },
-                    invalid: { color: '#D64545' },
-                  },
+                this.cardNumberElement = this.elements!.create('cardNumber', {
+                  showIcon: true,
+                  style: cardStyle,
+                  placeholder: '1234 1234 1234 1234',
                 });
-                this.cardElement.mount('#stripe-card-element');
+                this.cardExpiryElement = this.elements!.create('cardExpiry', {
+                  style: cardStyle,
+                  placeholder: 'MM/AA',
+                });
+                this.cardCvcElement = this.elements!.create('cardCvc', {
+                  style: cardStyle,
+                  placeholder: 'CVC',
+                });
+
+                this.cardNumberElement.mount('#stripe-card-number');
+                this.cardExpiryElement.mount('#stripe-card-expiry');
+                this.cardCvcElement.mount('#stripe-card-cvc');
               }, 0);
             },
             error: () => {
@@ -145,7 +170,7 @@ export class PagoPage implements OnInit {
 
   // ── Confirmar pago (sin redirect) ───────────────────────────────────────────
   async onPagar(): Promise<void> {
-    if (!this.stripe || !this.cardElement || !this.clientSecret) return;
+    if (!this.stripe || !this.cardNumberElement || !this.clientSecret) return;
     this.errorMsg.set('');
     this.estado.set('procesando');
 
@@ -155,7 +180,7 @@ export class PagoPage implements OnInit {
     console.log('[Pago] clientSecret:', this.clientSecret);
     const { paymentIntent, error } = await this.stripe.confirmCardPayment(
       this.clientSecret,
-      { payment_method: { card: this.cardElement } },
+      { payment_method: { card: this.cardNumberElement } },
     );
 
     if (error) {

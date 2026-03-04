@@ -35,6 +35,7 @@ export interface OrdenPago {
   expiresAt: string;
   areaResponsable?: string;
   createdAt: string;
+  nombreContribuyente?: string;
   servicioId?: { _id: string; nombre: string; costo: number };
   ciudadanoId?: {
     _id: string;
@@ -55,6 +56,7 @@ export interface GenerarOrdenDto {
   ciudadanoId?: string;
   emailCiudadano?: string;
   servicioId?: string;
+  nombreContribuyente?: string;
 }
 
 export interface GenerarOrdenResponse {
@@ -83,14 +85,20 @@ export interface ReciboOrdenResponse {
 }
 
 // ── Vista pública (sin auth) ─────────────────────────────────────────────
+export interface MunicipioPago {
+  nombre: string;
+  logoUrl?: string;
+}
+
 export interface OrdenPagoPublica {
   token: string;
+  concepto?: string;
   monto: number;
   descripcion: string;
   estado: EstadoOrden;
   expiresAt: string;
   areaResponsable?: string;
-  municipioNombre: string;
+  municipio?: MunicipioPago;
   ciudadanoNombre?: string;
 }
 
