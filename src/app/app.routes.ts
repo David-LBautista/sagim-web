@@ -140,6 +140,12 @@ export const routes: Routes = [
         (m) => m.NoAutorizadoPage,
       ),
   },
+  // ── Página de pago pública (sin autenticación) ──────────────────────────
+  {
+    path: 'pago/:token',
+    loadComponent: () =>
+      import('./pages/pago/pago.page').then((m) => m.PagoPage),
+  },
   {
     path: '',
     redirectTo: '/login',

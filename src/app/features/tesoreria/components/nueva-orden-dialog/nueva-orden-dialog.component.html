@@ -1,0 +1,313 @@
+<!-- ── Vista: Formulario ──────────────────────────────────────────────────── -->
+@if (vista() === "form") {
+  <mat-dialog-content>
+    <form [formGroup]="form" class="orden-form">
+      <!-- ── Sección 1: Datos del pago ──────────────────────────────────── -->
+      <p class="section-label">Datos del pago</p>
+
+      <!-- ── Buscar servicio del catálogo ──────────────────────────────── -->
+      @if (!servicioSeleccionado()) {
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+          style="margin-bottom: 0.5rem"
+        >
+          <mat-label>Buscar servicio del catálogo</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            [formControl]="servicioBusquedaCtrl"
+            [matAutocomplete]="autoServicio"
+            placeholder="Ej. acta de nacimiento, predial..."
+          />
+          @if (buscandoServicio()) {
+            <mat-spinner matSuffix diameter="18"></mat-spinner>
+          }
+          <mat-hint
+            >Opcional — rellena descripción y monto automáticamente</mat-hint
+          >
+          <mat-autocomplete
+            #autoServicio="matAutocomplete"
+            [displayWith]="displayServicio"
+            (optionSelected)="onServicioSeleccionado($event.option.value)"
+          >
+            @for (s of serviciosFiltrados(); track s._id) {
+              <mat-option [value]="s">
+                <div class="servicio-option">
+                  <span class="servicio-nombre">{{ s.nombre }}</span>
+                  <span class="servicio-meta">
+                    {{ s.categoria }} ·
+                    @if (s.montoVariable) {
+                      Monto variable
+                    } @else {
+                      ${{ s.costo | number: "1.2-2" }}
+                    }
+                  </span>
+                </div>
+              </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      } @else {
+        <!-- Servicio seleccionado chip -->
+        <div class="servicio-chip">
+          <div class="servicio-chip-info">
+            <span class="servicio-chip-nombre">{{
+              servicioSeleccionado()!.nombre
+            }}</span>
+            <span class="servicio-chip-meta">
+              {{ servicioSeleccionado()!.categoria }}
+              @if (!servicioSeleccionado()!.montoVariable) {
+                · ${{ servicioSeleccionado()!.costo | number: "1.2-2" }}
+              }
+            </span>
+          </div>
+          <button
+            mat-icon-button
+            (click)="limpiarServicio()"
+            matTooltip="Quitar servicio"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+
+      <!-- Descripción -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descripción del trámite</mat-label>
+        <textarea
+          matInput
+          formControlName="descripcion"
+          rows="2"
+          maxlength="200"
+          placeholder="Ej. Acta de nacimiento certificada"
+        ></textarea>
+        <mat-hint align="end"
+          >{{ form.value.descripcion?.length ?? 0 }}/200</mat-hint
+        >
+        @if (
+          form.get("descripcion")?.hasError("required") &&
+          form.get("descripcion")?.touched
+        ) {
+          <mat-error>La descripción es requerida</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Monto + Área (fila) -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="monto-field">
+          <mat-label>Monto</mat-label>
+          <span matTextPrefix>$&nbsp;</span>
+          <input
+            matInput
+            type="number"
+            formControlName="monto"
+            min="1"
+            placeholder="0"
+          />
+          @if (
+            form.get("monto")?.hasError("required") &&
+            form.get("monto")?.touched
+          ) {
+            <mat-error>El monto es requerido</mat-error>
+          }
+          @if (form.get("monto")?.hasError("min")) {
+            <mat-error>Debe ser mayor a $0</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="area-field">
+          <mat-label>Área responsable</mat-label>
+          @if (servicioSeleccionado()) {
+            <input matInput formControlName="areaResponsable" readonly />
+          } @else {
+            <mat-select formControlName="areaResponsable">
+              <mat-option value="">— Sin área —</mat-option>
+              @for (area of areas; track area.value) {
+                <mat-option [value]="area.value">{{ area.label }}</mat-option>
+              }
+            </mat-select>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Vigencia -->
+      <mat-form-field appearance="outline" class="vigencia-field">
+        <mat-label>Vigencia (horas)</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="horasValidez"
+          min="1"
+          max="72"
+          placeholder="48"
+        />
+        <mat-hint>Mínimo 1 h — máximo 72 h (default 48 h)</mat-hint>
+        @if (
+          form.get("horasValidez")?.hasError("min") ||
+          form.get("horasValidez")?.hasError("max")
+        ) {
+          <mat-error>Entre 1 y 72 horas</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-divider class="section-divider"></mat-divider>
+
+      <!-- ── Sección 2: Ciudadano (opcional) ────────────────────────────── -->
+      <p class="section-label">
+        Vincular ciudadano
+        <span class="opcional-tag">Opcional</span>
+      </p>
+
+      @if (!ciudadanoSeleccionado()) {
+        <!-- Buscador -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Buscar ciudadano</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            [formControl]="ciudadanoBusquedaCtrl"
+            [matAutocomplete]="autoCiudadano"
+            placeholder="Nombre o CURP"
+          />
+          @if (buscandoCiudadano()) {
+            <mat-spinner matSuffix diameter="18"></mat-spinner>
+          }
+          <mat-autocomplete
+            #autoCiudadano="matAutocomplete"
+            [displayWith]="displayCiudadano"
+            (optionSelected)="onCiudadanoSeleccionado($event.option.value)"
+          >
+            @for (c of ciudadanosFiltrados(); track c._id) {
+              <mat-option [value]="c">
+                <div class="ciudadano-option">
+                  <span class="ciudadano-nombre">
+                    {{ c.nombre }} {{ c.apellidoPaterno }}
+                    {{ c.apellidoMaterno ?? "" }}
+                  </span>
+                  <span class="ciudadano-curp">{{ c.curp }}</span>
+                </div>
+              </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- Email externo (si no hay ciudadano) -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>O ingresa el email del ciudadano</mat-label>
+          <mat-icon matPrefix>email</mat-icon>
+          <input
+            matInput
+            type="email"
+            formControlName="emailExterno"
+            placeholder="correo@ejemplo.com"
+          />
+          <mat-hint>Si se ingresa, el link se enviará automáticamente</mat-hint>
+          @if (form.get("emailExterno")?.hasError("email")) {
+            <mat-error>Email inválido</mat-error>
+          }
+        </mat-form-field>
+      } @else {
+        <!-- Ciudadano seleccionado -->
+        <div class="ciudadano-chip">
+          <mat-icon>person</mat-icon>
+          <div class="ciudadano-chip-info">
+            <span class="ciudadano-chip-nombre">
+              {{ ciudadanoSeleccionado()!.nombre }}
+              {{ ciudadanoSeleccionado()!.apellidoPaterno }}
+              {{ ciudadanoSeleccionado()!.apellidoMaterno ?? "" }}
+            </span>
+            @if (ciudadanoSeleccionado()!.email) {
+              <span class="ciudadano-chip-email">{{
+                ciudadanoSeleccionado()!.email
+              }}</span>
+            }
+          </div>
+          <button
+            mat-icon-button
+            (click)="limpiarCiudadano()"
+            matTooltip="Quitar ciudadano"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCerrar()">Cancelar</button>
+    <app-action-button
+      [label]="submitting() ? 'Generando...' : 'Generar Orden'"
+      icon="bolt"
+      color="primary"
+      [disabled]="form.invalid"
+      [loading]="submitting()"
+      (clicked)="onGenerarOrden()"
+    />
+  </mat-dialog-actions>
+}
+
+<!-- ── Vista: Éxito ──────────────────────────────────────────────────────── -->
+@if (vista() === "exito") {
+  <mat-dialog-content>
+    <div class="exito-content">
+      <!-- Monto + Área -->
+      <div class="exito-badges">
+        <div class="exito-badge">
+          <span class="badge-label">Monto</span>
+          <span class="badge-value monto-value">{{
+            ordenCreada()!.monto
+              | currency: "MXN" : "symbol" : "1.2-2" : "es-MX"
+          }}</span>
+        </div>
+        @if (ordenCreada()!.areaResponsable) {
+          <div class="exito-badge">
+            <span class="badge-label">Área</span>
+            <span class="badge-value">{{
+              ordenCreada()!.areaResponsable
+            }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Link de pago -->
+      <p class="link-label">Link de pago</p>
+      <div class="link-box">
+        <span class="link-text">{{ paymentLink }}</span>
+        <button
+          mat-icon-button
+          (click)="onCopiarLink()"
+          [matTooltip]="linkCopiado() ? '¡Copiado!' : 'Copiar link'"
+          class="copy-btn"
+          [class.copied]="linkCopiado()"
+        >
+          <mat-icon>{{ linkCopiado() ? "check" : "content_copy" }}</mat-icon>
+        </button>
+      </div>
+
+      <!-- Vigencia -->
+      <div class="vigencia-info">
+        <span>{{ vigenciaTexto }}</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      mat-raised-button
+      (click)="onReenviarEmail()"
+      [disabled]="reenviando()"
+      class="btn-reenviar"
+    >
+      <mat-spinner
+        diameter="16"
+        [style.display]="reenviando() ? 'inline-flex' : 'none'"
+      ></mat-spinner>
+      > Reenviar por email
+    </button>
+    <button mat-raised-button color="primary" (click)="onCerrar()">
+      Cerrar
+    </button>
+  </mat-dialog-actions>
+}

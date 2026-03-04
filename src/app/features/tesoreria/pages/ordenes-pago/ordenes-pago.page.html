@@ -1,0 +1,261 @@
+<div class="ordenes-page">
+  <!-- ── ENCABEZADO ──────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="sagim-title-xl" style="margin-bottom: 5px">Órdenes de Pago</h1>
+      <p class="sagim-subtitle-light">Pagos en línea via Stripe</p>
+    </div>
+    <div class="header-right">
+      <app-action-button
+        label="Nueva Orden"
+        icon="add"
+        color="primary"
+        (clicked)="onNuevaOrden()"
+      />
+    </div>
+  </div>
+
+  <!-- ── MÉTRICAS ────────────────────────────────────────────────────── -->
+  <div class="metrics-grid">
+    <app-kpi-card
+      icon="receipt_long"
+      label="Órdenes activas"
+      [value]="metrics()?.pendientes ?? 0"
+      [loading]="loadingMetrics()"
+    />
+    <app-kpi-card
+      icon="payments"
+      label="Recaudado en línea (mes)"
+      [value]="recaudadoMesStr()"
+      [loading]="loadingMetrics()"
+    />
+    <app-kpi-card
+      icon="schedule"
+      label="Por expirar (24 h)"
+      [value]="metrics()?.porExpirar24h ?? 0"
+      [loading]="loadingMetrics()"
+    />
+    <app-kpi-card
+      icon="trending_up"
+      label="Tasa de conversión"
+      [value]="tasaConversionStr()"
+      [loading]="loadingMetrics()"
+    />
+  </div>
+
+  <!-- ── FILTROS ─────────────────────────────────────────────────────── -->
+  <div class="filtros-card">
+    <div class="filtros-row">
+      <!-- Buscador -->
+      <mat-form-field
+        appearance="outline"
+        class="filtro-busqueda"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Buscar</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [formControl]="busquedaCtrl"
+          placeholder="Descripción o folio..."
+        />
+      </mat-form-field>
+
+      <!-- Estado -->
+      <mat-form-field
+        appearance="outline"
+        class="filtro-estado"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Estado</mat-label>
+        <mat-select [formControl]="estadoCtrl">
+          @for (op of estadoOpciones; track op.value) {
+            <mat-option [value]="op.value">{{ op.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Fecha desde -->
+      <mat-form-field
+        appearance="outline"
+        class="filtro-fecha"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Desde</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerDesde"
+          [formControl]="fechaDesdeCtrl"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="pickerDesde"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerDesde></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Fecha hasta -->
+      <mat-form-field
+        appearance="outline"
+        class="filtro-fecha"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Hasta</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerHasta"
+          [formControl]="fechaHastaCtrl"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="pickerHasta"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerHasta></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- ── TABLA ───────────────────────────────────────────────────────── -->
+  <div class="tabla-card">
+    <div class="tabla-header">
+      <span class="tabla-titulo">
+        Órdenes
+        @if (!loadingOrdenes()) {
+          <span class="tabla-count">({{ ordenes().length }})</span>
+        }
+      </span>
+      @if (loadingOrdenes()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      }
+    </div>
+    <mat-divider></mat-divider>
+
+    <app-data-table
+      [dataSource]="ordenes()"
+      [columns]="tableColumns"
+      noDataMessage="No se encontraron órdenes"
+      noDataIcon="receipt_long"
+    >
+      <ng-template #cellTemplate let-o let-col="column">
+        @switch (col) {
+          @case ("folio") {
+            @if (o.pagoId?.folio) {
+              <app-folio-tag [folio]="o.pagoId.folio" />
+            } @else {
+              <span class="no-folio">—</span>
+            }
+          }
+
+          @case ("descripcion") {
+            <span class="descripcion-text" [matTooltip]="o.descripcion">
+              {{ o.descripcion }}
+            </span>
+          }
+
+          @case ("ciudadano") {
+            <span class="ciudadano-cell">{{ nombreCiudadano(o) }}</span>
+          }
+
+          @case ("monto") {
+            <span class="monto-cell">{{ formatMonto(o.monto) }}</span>
+          }
+
+          @case ("estado") {
+            <app-status-badge
+              [label]="estadoBadge(o.estado).label"
+              [variant]="estadoBadge(o.estado).variant"
+            />
+          }
+
+          @case ("vigencia") {
+            @if (o.estado === "PENDIENTE" && estaExpirada(o.expiresAt)) {
+              <span class="vigencia-expirada">Expirada</span>
+            } @else {
+              <span
+                [class.vigencia-warn]="
+                  o.estado === 'PENDIENTE' && !estaExpirada(o.expiresAt)
+                "
+              >
+                {{ vigenciaStr(o.expiresAt) }}
+              </span>
+            }
+          }
+
+          @case ("area") {
+            <span class="area-text">{{
+              areaLabel(o.areaResponsable ?? "") || "—"
+            }}</span>
+          }
+
+          @case ("acciones") {
+            <div class="acciones-row">
+              @if (o.estado === "PENDIENTE") {
+                <button
+                  mat-icon-button
+                  (click)="onCopiarLink(o)"
+                  matTooltip="Copiar link"
+                  class="action-btn"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="onReenviarLink(o)"
+                  matTooltip="Reenviar por email"
+                  class="action-btn"
+                  [disabled]="reenviando() === o._id"
+                >
+                  <mat-spinner
+                    diameter="18"
+                    [style.display]="
+                      reenviando() === o._id ? 'inline-flex' : 'none'
+                    "
+                  ></mat-spinner>
+                  <mat-icon
+                    [style.display]="
+                      reenviando() === o._id ? 'none' : 'inline-flex'
+                    "
+                    >send</mat-icon
+                  >
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="onCancelar(o)"
+                  matTooltip="Cancelar orden"
+                  class="action-btn danger"
+                  [disabled]="cancelando() === o._id"
+                >
+                  <mat-spinner
+                    diameter="18"
+                    [style.display]="
+                      cancelando() === o._id ? 'inline-flex' : 'none'
+                    "
+                  ></mat-spinner>
+                  <mat-icon
+                    [style.display]="
+                      cancelando() === o._id ? 'none' : 'inline-flex'
+                    "
+                    >cancel</mat-icon
+                  >
+                </button>
+              }
+              @if (o.estado === "PAGADA") {
+                <button
+                  mat-icon-button
+                  (click)="onVerRecibo(o)"
+                  matTooltip="Ver recibo"
+                  class="action-btn success"
+                >
+                  <mat-icon>picture_as_pdf</mat-icon>
+                </button>
+              }
+              @if (o.estado === "CANCELADA" || o.estado === "EXPIRADA") {
+                <span class="sin-acciones">—</span>
+              }
+            </div>
+          }
+        }
+      </ng-template>
+    </app-data-table>
+  </div>
+</div>

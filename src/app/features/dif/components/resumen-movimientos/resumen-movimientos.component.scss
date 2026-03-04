@@ -113,6 +113,20 @@
     }
   }
 
+  .balance-footer {
+    display: flex;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+    .balance-summary {
+      flex: 1;
+      border-top: none;
+
+      & + .balance-summary {
+        border-left: 1px solid rgba(0, 0, 0, 0.06);
+      }
+    }
+  }
+
   .balance-summary {
     padding: 14px 20px;
     text-align: center;
@@ -156,6 +170,13 @@
     &--neutral {
       .balance-value {
         color: var(--sagim-text-dark);
+      }
+    }
+
+    &--disponible {
+      .balance-value {
+        color: var(--sagim-secondary, #1F6FAE);
+        font-size: 20px;
       }
     }
   }

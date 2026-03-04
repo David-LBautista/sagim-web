@@ -6,4 +6,10 @@
   mat-icon {
     margin-right: var(--sagim-spacing-xs);
   }
+
+  .btn-spinner {
+    display: inline-flex;
+    margin-right: var(--sagim-spacing-xs);
+    ::ng-deep circle { stroke: currentColor; }
+  }
 }

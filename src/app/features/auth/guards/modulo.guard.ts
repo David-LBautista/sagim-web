@@ -33,6 +33,28 @@ export const moduloGuard = (modulo: AppModulo): CanActivateFn => {
 };
 
 /**
+ * Guard factory para verificar que el usuario tenga alguno de los roles requeridos
+ */
+export const roleGuard = (roles: string[]): CanActivateFn => {
+  return () => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
+
+    if (!authService.isAuthenticated()) {
+      router.navigate(['/login']);
+      return false;
+    }
+
+    if (!authService.hasRole(roles)) {
+      router.navigate(['/no-autorizado']);
+      return false;
+    }
+
+    return true;
+  };
+};
+
+/**
  * Guard legacy para verificar módulo desde route.data
  * @deprecated Usa moduloGuard(modulo) en su lugar
  */

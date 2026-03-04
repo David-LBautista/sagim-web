@@ -21,6 +21,7 @@ interface SubMenuItem {
   label: string;
   route: string;
   icon?: string;
+  roles?: string[];
 }
 
 interface MenuSection {
@@ -113,7 +114,39 @@ export class SidebarComponent implements OnInit {
           }
 
           // Módulos con submenús
-          if (moduloKey === 'DIF') {
+          if (moduloKey === 'TESORERIA') {
+            const userRol = this.authService.getRol();
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              children: [
+                {
+                  label: 'Dashboard',
+                  route: '/tesoreria/dashboard',
+                  icon: 'dashboard',
+                },
+                {
+                  label: 'Caja',
+                  route: '/tesoreria/caja',
+                  icon: 'point_of_sale',
+                },
+                {
+                  label: 'Órdenes de Pago',
+                  route: '/tesoreria/ordenes-pago',
+                  icon: 'receipt_long',
+                },
+                {
+                  label: 'Servicios',
+                  route: '/tesoreria/servicios',
+                  icon: 'design_services',
+                  roles: ['SUPER_ADMIN', 'ADMIN_MUNICIPIO'],
+                },
+              ].filter(
+                (child) =>
+                  !child.roles || (userRol && child.roles.includes(userRol)),
+              ),
+            });
+          } else if (moduloKey === 'DIF') {
             items.push({
               icon: moduloConfig.icon,
               label: moduloConfig.label,

@@ -14,24 +14,28 @@ export const DIF_ROUTES: Routes = [
       {
         path: 'inventario',
         loadComponent: () =>
-          import('./pages/inventario.page').then((m) => m.InventarioPage),
+          import('./pages/inventario/inventario.page').then(
+            (m) => m.InventarioPage,
+          ),
       },
       {
         path: 'beneficiarios',
         loadComponent: () =>
-          import('./pages/beneficiarios.page').then((m) => m.BeneficiariosPage),
+          import('./pages/beneficiarios/beneficiarios.page').then(
+            (m) => m.BeneficiariosPage,
+          ),
       },
       {
         path: 'beneficiarios/:curp',
         loadComponent: () =>
-          import('./pages/beneficiario-detalle.page').then(
+          import('./pages/beneficiario-detalle/beneficiario-detalle.page').then(
             (m) => m.BeneficiarioDetallePage,
           ),
       },
       {
         path: 'apoyos',
         loadComponent: () =>
-          import('./pages/apoyos.page').then((m) => m.ApoyosPage),
+          import('./pages/apoyos/apoyos.page').then((m) => m.ApoyosPage),
       },
       {
         path: '',

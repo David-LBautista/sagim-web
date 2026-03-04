@@ -2,9 +2,6 @@
   display: block;
 }
 
-.apoyos-page {
-  padding: var(--sagim-spacing-md);
-}
 
 .page-header {
   margin-bottom: var(--sagim-spacing-md);
@@ -154,18 +151,6 @@
   mat-card-content {
     padding-top: 0;
   }
-}
-
-.folio-chip {
-  display: inline-block;
-  padding: 2px 8px;
-  background: rgba(31, 111, 174, 0.1);
-  color: var(--sagim-secondary);
-  border-radius: 12px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  font-family: monospace;
-  white-space: nowrap;
 }
 
 .tipo-badge {

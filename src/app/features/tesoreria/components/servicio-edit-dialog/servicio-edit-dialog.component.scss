@@ -1,0 +1,51 @@
+.dialog-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--sagim-primary, #0f2a44);
+}
+
+.servicio-ref {
+  padding: 10px 12px;
+  background: #f4f6f8;
+  border-radius: 8px;
+
+  .ref-nombre {
+    font-size: 14px;
+    color: var(--sagim-text-dark, #3a3a3a);
+    font-weight: 500;
+  }
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 380px;
+
+  .full-width {
+    width: 100%;
+  }
+
+  .toggles-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 8px 0 4px;
+
+    .toggle-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .toggle-hint {
+        font-size: 11px;
+        color: var(--sagim-text-mid, #7a7a7a);
+        padding-left: 2px;
+      }
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: 8px 24px 20px;
+}

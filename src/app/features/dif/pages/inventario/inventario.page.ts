@@ -1,15 +1,15 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { ItemFormDialogComponent } from '../components/item-form-dialog/item-form-dialog.component';
-import { GenerarReporteDialogComponent } from '../components/generar-reporte-dialog/generar-reporte-dialog.component';
-import { InventarioService } from '../services/inventario.service';
-import { DashboardInventario } from '../models/inventario.model';
-import { ActionButtonComponent } from '../../../shared/components/action-button/action-button.component';
-import { DashboardKpisComponent } from '../components/dashboard-kpis/dashboard-kpis.component';
-import { AlertasCriticasComponent } from '../components/alertas-criticas/alertas-criticas.component';
-import { ResumenMovimientosComponent } from '../components/resumen-movimientos/resumen-movimientos.component';
-import { ActividadRecienteComponent } from '../components/actividad-reciente/actividad-reciente.component';
+import { ItemFormDialogComponent } from '../../components/item-form-dialog/item-form-dialog.component';
+import { GenerarReporteDialogComponent } from '../../components/generar-reporte-dialog/generar-reporte-dialog.component';
+import { InventarioService } from '../../services/inventario.service';
+import { DashboardInventario } from '../../models/inventario.model';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
+import { DashboardKpisComponent } from '../../components/dashboard-kpis/dashboard-kpis.component';
+import { AlertasCriticasComponent } from '../../components/alertas-criticas/alertas-criticas.component';
+import { ResumenMovimientosComponent } from '../../components/resumen-movimientos/resumen-movimientos.component';
+import { ActividadRecienteComponent } from '../../components/actividad-reciente/actividad-reciente.component';
 
 @Component({
   selector: 'app-inventario',

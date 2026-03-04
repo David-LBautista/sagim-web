@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import dayjs from 'dayjs';
 import { Subject } from 'rxjs';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,19 +10,20 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {
   DataTableComponent,
   type TableColumn,
-} from '../../../shared/components/data-table/data-table.component';
-import { KpiCardComponent } from '../../../shared/components/kpi-card/kpi-card.component';
-import { ActionButtonComponent } from '../../../shared/components/action-button/action-button.component';
-import { ApoyosService } from '../services/apoyos.service';
-import { NotificationService } from '../../../shared/services/notification.service';
-import { ApoyoFormDialogComponent } from '../components/apoyo-form-dialog/apoyo-form-dialog.component';
-import { GenerarReporteDialogComponent } from '../components/generar-reporte-dialog/generar-reporte-dialog.component';
+} from '../../../../shared/components/data-table/data-table.component';
+import { KpiCardComponent } from '../../../../shared/components/kpi-card/kpi-card.component';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
+import { FolioTagComponent } from '../../../../shared/components/folio-tag/folio-tag.component';
+import { ApoyosService } from '../../services/apoyos.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { ApoyoFormDialogComponent } from '../../components/apoyo-form-dialog/apoyo-form-dialog.component';
+import { GenerarReporteDialogComponent } from '../../components/generar-reporte-dialog/generar-reporte-dialog.component';
 import type {
   ApoyosDashboard,
   Apoyo,
   BeneficiarioRef,
   ProgramaRef,
-} from '../models/apoyos.model';
+} from '../../models/apoyos.model';
 
 @Component({
   selector: 'app-apoyos',
@@ -35,6 +37,7 @@ import type {
     DataTableComponent,
     KpiCardComponent,
     ActionButtonComponent,
+    FolioTagComponent,
   ],
   templateUrl: './apoyos.page.html',
   styleUrls: ['./apoyos.page.scss'],
@@ -140,11 +143,6 @@ export class ApoyosPage implements OnInit, OnDestroy {
   }
 
   private formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    return dayjs(dateString).tz('America/Mexico_City').format('DD/MM/YYYY');
   }
 }

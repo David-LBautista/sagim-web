@@ -1,10 +1,14 @@
 <button
   mat-raised-button
   [color]="color"
-  [disabled]="disabled"
+  [disabled]="disabled || loading"
   (click)="onClick()"
   class="action-button"
 >
-  <mat-icon>{{ icon }}</mat-icon>
+  @if (loading) {
+    <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+  } @else {
+    <mat-icon>{{ icon }}</mat-icon>
+  }
   {{ label }}
 </button>

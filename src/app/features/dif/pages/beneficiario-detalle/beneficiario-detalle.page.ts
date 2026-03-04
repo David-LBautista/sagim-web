@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import dayjs from 'dayjs';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,14 +11,15 @@ import { Subject, takeUntil } from 'rxjs';
 import {
   DataTableComponent,
   TableColumn,
-} from '../../../shared/components/data-table/data-table.component';
-import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
-import { BeneficiariosService } from '../services/beneficiarios.service';
-import { NotificationService } from '../../../shared/services/notification.service';
+} from '../../../../shared/components/data-table/data-table.component';
+import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
+import { FolioTagComponent } from '../../../../shared/components/folio-tag/folio-tag.component';
+import { BeneficiariosService } from '../../services/beneficiarios.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
 import type {
   ApoyoHistorial,
   BeneficiarioDetalle,
-} from '../models/beneficiarios.model';
+} from '../../models/beneficiarios.model';
 
 interface ApoyoRow {
   folio: string;
@@ -42,6 +44,7 @@ interface ApoyoRow {
     MatProgressSpinnerModule,
     DataTableComponent,
     StatusBadgeComponent,
+    FolioTagComponent,
   ],
   templateUrl: './beneficiario-detalle.page.html',
   styleUrls: ['./beneficiario-detalle.page.scss'],
@@ -177,11 +180,6 @@ export class BeneficiarioDetallePage implements OnInit, OnDestroy {
   }
 
   private formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    return dayjs(dateString).tz('America/Mexico_City').format('DD/MM/YYYY');
   }
 }

@@ -26,6 +26,7 @@ export interface Municipio {
   direccion?: string;
   activo?: boolean;
   logoUrl?: string;
+  porcentajeContribucion?: number;
   admin?: AdminRef;
   createdAt?: string;
   updatedAt?: string;
@@ -61,4 +62,5 @@ export interface MunicipioUpdateDto {
   adminNombre?: string;
   adminEmail?: string;
   adminPassword?: string;
+  porcentajeContribucion?: number;
 }

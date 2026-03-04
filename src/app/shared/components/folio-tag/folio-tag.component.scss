@@ -1,0 +1,16 @@
+.folio-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: color-mix(
+    in srgb,
+    var(--sagim-secondary, #1f6fae) 10%,
+    transparent
+  );
+  color: var(--sagim-secondary, #1f6fae);
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: monospace;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}

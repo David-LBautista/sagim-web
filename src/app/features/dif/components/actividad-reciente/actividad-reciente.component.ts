@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import dayjs from 'dayjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import {
@@ -7,6 +8,7 @@ import {
   TableColumn,
 } from '../../../../shared/components/data-table/data-table.component';
 import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
+import { FolioTagComponent } from '../../../../shared/components/folio-tag/folio-tag.component';
 import { MovimientoReciente } from '../../models/inventario.model';
 
 @Component({
@@ -18,6 +20,7 @@ import { MovimientoReciente } from '../../models/inventario.model';
     MatIconModule,
     DataTableComponent,
     StatusBadgeComponent,
+    FolioTagComponent,
   ],
   templateUrl: './actividad-reciente.component.html',
   styleUrls: ['./actividad-reciente.component.scss'],
@@ -38,11 +41,7 @@ export class ActividadRecienteComponent {
 
   get actividadTableData(): any[] {
     return this.movimientos.map((mov) => ({
-      fecha: new Date(mov.fecha).toLocaleDateString('es-MX', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      }),
+      fecha: dayjs(mov.fecha).tz('America/Mexico_City').format('DD/MM/YYYY'),
       folio: mov.folio,
       tipoMovimiento: mov.tipoMovimiento,
       tipo: mov.tipo,

@@ -15,6 +15,8 @@
             [variant]="getBadgeVariant(row.tipoMovimiento)"
             [label]="getBadgeLabel(row.tipoMovimiento)"
           />
+        } @else if (column === 'folio') {
+          <app-folio-tag [folio]="row.folio" />
         } @else {
           {{ row[column] }}
         }

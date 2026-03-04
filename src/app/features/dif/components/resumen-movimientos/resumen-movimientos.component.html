@@ -57,9 +57,17 @@
       </div>
 
       <!-- Balance -->
-      <div [class]="'balance-summary ' + getBalanceClass(movimientos.balance)">
-        <span class="balance-label">Balance del mes</span>
-        <span class="balance-value">{{ balanceLabel }}</span>
+      <div class="balance-footer">
+        <div [class]="'balance-summary ' + getBalanceClass(movimientos.balance)">
+          <span class="balance-label">Flujo neto del mes</span>
+          <span class="balance-value">{{ balanceLabel }}</span>
+        </div>
+        @if (modo === 'monetario' && saldoDisponible !== null) {
+          <div class="balance-summary balance-summary--disponible">
+            <span class="balance-label">Saldo disponible</span>
+            <span class="balance-value">{{ saldoDisponibleLabel }}</span>
+          </div>
+        }
       </div>
     </mat-card-content>
   </mat-card>

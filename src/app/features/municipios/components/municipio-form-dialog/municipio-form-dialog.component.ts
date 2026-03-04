@@ -112,6 +112,10 @@ export class MunicipioFormDialogComponent implements OnInit {
         data?.municipio?.admin?.nombre || '',
         this.isEditMode ? [] : [Validators.required],
       ],
+      porcentajeContribucion: [
+        data?.municipio?.porcentajeContribucion ?? 10,
+        [Validators.required, Validators.min(0), Validators.max(100)],
+      ],
       modulos: modulosGroup,
     });
 
@@ -375,6 +379,10 @@ export class MunicipioFormDialogComponent implements OnInit {
         updateFd.append('contactoEmail', formValue.contactoEmail || '');
         updateFd.append('contactoTelefono', formValue.contactoTelefono || '');
         updateFd.append('direccion', formValue.direccion || '');
+        updateFd.append(
+          'porcentajeContribucion',
+          (formValue.porcentajeContribucion ?? 10).toString(),
+        );
         updateFd.append(
           'config',
           JSON.stringify({ modulos: formValue.modulos }),

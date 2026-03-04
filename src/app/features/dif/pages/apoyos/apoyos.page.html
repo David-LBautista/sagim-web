@@ -71,7 +71,7 @@
       >
         <ng-template #cellTemplate let-row let-column="column">
           @if (column === 'folio') {
-            <span class="folio-chip">{{ row.folio }}</span>
+            <app-folio-tag [folio]="row.folio" />
           } @else if (column === 'tipo') {
             <span class="tipo-badge">{{ row.tipo }}</span>
           } @else if (column === 'monto') {

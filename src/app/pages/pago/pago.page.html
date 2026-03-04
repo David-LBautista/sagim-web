@@ -1,0 +1,206 @@
+<div class="pago-shell">
+  <!-- ── Cabecera ────────────────────────────────────────────────────────── -->
+  <header class="pago-header">
+    <div class="header-content">
+      <img
+        class="logo"
+        src="/assets/logo/sagim_logo_white.png"
+        alt="SAGIM"
+        onerror="this.style.display = 'none'"
+      />
+      <div class="header-text">
+        <span class="municipio">{{
+          orden()?.municipioNombre || "Municipio"
+        }}</span>
+        <span class="subtitulo">Sistema de Pagos Municipales — SAGIM</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Cuerpo ────────────────────────────────────────────────────────── -->
+  <main class="pago-main">
+    <!-- Estado: cargando -->
+    @if (estado() === "cargando") {
+      <div class="estado-card estado-cargando">
+        <mat-spinner diameter="48" />
+        <p>Cargando información del pago…</p>
+      </div>
+    }
+
+    <!-- Estado: éxito -->
+    @if (estado() === "exito") {
+      <div class="estado-card estado-exito">
+        <div class="estado-icono exito-icono">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <h2>¡Pago realizado!</h2>
+        <p>
+          Tu pago se procesó correctamente. Recibirás una confirmación en tu
+          correo electrónico.
+        </p>
+        @if (orden(); as o) {
+          <div class="recibo-resumen">
+            <div class="recibo-fila">
+              <span>Concepto</span>
+              <strong>{{ o.descripcion }}</strong>
+            </div>
+            <div class="recibo-fila">
+              <span>Monto pagado</span>
+              <strong class="monto-exito"
+                >{{ formatMonto(o.monto) }} MXN</strong
+              >
+            </div>
+            @if (folio()) {
+              <div class="recibo-fila">
+                <span>Folio</span>
+                <strong>{{ folio() }}</strong>
+              </div>
+            }
+          </div>
+        }
+        @if (reciboUrl()) {
+          <a
+            class="btn-recibo"
+            [href]="reciboUrl()"
+            target="_blank"
+            rel="noopener"
+          >
+            <mat-icon>picture_as_pdf</mat-icon>
+            Descargar recibo
+          </a>
+        }
+      </div>
+    }
+
+    <!-- Estado: ya pagada -->
+    @if (estado() === "pagada") {
+      <div class="estado-card estado-info">
+        <div class="estado-icono info-icono">
+          <mat-icon>task_alt</mat-icon>
+        </div>
+        <h2>Esta orden ya fue pagada</h2>
+        <p>
+          El pago correspondiente a este enlace ya fue procesado anteriormente.
+        </p>
+      </div>
+    }
+
+    <!-- Estado: cancelada -->
+    @if (estado() === "cancelada") {
+      <div class="estado-card estado-warn">
+        <div class="estado-icono warn-icono">
+          <mat-icon>cancel</mat-icon>
+        </div>
+        <h2>Orden cancelada</h2>
+        <p>
+          Esta orden de pago fue cancelada. Si crees que es un error, contacta a
+          la dependencia correspondiente.
+        </p>
+      </div>
+    }
+
+    <!-- Estado: expirada -->
+    @if (estado() === "expirada") {
+      <div class="estado-card estado-warn">
+        <div class="estado-icono warn-icono">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <h2>Enlace expirado</h2>
+        <p>
+          Este enlace de pago ha vencido. Por favor, solicita uno nuevo a la
+          dependencia.
+        </p>
+        @if (orden(); as o) {
+          <p class="fecha-expiro">Venció el {{ formatFecha(o.expiresAt) }}</p>
+        }
+      </div>
+    }
+
+    <!-- Estado: error sin orden -->
+    @if (estado() === "error" && !orden()) {
+      <div class="estado-card estado-danger">
+        <div class="estado-icono danger-icono">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+        <h2>Enlace no válido</h2>
+        <p>{{ errorMsg() || "No se pudo cargar la información del pago." }}</p>
+      </div>
+    }
+
+    <!-- Estado: listo / procesando (formulario de pago) -->
+    @if (estado() === "listo" || estado() === "procesando") {
+      <!-- Saludo -->
+      @if (orden()?.ciudadanoNombre; as nombre) {
+        <p class="saludo">
+          Hola <strong>{{ nombre }}</strong
+          >,
+        </p>
+        <p class="saludo-sub">
+          Se ha generado una orden de pago a tu nombre. Completa el pago de
+          forma segura a continuación.
+        </p>
+      } @else {
+        <p class="saludo-sub">
+          Completa el pago de forma segura a continuación.
+        </p>
+      }
+
+      <!-- Detalle de la orden -->
+      <div class="orden-card">
+        <div class="orden-campo">
+          <span class="campo-label">CONCEPTO</span>
+          <span class="campo-valor concepto">{{ orden()!.descripcion }}</span>
+        </div>
+        <div class="orden-campo">
+          <span class="campo-label">MONTO A PAGAR</span>
+          <span class="campo-valor monto">
+            {{ formatMonto(orden()!.monto) }}
+            <span class="moneda">MXN</span>
+          </span>
+        </div>
+        <div class="orden-campo">
+          <span class="campo-label">VENCE EL</span>
+          <span class="campo-valor vence">{{
+            formatFecha(orden()!.expiresAt)
+          }}</span>
+        </div>
+      </div>
+
+      <!-- Error inline de Stripe -->
+      @if (errorMsg()) {
+        <div class="stripe-error">
+          <mat-icon>warning</mat-icon>
+          {{ errorMsg() }}
+        </div>
+      }
+
+      <!-- Elemento de tarjeta de Stripe -->
+      <div id="stripe-card-element" class="stripe-element-wrap"></div>
+
+      <!-- Botón de pago -->
+      <button
+        class="btn-pagar"
+        (click)="onPagar()"
+        [disabled]="estado() === 'procesando'"
+      >
+        @if (estado() === "procesando") {
+          <mat-spinner diameter="20" [style.display]="'inline-block'" />
+          <span>Procesando…</span>
+        } @else {
+          <mat-icon>lock</mat-icon>
+          <span>Pagar ahora</span>
+        }
+      </button>
+
+      <p class="aviso-seguridad">
+        <mat-icon>security</mat-icon>
+        Pago seguro procesado por Stripe. Este enlace es de uso único.
+      </p>
+    }
+  </main>
+
+  <!-- ── Pie de página ─────────────────────────────────────────────────── -->
+  <footer class="pago-footer">
+    Generado por SAGIM — Sistema de Atención y Gestión Integral Municipal
+  </footer>
+</div>

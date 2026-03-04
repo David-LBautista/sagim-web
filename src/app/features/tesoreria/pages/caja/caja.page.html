@@ -1,0 +1,349 @@
+<div class="caja-page">
+  <!-- ── ENCABEZADO ──────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="sagim-title-xl" style="margin-bottom: 5px">Caja</h1>
+      <p class="sagim-subtitle-light">{{ fechaFormateada }}</p>
+    </div>
+    <div class="header-right">
+      <button
+        mat-raised-button
+        (click)="onCorteDia()"
+        class="btn-corte"
+        [disabled]="generandoCorte()"
+      >
+        <mat-spinner
+          diameter="18"
+          class="spinner-inline"
+          [style.display]="generandoCorte() ? 'inline-flex' : 'none'"
+        ></mat-spinner>
+        <mat-icon [style.display]="generandoCorte() ? 'none' : 'inline-flex'"
+          >picture_as_pdf</mat-icon
+        >
+        {{ generandoCorte() ? "Generando..." : "Corte del día" }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ── FORMULARIO DE COBRO ─────────────────────────────────────────── -->
+  <div class="cobro-card">
+    <div class="card-section-title">Nuevo Cobro</div>
+    <mat-divider></mat-divider>
+
+    <div class="cobro-body">
+      <div class="cobro-cols">
+        <!-- COLUMNA IZQUIERDA: buscar servicio + persona -->
+        <div class="col-izquierda">
+          <!-- Búsqueda de servicio -->
+          <mat-form-field
+            appearance="outline"
+            class="full-width"
+            subscriptSizing="dynamic"
+          >
+            <mat-label>Buscar servicio</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              matInput
+              [formControl]="servicioBusquedaCtrl"
+              [matAutocomplete]="autoServicio"
+              placeholder="Nombre o clave del servicio…"
+            />
+            <mat-autocomplete
+              #autoServicio="matAutocomplete"
+              [displayWith]="displayServicio"
+              (optionSelected)="onServicioSeleccionado($event.option.value)"
+            >
+              @for (s of serviciosFiltrados(); track s._id) {
+                <mat-option [value]="s">
+                  <div class="servicio-option">
+                    <div class="servicio-info">
+                      <span class="servicio-nombre">{{ s.nombre }}</span>
+                      <span class="servicio-clave">{{ s.clave }}</span>
+                    </div>
+                    <span class="servicio-costo">
+                      @if (s.montoVariable) {
+                        Variable
+                      } @else {
+                        MXN {{ formatCurrency(s.costo) }}
+                      }
+                    </span>
+                  </div>
+                </mat-option>
+              }
+              @if (serviciosFiltrados().length === 0) {
+                <mat-option disabled>Sin resultados</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+
+          @if (servicioSeleccionado()?.descripcion) {
+            <app-info-alert
+              [message]="servicioSeleccionado()!.descripcion!"
+              type="info"
+            />
+          }
+
+          @if (servicioSeleccionado()) {
+            <mat-form-field
+              appearance="outline"
+              class="full-width"
+              subscriptSizing="dynamic"
+              [formGroup]="form"
+            >
+              <mat-label>Folio / Referencia del documento</mat-label>
+              <mat-icon matPrefix>tag</mat-icon>
+              <input
+                matInput
+                formControlName="referenciaDocumento"
+                placeholder="Ej. RC-2026-00142"
+                autocomplete="off"
+              />
+            </mat-form-field>
+          }
+
+          <!-- Persona: contribuyente o nombre libre -->
+          @if (servicioSeleccionado()?.requiereContribuyente) {
+            <div class="contribuyente-section">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Buscar contribuyente</mat-label>
+                <mat-icon matPrefix>search</mat-icon>
+                <input
+                  matInput
+                  [formControl]="ciudadanoBusquedaCtrl"
+                  [matAutocomplete]="autoCiudadano"
+                  placeholder="Nombre o CURP (mín. 3 caracteres)…"
+                />
+                @if (buscandoCiudadano()) {
+                  <mat-spinner matSuffix diameter="18"></mat-spinner>
+                }
+                <mat-autocomplete
+                  #autoCiudadano="matAutocomplete"
+                  [displayWith]="displayCiudadano"
+                  (optionSelected)="
+                    onCiudadanoSeleccionado($event.option.value)
+                  "
+                >
+                  @for (c of ciudadanosFiltrados(); track c._id) {
+                    <mat-option [value]="c">
+                      <div class="ciudadano-option">
+                        <span class="ciudadano-nombre">{{
+                          c.nombreCompleto
+                        }}</span>
+                        <span class="ciudadano-curp">{{ c.curp }}</span>
+                      </div>
+                    </mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+
+              @if (mostrarRegistrarCiudadano()) {
+                <button
+                  mat-stroked-button
+                  class="btn-registrar-ciudadano"
+                  (click)="onRegistrarCiudadanoNuevo()"
+                >
+                  <mat-icon>person_add</mat-icon>
+                  Registrar nuevo ciudadano
+                </button>
+              }
+
+              @if (ciudadanoSeleccionado()) {
+                <div class="ciudadano-selected-chip">
+                  <mat-icon>check_circle</mat-icon>
+                  <div>
+                    <strong>{{
+                      ciudadanoSeleccionado()!.nombreCompleto
+                    }}</strong>
+                    <small>{{ ciudadanoSeleccionado()!.curp }}</small>
+                  </div>
+                  <button
+                    mat-icon-button
+                    class="btn-clear-ciudadano"
+                    (click)="limpiarCiudadano()"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          } @else if (servicioSeleccionado()) {
+            <div class="nombre-libre-section" [formGroup]="form">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nombre para el recibo</mat-label>
+                <mat-icon matPrefix>person_outline</mat-icon>
+                <input
+                  matInput
+                  formControlName="nombreLibre"
+                  placeholder="Nombre del solicitante (opcional)"
+                  autocomplete="off"
+                />
+                <mat-hint>Aparecerá en el recibo impreso</mat-hint>
+              </mat-form-field>
+            </div>
+          }
+        </div>
+
+        <!-- COLUMNA DERECHA: monto + método -->
+        <div class="col-derecha">
+          <mat-form-field
+            appearance="outline"
+            class="full-width monto-field"
+            subscriptSizing="dynamic"
+            [formGroup]="form"
+          >
+            <mat-label>Monto</mat-label>
+            <span matTextPrefix>$&nbsp;</span>
+            <input
+              matInput
+              type="number"
+              formControlName="monto"
+              min="1"
+              placeholder="0"
+            />
+            <span matTextSuffix>&nbsp;MXN</span>
+          </mat-form-field>
+
+          <div class="metodo-pago-group" [formGroup]="form">
+            <label class="metodo-label">Método de pago</label>
+            <mat-button-toggle-group
+              formControlName="metodoPago"
+              class="metodo-toggle"
+              hideSingleSelectionIndicator
+            >
+              <mat-button-toggle value="EFECTIVO">
+                <mat-icon>payments</mat-icon>
+                Efectivo
+              </mat-button-toggle>
+              <mat-button-toggle
+                value="TARJETA"
+                [disabled]="true"
+                matTooltip="Próximamente disponible"
+              >
+                <mat-icon>credit_card</mat-icon>
+                Tarjeta
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTÓN REGISTRAR -->
+      <div class="cobro-actions">
+        <app-action-button
+          label="Registrar Cobro"
+          icon=""
+          color="primary"
+          [disabled]="!puedeCobrar"
+          [loading]="submitting()"
+          (clicked)="onRegistrarCobro()"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MOVIMIENTOS DEL DÍA ─────────────────────────────────────────── -->
+  <div class="movimientos-card">
+    <div class="card-section-title">
+      Movimientos del día
+      <button
+        mat-icon-button
+        matTooltip="Recargar"
+        class="btn-reload"
+        (click)="cargarMovimientosDia()"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+
+    @if (loadingMovimientos()) {
+      <div class="loading-center">
+        <mat-spinner diameter="36"></mat-spinner>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="movimientos()" class="movimientos-table">
+          <!-- Hora -->
+          <ng-container matColumnDef="hora">
+            <th mat-header-cell *matHeaderCellDef>Hora</th>
+            <td mat-cell *matCellDef="let m">{{ m.hora }}</td>
+          </ng-container>
+
+          <!-- Folio -->
+          <ng-container matColumnDef="folio">
+            <th mat-header-cell *matHeaderCellDef>Folio</th>
+            <td mat-cell *matCellDef="let m">
+              <app-folio-tag [folio]="m.folio" />
+            </td>
+          </ng-container>
+
+          <!-- Servicio -->
+          <ng-container matColumnDef="servicio">
+            <th mat-header-cell *matHeaderCellDef>Servicio</th>
+            <td mat-cell *matCellDef="let m">{{ m.servicio }}</td>
+          </ng-container>
+
+          <!-- Ciudadano -->
+          <ng-container matColumnDef="ciudadano">
+            <th mat-header-cell *matHeaderCellDef>Contribuyente</th>
+            <td mat-cell *matCellDef="let m">
+              {{ m.ciudadano ?? "—" }}
+            </td>
+          </ng-container>
+
+          <!-- Monto -->
+          <ng-container matColumnDef="monto">
+            <th mat-header-cell *matHeaderCellDef class="col-right">Monto</th>
+            <td mat-cell *matCellDef="let m" class="col-right monto-cell">
+              {{ formatCurrency(m.monto) }}
+            </td>
+          </ng-container>
+
+          <!-- Canal -->
+          <ng-container matColumnDef="canal">
+            <th mat-header-cell *matHeaderCellDef>Canal</th>
+            <td mat-cell *matCellDef="let m">
+              <span
+                class="canal-badge"
+                [class.canal-caja]="m.canal === 'CAJA'"
+                [class.canal-linea]="m.canal === 'EN_LINEA'"
+              >
+                {{ m.canal === "CAJA" ? "Caja" : "En línea" }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let m">
+              @if (m.canal === "CAJA") {
+                <button
+                  mat-icon-button
+                  matTooltip="Reimprimir recibo"
+                  (click)="onReimprimirRecibo(m)"
+                >
+                  <mat-icon>print</mat-icon>
+                </button>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+          <!-- Sin datos -->
+          <tr class="mat-row" *matNoDataRow>
+            <td
+              class="mat-cell empty-state"
+              [attr.colspan]="displayedColumns.length"
+            >
+              <mat-icon>receipt_long</mat-icon>
+              <p>No hay movimientos registrados hoy</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    }
+  </div>
+</div>

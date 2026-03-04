@@ -11,7 +11,7 @@
     <div class="header-text">
       <h1 class="sagim-title-xl">{{ nombreCompleto }}</h1>
       @if (detalle) {
-        <span class="folio-badge">{{ detalle.folio }}</span>
+        <app-folio-tag [folio]="detalle.folio ?? ''" />
       }
     </div>
     @if (detalle) {

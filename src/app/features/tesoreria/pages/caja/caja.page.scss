@@ -1,0 +1,493 @@
+// ── Variables ─────────────────────────────────────────────────────────────
+$primary: #0f2a44;
+$secondary: #1f6fae;
+$success: #6fae3b;
+$warning: #f0a12a;
+$danger: #d64545;
+$text-dark: #3a3a3a;
+$text-mid: #7a7a7a;
+$bg-light: #f4f6f8;
+$card-bg: #ffffff;
+$border: #e0e6ed;
+$radius: 10px;
+
+// ── Layout ────────────────────────────────────────────────────────────────
+:host {
+  display: block;
+}
+
+.caja-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sagim-spacing-md);
+
+  @media (max-width: 600px) {
+    padding: var(--sagim-spacing-sm);
+    gap: var(--sagim-spacing-sm);
+  }
+}
+
+// ── Encabezado ────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sagim-spacing-lg);
+  flex-wrap: wrap;
+  margin-bottom: var(--sagim-spacing-md);
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .cajero-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #e8f0fe;
+    color: $secondary;
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .btn-corte {
+    color: $secondary;
+    border-color: $secondary;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    .spinner-inline {
+      display: inline-flex;
+
+      ::ng-deep circle {
+        stroke: $secondary;
+      }
+    }
+  }
+}
+
+// ── Tarjetas compartidas ──────────────────────────────────────────────────
+.cobro-card,
+.movimientos-card {
+  background: $card-bg;
+  border-radius: $radius;
+  border: 1px solid $border;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.card-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $primary;
+  padding: 1rem 1.25rem;
+
+  mat-icon {
+    color: $secondary;
+  }
+
+  .btn-reload {
+    margin-left: auto;
+    color: $text-mid;
+  }
+}
+
+// ── Cuerpo del cobro ──────────────────────────────────────────────────────
+.cobro-body {
+  padding: 1.25rem;
+}
+
+.cobro-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 2rem;
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Columna izquierda: buscar servicio + persona
+.col-izquierda {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 4px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+::ng-deep mat-autocomplete .mat-mdc-option .mdc-list-item__primary-text {
+  width: 100%;
+}
+
+.servicio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  font-size: 0.875rem;
+
+  .servicio-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .servicio-nombre {
+    font-weight: 500;
+    color: $text-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .servicio-clave {
+    font-size: 0.75rem;
+    color: $text-mid;
+    background: $bg-light;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .servicio-costo {
+    font-size: 0.8rem;
+    color: $success;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: auto;
+    text-align: right;
+  }
+}
+
+.monto-field {
+  margin-top: 0.25rem;
+}
+
+// Método de pago
+.metodo-pago-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .metodo-label {
+    font-size: 0.8rem;
+    color: $text-mid;
+    font-weight: 500;
+  }
+}
+
+.metodo-toggle {
+  width: fit-content;
+
+  ::ng-deep .mat-button-toggle {
+    min-width: 110px;
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+      vertical-align: middle;
+      margin-right: 0.3rem;
+    }
+  }
+}
+
+// Columna derecha: monto + método
+.col-derecha {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.contribuyente-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ciudadano-option {
+  display: flex;
+  flex-direction: column;
+
+  .ciudadano-nombre {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: $text-dark;
+  }
+
+  .ciudadano-curp {
+    font-size: 0.75rem;
+    color: $text-mid;
+    font-family: monospace;
+  }
+}
+
+.btn-registrar-ciudadano {
+  color: $secondary;
+  border-color: $secondary;
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.ciudadano-selected-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #e8f8e8;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #c3e6c3;
+
+  mat-icon {
+    color: $success;
+    flex-shrink: 0;
+  }
+
+  div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    strong {
+      font-size: 0.875rem;
+      color: $text-dark;
+    }
+
+    small {
+      font-size: 0.75rem;
+      color: $text-mid;
+      font-family: monospace;
+    }
+  }
+
+  .btn-clear-ciudadano {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    color: $text-mid;
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+      color: inherit;
+    }
+  }
+}
+
+.nombre-libre-section {
+  width: 100%;
+
+  .full-width {
+    width: 100%;
+  }
+}
+
+.no-contribuyente,
+.sin-servicio-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  text-align: center;
+  color: $text-mid;
+  gap: 0.5rem;
+
+  mat-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    opacity: 0.5;
+  }
+
+  p {
+    font-size: 0.85rem;
+    margin: 0;
+  }
+}
+
+// Botón registrar cobro
+.cobro-actions {
+  border-top: 1px solid $border;
+  padding-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-registrar-cobro {
+  min-width: 200px;
+  height: 44px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  &[disabled] {
+    opacity: 0.6;
+  }
+}
+
+// ── Tabla de movimientos ──────────────────────────────────────────────────
+.loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.movimientos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  ::ng-deep {
+    th.mat-mdc-header-cell {
+      font-weight: 600;
+      color: $text-mid;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: $bg-light;
+      border-bottom: 2px solid $border;
+      padding: 0.7rem 1rem;
+      white-space: nowrap;
+    }
+
+    td.mat-mdc-cell {
+      padding: 0.75rem 1rem;
+      color: $text-dark;
+      border-bottom: 1px solid #f0f4f8;
+      white-space: nowrap;
+    }
+
+    tr.mat-mdc-row:hover {
+      background: #f8fafd;
+    }
+  }
+}
+
+.col-right {
+  text-align: right !important;
+}
+
+.monto-cell {
+  font-weight: 600;
+  color: $success;
+}
+
+// Canal badges
+.canal-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  &.canal-caja {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  &.canal-linea {
+    background: #ede9fe;
+    color: #6d28d9;
+  }
+}
+
+// Estado vacío
+.empty-state {
+  text-align: center !important;
+  padding: 2.5rem !important;
+  color: $text-mid;
+
+  mat-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    opacity: 0.4;
+    display: block;
+    margin: 0 auto 0.5rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}
+
+// ── Totales ───────────────────────────────────────────────────────────────
+.totales-footer {
+  border-top: 2px solid $border;
+  padding: 1rem 1.25rem;
+  background: $bg-light;
+}
+
+.totales-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.total-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  .total-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $text-mid;
+    font-weight: 500;
+  }
+
+  .total-valor {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $text-dark;
+
+    &.total-principal {
+      color: $primary;
+      font-size: 1.3rem;
+    }
+  }
+}

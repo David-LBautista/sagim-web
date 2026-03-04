@@ -8,6 +8,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import dayjs from 'dayjs';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -100,12 +101,7 @@ export class UserTableComponent implements OnChanges {
 
   formatDate(dateString?: string): string {
     if (!dateString) return 'Nunca';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
+    return dayjs(dateString).tz('America/Mexico_City').format('DD MMM YYYY');
   }
 
   getEstadoBadgeVariant(activo: boolean): 'success' | 'danger' {

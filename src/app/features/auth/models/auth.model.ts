@@ -89,6 +89,8 @@ export interface User {
  * Roles de usuario en el sistema SAGIM
  */
 export enum UserRole {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  ADMIN_MUNICIPIO = 'ADMIN_MUNICIPIO',
   ADMIN = 'ADMIN',
   DIF = 'DIF',
   OPERADOR = 'OPERADOR',

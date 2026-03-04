@@ -196,6 +196,21 @@ export class AuthService {
   }
 
   /**
+   * Obtener el rol del usuario actual
+   */
+  getRol(): string | null {
+    return this.getCurrentUser()?.rol ?? null;
+  }
+
+  /**
+   * Verificar si el usuario tiene alguno de los roles indicados
+   */
+  hasRole(roles: string[]): boolean {
+    const rol = this.getRol();
+    return rol ? roles.includes(rol) : false;
+  }
+
+  /**
    * Obtener permisos del usuario agrupados por módulo
    */
   getPermisos(): Record<string, string[]> {

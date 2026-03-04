@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import dayjs from 'dayjs';
 import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,13 +16,17 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
-import { ActionButtonComponent } from '../../../shared/components/action-button/action-button.component';
-import { BeneficiariosService } from '../services/beneficiarios.service';
-import { NotificationService } from '../../../shared/services/notification.service';
-import type { Beneficiario, MunicipioRef } from '../models/beneficiarios.model';
-import { BeneficiarioFormDialogComponent } from '../components/beneficiario-form-dialog/beneficiario-form-dialog.component';
-import { GenerarReporteDialogComponent } from '../components/generar-reporte-dialog/generar-reporte-dialog.component';
+import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
+import { FolioTagComponent } from '../../../../shared/components/folio-tag/folio-tag.component';
+import { BeneficiariosService } from '../../services/beneficiarios.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import type {
+  Beneficiario,
+  MunicipioRef,
+} from '../../models/beneficiarios.model';
+import { BeneficiarioFormDialogComponent } from '../../components/beneficiario-form-dialog/beneficiario-form-dialog.component';
+import { GenerarReporteDialogComponent } from '../../components/generar-reporte-dialog/generar-reporte-dialog.component';
 
 interface BeneficiarioListItem {
   folio: string;
@@ -52,6 +57,7 @@ interface BeneficiarioListItem {
     MatTableModule,
     StatusBadgeComponent,
     ActionButtonComponent,
+    FolioTagComponent,
   ],
   templateUrl: './beneficiarios.page.html',
   styleUrls: ['./beneficiarios.page.scss'],
@@ -229,12 +235,7 @@ export class BeneficiariosPage implements OnInit, OnDestroy {
   }
 
   private formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    return dayjs(dateString).tz('America/Mexico_City').format('DD/MM/YYYY');
   }
 
   private mapBeneficiario(item: Beneficiario): BeneficiarioListItem {

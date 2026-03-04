@@ -1,0 +1,181 @@
+// ── Variables ─────────────────────────────────────────────────────────────
+$primary: #0f2a44;
+$secondary: #1f6fae;
+$success: #6fae3b;
+$warning: #f0a12a;
+$danger: #d64545;
+$text-dark: #3a3a3a;
+$text-mid: #7a7a7a;
+$bg-light: #f4f6f8;
+$card-bg: #ffffff;
+$border: #e0e6ed;
+$radius: 10px;
+
+:host {
+  display: block;
+}
+
+// ── Layout ────────────────────────────────────────────────────────────────
+.ordenes-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sagim-spacing-md);
+}
+
+// ── Header ────────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: var(--sagim-spacing-sm);
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+// ── Métricas ──────────────────────────────────────────────────────────────
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sagim-spacing-md);
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Filtros ───────────────────────────────────────────────────────────────
+.filtros-card {
+  background: $card-bg;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+
+  .filtros-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .filtro-busqueda {
+    flex: 1 1 220px;
+    min-width: 180px;
+  }
+
+  .filtro-estado {
+    flex: 0 0 180px;
+  }
+
+  .filtro-fecha {
+    flex: 0 0 150px;
+  }
+}
+
+// ── Tabla ─────────────────────────────────────────────────────────────────
+.tabla-card {
+  background: $card-bg;
+  border: 1px solid $border;
+  border-radius: $radius;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.tabla-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+
+  .tabla-titulo {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: $primary;
+  }
+
+  .tabla-count {
+    font-weight: 400;
+    color: $text-mid;
+    margin-left: 4px;
+  }
+}
+
+// ── Columnas específicas ──────────────────────────────────────────────────
+
+.monto-cell {
+  font-weight: 600;
+  color: $primary;
+}
+
+.descripcion-text {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ciudadano-cell {
+  color: $text-mid;
+  font-size: 0.85rem;
+}
+
+.area-text {
+  font-size: 0.82rem;
+  color: $text-mid;
+}
+
+.no-folio {
+  color: $text-mid;
+}
+
+// ── Vigencia ──────────────────────────────────────────────────────────────
+.vigencia-expirada {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $danger;
+}
+
+.vigencia-warn {
+  font-size: 0.82rem;
+  color: $warning;
+}
+
+// ── Acciones ──────────────────────────────────────────────────────────────
+.acciones-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+}
+
+.action-btn {
+  color: $text-mid;
+
+  &:hover {
+    color: $secondary;
+  }
+
+  &.danger:hover {
+    color: $danger;
+  }
+
+  &.success:hover {
+    color: $success;
+  }
+}
+
+.sin-acciones {
+  color: $text-mid;
+  font-size: 0.85rem;
+}

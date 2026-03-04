@@ -83,6 +83,26 @@
             readonly
           />
         </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Porcentaje de Contribución (%)</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="porcentajeContribucion"
+            placeholder="10"
+            min="0"
+            max="100"
+          />
+          <span matTextSuffix>%</span>
+          <mat-hint>Tasa aplicada a los cobros (por defecto 10%)</mat-hint>
+          @if (
+            municipioForm.get('porcentajeContribucion')?.invalid &&
+            municipioForm.get('porcentajeContribucion')?.touched
+          ) {
+            <mat-error>Valor entre 0 y 100</mat-error>
+          }
+        </mat-form-field>
       </div>
 
       <!-- Logo del Municipio -->

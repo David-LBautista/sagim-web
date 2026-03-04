@@ -1,0 +1,192 @@
+<div class="servicios-page">
+  <!-- ── SECCIÓN 1: HEADER ── -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1 class="sagim-title-xl">Servicios Cobrables</h1>
+      <p class="sagim-subtitle-light">Catálogo de servicios del municipio</p>
+    </div>
+    @if (hasOverrides()) {
+      <button
+        mat-raised-button
+        color="warn"
+        class="btn-restablecer-todo"
+        (click)="onRestablecerTodo()"
+        [disabled]="restableciendo()"
+      >
+        @if (restableciendo()) {
+          <mat-spinner diameter="16" />
+        } @else {
+          <mat-icon>restore</mat-icon>
+        }
+        Restablecer todo
+      </button>
+    }
+  </div>
+
+  <!-- ── SECCIÓN 2: FILTROS ── -->
+  <div class="filtros-bar">
+    <!-- Buscador -->
+    <mat-form-field appearance="outline" class="filtro-busqueda">
+      <mat-label>Buscar por nombre o clave</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [ngModel]="busqueda"
+        (ngModelChange)="onBusquedaChange($event)"
+        placeholder="Ej. acta de nacimiento, predial..."
+      />
+    </mat-form-field>
+
+    <!-- Selector de categoría -->
+    <mat-form-field appearance="outline" class="filtro-categoria">
+      <mat-label>Categoría</mat-label>
+      <mat-select
+        [(ngModel)]="categoriaSeleccionada"
+        (ngModelChange)="onFiltroChange()"
+      >
+        <mat-option value="">Todas las categorías</mat-option>
+        @for (cat of categorias(); track cat) {
+          <mat-option [value]="cat">{{ cat }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Toggle solo personalizados -->
+    <div class="filtro-toggle">
+      <mat-slide-toggle
+        [(ngModel)]="soloPersonalizados"
+        (ngModelChange)="onFiltroChange()"
+        color="primary"
+      >
+        Solo personalizados
+      </mat-slide-toggle>
+    </div>
+  </div>
+
+  <!-- ── SECCIÓN 3: TABLA ── -->
+  <div class="tabla-container">
+    @if (loading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="40" />
+        <p>Cargando servicios...</p>
+      </div>
+    } @else if (servicios().length === 0) {
+      <div class="empty-state">
+        <mat-icon>search_off</mat-icon>
+        <p>No se encontraron servicios con los filtros aplicados</p>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="servicios()" class="servicios-table">
+        <!-- Columna: Servicio (nombre + descripción) -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Servicio</th>
+          <td mat-cell *matCellDef="let s" class="cell-servicio">
+            <div class="nombre-grupo">
+              <span class="nombre">{{ s.nombre }}</span>
+              @if (s.descripcion) {
+                <span class="descripcion">{{ s.descripcion }}</span>
+              }
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna: Categoría -->
+        <ng-container matColumnDef="categoria">
+          <th mat-header-cell *matHeaderCellDef>Categoría</th>
+          <td mat-cell *matCellDef="let s">
+            <span class="badge-categoria">{{ s.categoria }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Columna: Costo -->
+        <ng-container matColumnDef="costo">
+          <th mat-header-cell *matHeaderCellDef>Costo</th>
+          <td mat-cell *matCellDef="let s" class="cell-costo">
+            @if (s.montoVariable) {
+              <span class="costo-variable">Variable</span>
+            } @else {
+              <span class="costo-valor">{{
+                s.costo | currency: "MXN" : "symbol-narrow" : "1.0-2"
+              }}</span>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Columna: Monto Variable -->
+        <ng-container matColumnDef="variable">
+          <th mat-header-cell *matHeaderCellDef>Variable</th>
+          <td mat-cell *matCellDef="let s" class="cell-center">
+            @if (s.montoVariable) {
+              <mat-icon class="icon-check">check_circle</mat-icon>
+            } @else {
+              <mat-icon class="icon-x">cancel</mat-icon>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Columna: Estado (activo) -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let s" class="cell-center">
+            @if (s.activo) {
+              <span class="badge-estado badge-activo">Activo</span>
+            } @else {
+              <span class="badge-estado badge-inactivo">Inactivo</span>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Columna: Personalizado -->
+        <ng-container matColumnDef="personalizado">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let s" class="cell-center">
+            @if (s.esPersonalizado) {
+              <span class="badge-personalizado">Personalizado</span>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Columna: Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef class="cell-acciones">
+            Acciones
+          </th>
+          <td mat-cell *matCellDef="let s" class="cell-acciones">
+            <button
+              mat-icon-button
+              matTooltip="Editar servicio"
+              (click)="onEditarServicio(s)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            @if (s.esPersonalizado) {
+              <button
+                mat-icon-button
+                matTooltip="Restablecer valor por defecto"
+                class="btn-restore"
+                [disabled]="isRestableciendo(s.clave)"
+                (click)="onRestablecerItem(s, $event)"
+              >
+                @if (isRestableciendo(s.clave)) {
+                  <mat-spinner diameter="18" />
+                } @else {
+                  <mat-icon>restore</mat-icon>
+                }
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="servicio-row"
+        ></tr>
+      </table>
+    }
+  </div>
+</div>

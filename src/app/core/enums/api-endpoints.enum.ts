@@ -84,6 +84,48 @@ export enum ApiEndpoints {
   DIF_REPORTES_GENERAR = '/api/v1/dif/reportes/generar',
 
   // ========================================
+  // TESORERÍA — SERVICIOS COBRABLES
+  // ========================================
+  TESORERIA_SERVICIOS_LIST = '/api/v1/tesoreria/servicios',
+  TESORERIA_SERVICIOS_HAS_OVERRIDES = '/api/v1/tesoreria/servicios/has-overrides',
+  TESORERIA_SERVICIOS_CATALOGO = '/api/v1/tesoreria/servicios/catalogo',
+  TESORERIA_SERVICIOS_OVERRIDE_PATCH = '/api/v1/tesoreria/servicios/:clave/override',
+  TESORERIA_SERVICIOS_OVERRIDE_DELETE = '/api/v1/tesoreria/servicios/:clave/override',
+  TESORERIA_SERVICIOS_OVERRIDES_DELETE_ALL = '/api/v1/tesoreria/servicios/overrides',
+
+  // ========================================
+  // PAGOS PÚBLICOS (sin auth)
+  // ========================================
+  PAGOS_ORDEN_BY_TOKEN = '/api/v1/pagos/orden/:token',
+  PAGOS_CREAR_INTENT = '/api/v1/pagos/orden/:token/crear-intent',
+  PAGOS_PAGAR = '/api/v1/pagos/orden/:token/pagar',
+  PAGOS_RECIBO = '/api/v1/pagos/:pagoId/recibo',
+
+  // ========================================
+  // TESORERÍA — ÓRDENES DE PAGO EN LÍNEA
+  // ========================================
+  TESORERIA_ORDENES_PAGO_METRICS = '/api/v1/tesoreria/ordenes-pago/metrics',
+  TESORERIA_ORDENES_PAGO_LIST = '/api/v1/tesoreria/ordenes-pago',
+  TESORERIA_ORDENES_PAGO_CANCELAR = '/api/v1/tesoreria/ordenes-pago/:id/cancelar',
+  TESORERIA_ORDENES_PAGO_REENVIAR = '/api/v1/tesoreria/ordenes-pago/:id/reenviar-link',
+  TESORERIA_GENERAR_ORDEN = '/api/v1/pagos/generar-orden',
+  TESORERIA_PAGO_RECIBO = '/api/v1/pagos/:pagoId/recibo',
+
+  // ========================================
+  // TESORERÍA — CAJA
+  // ========================================
+  TESORERIA_PAGOS_CAJA = '/api/v1/tesoreria/pagos/caja',
+  TESORERIA_PAGOS_CAJA_RECIBO = '/api/v1/tesoreria/pagos/caja/:id/recibo',
+  TESORERIA_REPORTE_DIARIO = '/api/v1/tesoreria/reportes/diario',
+  TESORERIA_CORTE_DIA_PDF = '/api/v1/tesoreria/reportes/diario/pdf',
+
+  // ========================================
+  // CIUDADANOS
+  // ========================================
+  CIUDADANOS_SEARCH = '/api/v1/ciudadanos',
+  CIUDADANOS_CREATE = '/api/v1/ciudadanos',
+
+  // ========================================
   // DASHBOARD EJECUTIVO — TESORERÍA
   // ========================================
   DASHBOARD_TESORERIA_RESUMEN = '/api/v1/dashboard/tesoreria/resumen',

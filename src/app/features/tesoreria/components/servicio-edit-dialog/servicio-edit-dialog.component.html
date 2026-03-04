@@ -1,0 +1,85 @@
+<h2 mat-dialog-title class="dialog-title">Editar Servicio</h2>
+
+<mat-dialog-content>
+  <div class="servicio-ref">
+    <span class="ref-nombre">{{ data.servicio.nombre }}</span>
+  </div>
+
+  <mat-divider style="margin: 16px 0" />
+
+  <form [formGroup]="form" class="edit-form">
+    <!-- Nombre -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre del servicio</mat-label>
+      <input matInput formControlName="nombre" />
+      @if (
+        form.get("nombre")?.hasError("required") && form.get("nombre")?.touched
+      ) {
+        <mat-error>El nombre es requerido</mat-error>
+      }
+      @if (form.get("nombre")?.hasError("maxlength")) {
+        <mat-error>Máximo 120 caracteres</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Costo -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Costo (MXN)</mat-label>
+      <span matTextPrefix>$&nbsp;</span>
+      <input
+        matInput
+        type="number"
+        formControlName="costo"
+        min="0"
+        step="0.01"
+      />
+      <mat-hint>Dejar en 0 si el costo es variable</mat-hint>
+      @if (
+        form.get("costo")?.hasError("required") && form.get("costo")?.touched
+      ) {
+        <mat-error>El costo es requerido</mat-error>
+      }
+      @if (form.get("costo")?.hasError("min")) {
+        <mat-error>El costo no puede ser negativo</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Toggles -->
+    <div class="toggles-row">
+      <div class="toggle-item">
+        <mat-slide-toggle formControlName="montoVariable" color="primary">
+          Monto variable
+        </mat-slide-toggle>
+        <span class="toggle-hint"
+          >El cobro depende de una liquidación específica</span
+        >
+      </div>
+      <div class="toggle-item">
+        <mat-slide-toggle formControlName="activo" color="primary">
+          Servicio activo
+        </mat-slide-toggle>
+        <span class="toggle-hint">Si está inactivo no aparece en cobros</span>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
+    Cancelar
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="isSubmitting || form.invalid"
+  >
+    @if (isSubmitting) {
+      <mat-spinner
+        diameter="18"
+        style="display: inline-block; margin-right: 8px"
+      />
+    }
+    Guardar cambios
+  </button>
+</mat-dialog-actions>

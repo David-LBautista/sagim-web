@@ -30,6 +30,12 @@ export class ResumenMovimientosComponent {
   @Input() movimientos: MovimientosDelMes | null = null;
   @Input() titulo = 'Resumen de Movimientos del Mes';
   @Input() modo: 'fisico' | 'monetario' = 'fisico';
+  @Input() saldoDisponible: number | null = null;
+
+  get saldoDisponibleLabel(): string {
+    if (this.saldoDisponible === null) return '';
+    return '$' + this.saldoDisponible.toLocaleString('es-MX');
+  }
 
   get entradasValor(): string {
     if (!this.movimientos) return '0';
