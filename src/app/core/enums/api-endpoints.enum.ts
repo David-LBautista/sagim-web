@@ -118,6 +118,10 @@ export enum ApiEndpoints {
   TESORERIA_PAGOS_CAJA_RECIBO = '/api/v1/tesoreria/pagos/caja/:id/recibo',
   TESORERIA_REPORTE_DIARIO = '/api/v1/tesoreria/reportes/diario',
   TESORERIA_CORTE_DIA_PDF = '/api/v1/tesoreria/reportes/diario/pdf',
+  TESORERIA_REPORTE_MENSUAL = '/api/v1/tesoreria/reportes/mensual',
+  TESORERIA_REPORTE_MENSUAL_PDF = '/api/v1/tesoreria/reportes/mensual/pdf',
+  TESORERIA_REPORTE_SERVICIO = '/api/v1/tesoreria/reportes/servicio/:servicioId',
+  TESORERIA_REPORTE_SERVICIO_PDF = '/api/v1/tesoreria/reportes/servicio/:servicioId/pdf',
 
   // ========================================
   // CIUDADANOS
@@ -134,6 +138,14 @@ export enum ApiEndpoints {
   DASHBOARD_TESORERIA_SERVICIOS_TOP = '/api/v1/dashboard/tesoreria/servicios-top',
   DASHBOARD_TESORERIA_COMPARATIVO_MENSUAL = '/api/v1/dashboard/tesoreria/comparativo-mensual',
   DASHBOARD_TESORERIA_ALERTAS = '/api/v1/dashboard/tesoreria/alertas',
+
+  // ========================================
+  // TESORERÍA — ÓRDENES INTERNAS (departamentos)
+  // ========================================
+  TESORERIA_ORDENES_INTERNAS_LIST = '/api/v1/tesoreria/ordenes-internas',
+  TESORERIA_ORDENES_INTERNAS_CREATE = '/api/v1/tesoreria/ordenes-internas',
+  TESORERIA_ORDENES_INTERNAS_CANCELAR = '/api/v1/tesoreria/ordenes-internas/:id/cancelar',
+  TESORERIA_ORDENES_INTERNAS_COBRAR = '/api/v1/tesoreria/ordenes-internas/:id/cobrar',
 
   // ========================================
   // DASHBOARD EJECUTIVO — DIF

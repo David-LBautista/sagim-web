@@ -28,6 +28,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'registro-civil',
+        loadChildren: () =>
+          import('./features/registro-civil/registro-civil.routes').then(
+            (m) => m.REGISTRO_CIVIL_ROUTES,
+          ),
+      },
+      {
         path: 'comunicacion-social',
         loadChildren: () =>
           import('./features/comunicacion-social/comunicacion.routes').then(

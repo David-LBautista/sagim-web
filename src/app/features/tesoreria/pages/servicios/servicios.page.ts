@@ -1,7 +1,13 @@
 import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+import {
+  Subject,
+  takeUntil,
+  debounceTime,
+  distinctUntilChanged,
+  finalize,
+} from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,6 +21,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 
 import { TesoreriaService } from '../../services/tesoreria.service';
+import { CajaService } from '../../services/caja.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import {
   ServicioCobrable,
@@ -59,6 +66,7 @@ export const CATEGORIA_CONFIG: Record<
 })
 export class ServiciosTesoreriaPage implements OnInit, OnDestroy {
   private tesoreriaService = inject(TesoreriaService);
+  private cajaService = inject(CajaService);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
   private destroy$ = new Subject<void>();
@@ -74,6 +82,7 @@ export class ServiciosTesoreriaPage implements OnInit, OnDestroy {
   loading = signal(true);
   restableciendo = signal(false);
   restablecienodoClave = signal<string | null>(null);
+  generandoReporteClave = signal<string | null>(null);
 
   busqueda = '';
   categoriaSeleccionada: CategoriaServicio | '' = '';
@@ -86,6 +95,7 @@ export class ServiciosTesoreriaPage implements OnInit, OnDestroy {
     'variable',
     'estado',
     'personalizado',
+    'reporte',
     'acciones',
   ];
 
@@ -232,5 +242,29 @@ export class ServiciosTesoreriaPage implements OnInit, OnDestroy {
 
   isRestableciendo(clave: string): boolean {
     return this.restablecienodoClave() === clave;
+  }
+
+  isGenerandoReporte(id: string): boolean {
+    return this.generandoReporteClave() === id;
+  }
+
+  onVerReporteServicio(servicio: ServicioCobrable, event: Event): void {
+    event.stopPropagation();
+    if (this.generandoReporteClave()) return;
+    this.generandoReporteClave.set(servicio._id);
+    this.cajaService
+      .getReporteServicioPdf(servicio._id)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.generandoReporteClave.set(null)),
+      )
+      .subscribe({
+        next: ({ url }) => window.open(url, '_blank'),
+        error: () =>
+          this.notificationService.show({
+            message: `No se pudo generar el reporte de "${servicio.nombre}".`,
+            type: NotificationType.ERROR,
+          }),
+      });
   }
 }

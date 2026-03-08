@@ -27,60 +27,156 @@
 
   <!-- ── FORMULARIO DE COBRO ─────────────────────────────────────────── -->
   <div class="cobro-card">
-    <div class="card-section-title">Nuevo Cobro</div>
-    <mat-divider></mat-divider>
 
+    <mat-tab-group
+      [selectedIndex]="tabIndex()"
+      (selectedIndexChange)="tabIndex.set($event)"
+      animationDuration="200ms"
+      mat-stretch-tabs="false"
+      class="cobro-tabs"
+    >
+      <!-- ─ TAB 1: Cobro directo ──────────────────────────────────────── -->
+      <mat-tab label="Cobro directo">
     <div class="cobro-body">
       <div class="cobro-cols">
-        <!-- COLUMNA IZQUIERDA: buscar servicio + persona -->
+        <!-- COLUMNA IZQUIERDA: ciudadano + servicio -->
         <div class="col-izquierda">
-          <!-- Búsqueda de servicio -->
-          <mat-form-field
-            appearance="outline"
-            class="full-width"
-            subscriptSizing="dynamic"
-          >
-            <mat-label>Buscar servicio</mat-label>
-            <mat-icon matPrefix>search</mat-icon>
-            <input
-              matInput
-              [formControl]="servicioBusquedaCtrl"
-              [matAutocomplete]="autoServicio"
-              placeholder="Nombre o clave del servicio…"
-            />
-            <mat-autocomplete
-              #autoServicio="matAutocomplete"
-              [displayWith]="displayServicio"
-              (optionSelected)="onServicioSeleccionado($event.option.value)"
-            >
-              @for (s of serviciosFiltrados(); track s._id) {
-                <mat-option [value]="s">
-                  <div class="servicio-option">
-                    <div class="servicio-info">
-                      <span class="servicio-nombre">{{ s.nombre }}</span>
-                      <span class="servicio-clave">{{ s.clave }}</span>
-                    </div>
-                    <span class="servicio-costo">
-                      @if (s.montoVariable) {
-                        Variable
-                      } @else {
-                        MXN {{ formatCurrency(s.costo) }}
-                      }
-                    </span>
-                  </div>
-                </mat-option>
-              }
-              @if (serviciosFiltrados().length === 0) {
-                <mat-option disabled>Sin resultados</mat-option>
-              }
-            </mat-autocomplete>
-          </mat-form-field>
 
-          @if (servicioSeleccionado()?.descripcion) {
-            <app-info-alert
-              [message]="servicioSeleccionado()!.descripcion!"
-              type="info"
-            />
+          <!-- ── Vincular ciudadano ──────────────────────────────── -->
+          <p class="section-label">
+            Vincular ciudadano
+            <span class="requerido-tag">Requerido</span>
+          </p>
+
+          <mat-radio-group
+            class="modo-radio-group"
+            [value]="modoContribuyente()"
+            (change)="onModoContribuyenteChange($event.value)"
+          >
+            <mat-radio-button value="registrado">Ciudadano registrado</mat-radio-button>
+            <mat-radio-button value="manual">Ingresar manualmente</mat-radio-button>
+          </mat-radio-group>
+
+          @if (modoContribuyente() === 'registrado') {
+            @if (!ciudadanoSeleccionado()) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Buscar ciudadano</mat-label>
+                <mat-icon matPrefix>search</mat-icon>
+                <input
+                  matInput
+                  [formControl]="ciudadanoBusquedaCtrl"
+                  [matAutocomplete]="autoCiudadano"
+                  placeholder="Nombre o CURP"
+                />
+                @if (buscandoCiudadano()) {
+                  <mat-spinner matSuffix diameter="18"></mat-spinner>
+                }
+                <mat-autocomplete
+                  #autoCiudadano="matAutocomplete"
+                  [displayWith]="displayCiudadano"
+                  (optionSelected)="onCiudadanoSeleccionado($event.option.value)"
+                >
+                  @for (c of ciudadanosFiltrados(); track c._id) {
+                    <mat-option [value]="c">
+                      <div class="ciudadano-option">
+                        <span class="ciudadano-nombre">{{ c.nombreCompleto }}</span>
+                        <span class="ciudadano-curp">{{ c.curp }}</span>
+                      </div>
+                    </mat-option>
+                  }
+                  @if (ciudadanosFiltrados().length === 0 && ciudadanoBusquedaCtrl.value && ciudadanoBusquedaCtrl.value!.length >= 2 && !buscandoCiudadano()) {
+                    <mat-option disabled>Sin resultados</mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+              <p class="modo-hint">
+                <mat-icon>info_outline</mat-icon>
+                Busca al ciudadano en el padrón del sistema para vincular su expediente.
+              </p>
+            } @else {
+              <div class="ciudadano-chip">
+                <mat-icon class="chip-icon">person</mat-icon>
+                <div class="chip-info">
+                  <span class="chip-nombre">{{ ciudadanoSeleccionado()!.nombreCompleto }}</span>
+                  <span class="chip-curp">{{ ciudadanoSeleccionado()!.curp }}</span>
+                </div>
+                <button mat-icon-button type="button" class="chip-clear" (click)="limpiarCiudadano()" matTooltip="Cambiar ciudadano">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+
+            @if (mostrarRegistrarCiudadano()) {
+              <button mat-stroked-button class="btn-registrar-ciudadano" (click)="onRegistrarCiudadanoNuevo()">
+                <mat-icon>person_add</mat-icon>
+                Registrar nuevo ciudadano
+              </button>
+            }
+          }
+
+          @if (modoContribuyente() === 'manual') {
+            <mat-form-field appearance="outline" class="full-width" [formGroup]="form">
+              <mat-label>Nombre del contribuyente</mat-label>
+              <mat-icon matPrefix>person</mat-icon>
+              <input
+                matInput
+                formControlName="nombreLibre"
+                placeholder="Ej. Juan Pérez García"
+                autocomplete="off"
+              />
+              <mat-hint>Se registrará sin vínculo a un ciudadano registrado</mat-hint>
+            </mat-form-field>
+          }
+
+          <mat-divider class="section-divider"></mat-divider>
+
+          <!-- ── Datos del pago ──────────────────────────────────── -->
+          <p class="section-label">Datos del pago</p>
+
+          @if (!servicioSeleccionado()) {
+            <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 0.5rem">
+              <mat-label>Buscar servicio del catálogo</mat-label>
+              <mat-icon matPrefix>search</mat-icon>
+              <input
+                matInput
+                [formControl]="servicioBusquedaCtrl"
+                [matAutocomplete]="autoServicio"
+                placeholder="Ej. acta de nacimiento, predial..."
+              />
+              <mat-hint>Requerido</mat-hint>
+              <mat-autocomplete
+                #autoServicio="matAutocomplete"
+                [displayWith]="displayServicio"
+                (optionSelected)="onServicioSeleccionado($event.option.value)"
+              >
+                @for (s of serviciosFiltrados(); track s._id) {
+                  <mat-option [value]="s">
+                    <div class="servicio-option">
+                      <div class="servicio-info">
+                        <span class="servicio-nombre">{{ s.nombre }}</span>
+                        <span class="servicio-clave">{{ s.clave }}</span>
+                      </div>
+                      <span class="servicio-costo">
+                        @if (s.montoVariable) { Variable } @else { MXN {{ formatCurrency(s.costo) }} }
+                      </span>
+                    </div>
+                  </mat-option>
+                }
+                @if (serviciosFiltrados().length === 0) {
+                  <mat-option disabled>Sin resultados</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          } @else {
+            <div class="servicio-chip">
+              <div class="chip-info">
+                <span class="chip-nombre">{{ servicioSeleccionado()!.nombre }}</span>
+                <span class="chip-meta">{{ servicioSeleccionado()!.descripcion }}</span>
+              </div>
+              <button mat-icon-button type="button" class="chip-clear" (click)="limpiarServicio()" matTooltip="Cambiar servicio">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
           }
 
           @if (servicioSeleccionado()) {
@@ -101,86 +197,6 @@
             </mat-form-field>
           }
 
-          <!-- Persona: contribuyente o nombre libre -->
-          @if (servicioSeleccionado()?.requiereContribuyente) {
-            <div class="contribuyente-section">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Buscar contribuyente</mat-label>
-                <mat-icon matPrefix>search</mat-icon>
-                <input
-                  matInput
-                  [formControl]="ciudadanoBusquedaCtrl"
-                  [matAutocomplete]="autoCiudadano"
-                  placeholder="Nombre o CURP (mín. 3 caracteres)…"
-                />
-                @if (buscandoCiudadano()) {
-                  <mat-spinner matSuffix diameter="18"></mat-spinner>
-                }
-                <mat-autocomplete
-                  #autoCiudadano="matAutocomplete"
-                  [displayWith]="displayCiudadano"
-                  (optionSelected)="
-                    onCiudadanoSeleccionado($event.option.value)
-                  "
-                >
-                  @for (c of ciudadanosFiltrados(); track c._id) {
-                    <mat-option [value]="c">
-                      <div class="ciudadano-option">
-                        <span class="ciudadano-nombre">{{
-                          c.nombreCompleto
-                        }}</span>
-                        <span class="ciudadano-curp">{{ c.curp }}</span>
-                      </div>
-                    </mat-option>
-                  }
-                </mat-autocomplete>
-              </mat-form-field>
-
-              @if (mostrarRegistrarCiudadano()) {
-                <button
-                  mat-stroked-button
-                  class="btn-registrar-ciudadano"
-                  (click)="onRegistrarCiudadanoNuevo()"
-                >
-                  <mat-icon>person_add</mat-icon>
-                  Registrar nuevo ciudadano
-                </button>
-              }
-
-              @if (ciudadanoSeleccionado()) {
-                <div class="ciudadano-selected-chip">
-                  <mat-icon>check_circle</mat-icon>
-                  <div>
-                    <strong>{{
-                      ciudadanoSeleccionado()!.nombreCompleto
-                    }}</strong>
-                    <small>{{ ciudadanoSeleccionado()!.curp }}</small>
-                  </div>
-                  <button
-                    mat-icon-button
-                    class="btn-clear-ciudadano"
-                    (click)="limpiarCiudadano()"
-                  >
-                    <mat-icon>close</mat-icon>
-                  </button>
-                </div>
-              }
-            </div>
-          } @else if (servicioSeleccionado()) {
-            <div class="nombre-libre-section" [formGroup]="form">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Nombre para el recibo</mat-label>
-                <mat-icon matPrefix>person_outline</mat-icon>
-                <input
-                  matInput
-                  formControlName="nombreLibre"
-                  placeholder="Nombre del solicitante (opcional)"
-                  autocomplete="off"
-                />
-                <mat-hint>Aparecerá en el recibo impreso</mat-hint>
-              </mat-form-field>
-            </div>
-          }
         </div>
 
         <!-- COLUMNA DERECHA: monto + método -->
@@ -239,6 +255,145 @@
         />
       </div>
     </div>
+      </mat-tab>
+
+      <!-- ─ TAB 2: Cobrar orden ───────────────────────────────────────── -->
+      <mat-tab label="Cobrar orden">
+        <div class="orden-body">
+          <div class="orden-cols">
+
+            <!-- COL IZQUIERDA: buscador -->
+            <div class="orden-col-buscar">
+              <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+                <mat-label>Buscar por nombre del contribuyente</mat-label>
+                <mat-icon matPrefix>search</mat-icon>
+                <input
+                  matInput
+                  [formControl]="ordenBusquedaCtrl"
+                  placeholder="Nombre del contribuyente (mín. 3 caracteres)…"
+                  autocomplete="off"
+                />
+                @if (buscandoOrdenes()) {
+                  <mat-spinner matSuffix diameter="18"></mat-spinner>
+                }
+              </mat-form-field>
+
+              <p class="modo-hint">
+                <mat-icon class="hint-icon">info</mat-icon>
+                Escribe el nombre del contribuyente para buscar sus órdenes de pago pendientes.
+              </p>
+            </div>
+
+            <!-- COL DERECHA: lista + pago -->
+            <div class="orden-col-resultado">
+
+              <!-- Lista de órdenes pendientes -->
+              @if (buscandoOrdenes()) {
+                <div class="loading-center" style="padding: 24px 0">
+                  <mat-spinner diameter="32"></mat-spinner>
+                </div>
+              } @else if (ordenesPendientes().length > 0) {
+                <div class="ordenes-list">
+                  @for (orden of ordenesPendientes(); track orden._id) {
+                    <div
+                      class="orden-card"
+                      [class.orden-card--selected]="ordenSeleccionada()?._id === orden._id"
+                      (click)="onSeleccionarOrden(orden)"
+                    >
+                      <div class="orden-card-header">
+                        <app-folio-tag [folio]="orden.folio" />
+                        <span class="orden-monto">MXN {{ formatCurrency(orden.monto) }}</span>
+                      </div>
+                      <div class="orden-card-body">
+                        <span class="orden-servicio">
+                          {{ orden.servicioId?.nombre ?? '—' }}
+                        </span>
+                        <span class="orden-ciudadano">
+                          <mat-icon class="icon-sm">person</mat-icon>
+                          {{ nombreOrden(orden) }}
+                        </span>
+                      </div>
+                      <div class="orden-card-footer">
+                        @if (orden.folioDocumento) {
+                          <span class="orden-ref">
+                            <mat-icon class="icon-sm">tag</mat-icon>
+                            {{ orden.folioDocumento }}
+                          </span>
+                        }
+                        <button
+                          mat-stroked-button
+                          color="primary"
+                          class="btn-seleccionar-orden"
+                          (click)="onSeleccionarOrden(orden); $event.stopPropagation()"
+                        >
+                          <mat-icon>{{ ordenSeleccionada()?._id === orden._id ? 'check' : 'radio_button_unchecked' }}</mat-icon>
+                          {{ ordenSeleccionada()?._id === orden._id ? 'Seleccionada' : 'Seleccionar' }}
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else if ((ordenBusquedaCtrl.value?.trim()?.length ?? 0) >= 3) {
+                <div class="empty-ordenes">
+                  <mat-icon>receipt_long</mat-icon>
+                  <p>No se encontraron órdenes pendientes con ese nombre</p>
+                </div>
+              } @else {
+                <div class="empty-ordenes empty-ordenes--idle">
+                  <p>Los resultados aparecerán aquí</p>
+                </div>
+              }
+
+              <!-- Panel confirmar cobro -->
+              @if (ordenSeleccionada()) {
+                <div class="orden-confirm-panel">
+                  <mat-divider></mat-divider>
+
+                  <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+                    <mat-label>Folio del documento</mat-label>
+                    <mat-icon matPrefix>tag</mat-icon>
+                    <input
+                      matInput
+                      [formControl]="folioDocumentoOrdenCtrl"
+                      placeholder="Ej. RC-2026-00142"
+                      autocomplete="off"
+                    />
+                    <mat-hint>Modifica el folio del documento</mat-hint>
+                  </mat-form-field>
+
+                  <p class="confirm-label">Método de pago</p>
+                  <mat-button-toggle-group
+                    [value]="metodoPagoOrden()"
+                    (change)="metodoPagoOrden.set($event.value)"
+                    class="metodo-toggle"
+                    hideSingleSelectionIndicator
+                  >
+                    <mat-button-toggle value="EFECTIVO">
+                      <mat-icon>payments</mat-icon> Efectivo
+                    </mat-button-toggle>
+                    <mat-button-toggle value="TARJETA" [disabled]="true" matTooltip="Próximamente disponible">
+                      <mat-icon>credit_card</mat-icon> Tarjeta
+                    </mat-button-toggle>
+                  </mat-button-toggle-group>
+
+                  <div class="cobro-actions" style="margin-top: 16px">
+                    <app-action-button
+                      label="Cobrar orden"
+                      icon="bolt"
+                      color="primary"
+                      [loading]="submittingOrden()"
+                      [disabled]="submittingOrden()"
+                      (clicked)="onCobrarOrdenInterna()"
+                    />
+                  </div>
+                </div>
+              }
+
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 
   <!-- ── MOVIMIENTOS DEL DÍA ─────────────────────────────────────────── -->
@@ -287,7 +442,7 @@
           <ng-container matColumnDef="ciudadano">
             <th mat-header-cell *matHeaderCellDef>Contribuyente</th>
             <td mat-cell *matCellDef="let m">
-              {{ m.ciudadano ?? "—" }}
+              {{ m.ciudadano ?? m.nombreContribuyente ?? "—" }}
             </td>
           </ng-container>
 
@@ -338,7 +493,6 @@
               class="mat-cell empty-state"
               [attr.colspan]="displayedColumns.length"
             >
-              <mat-icon>receipt_long</mat-icon>
               <p>No hay movimientos registrados hoy</p>
             </td>
           </tr>

@@ -17,6 +17,19 @@
 
     <!-- Información de usuario -->
     <div class="navbar-actions">
+      <!-- Indicador WebSocket -->
+      @if (wsService.conexionActiva$ | async) {
+        <div class="ws-indicator ws-indicator--online" matTooltip="Tiempo real activo">
+          <span class="ws-dot"></span>
+          <span class="ws-label">En línea</span>
+        </div>
+      } @else {
+        <div class="ws-indicator ws-indicator--offline" matTooltip="Reconectando...">
+          <span class="ws-dot"></span>
+          <span class="ws-label">Sin conexión</span>
+        </div>
+      }
+
       @if (currentUser) {
         <div class="user-info">
           <span class="user-name">{{ currentUser.nombre }}</span>

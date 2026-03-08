@@ -150,8 +150,8 @@
       <ng-template #cellTemplate let-o let-col="column">
         @switch (col) {
           @case ("folio") {
-            @if (o.pagoId?.folio) {
-              <app-folio-tag [folio]="o.pagoId.folio" />
+            @if (o.folio || o.pagoId?.folio) {
+              <app-folio-tag [folio]="(o.folio ?? o.pagoId!.folio)" />
             } @else {
               <span class="no-folio">—</span>
             }

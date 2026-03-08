@@ -60,6 +60,7 @@ export class SidebarComponent implements OnInit {
       modules: [
         'PRESIDENCIA',
         'SECRETARIA_AYUNTAMIENTO',
+        'REGISTRO_CIVIL',
         'COMUNICACION_SOCIAL',
         'UIPPE',
         'CONTRALORIA',
@@ -114,7 +115,41 @@ export class SidebarComponent implements OnInit {
           }
 
           // Módulos con submenús
-          if (moduloKey === 'TESORERIA') {
+          if (moduloKey === 'SECRETARIA_AYUNTAMIENTO') {
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              children: [
+                {
+                  label: 'Dashboard',
+                  route: '/secretaria-ayuntamiento/dashboard',
+                  icon: 'dashboard',
+                },
+                {
+                  label: 'Órdenes de Pago',
+                  route: '/secretaria-ayuntamiento/ordenes-pago',
+                  icon: 'receipt_long',
+                },
+              ],
+            });
+          } else if (moduloKey === 'REGISTRO_CIVIL') {
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              children: [
+                {
+                  label: 'Dashboard',
+                  route: '/registro-civil/dashboard',
+                  icon: 'dashboard',
+                },
+                {
+                  label: 'Órdenes de Pago',
+                  route: '/registro-civil/ordenes-pago',
+                  icon: 'receipt_long',
+                },
+              ],
+            });
+          } else if (moduloKey === 'TESORERIA') {
             const userRol = this.authService.getRol();
             items.push({
               icon: moduloConfig.icon,

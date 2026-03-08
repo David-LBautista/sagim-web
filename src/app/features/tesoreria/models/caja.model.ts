@@ -39,6 +39,7 @@ export interface PagoCajaDto {
   monto: number;
   metodoPago: MetodoPago;
   ciudadanoId?: string;
+  nombreContribuyente?: string;
   referenciaDocumento?: string;
   observaciones?: string;
 }
@@ -73,6 +74,7 @@ export interface MovimientoDiario {
   hora: string;
   servicio: string;
   ciudadano: string | null;
+  nombreContribuyente?: string | null;
   monto: number;
   metodoPago: MetodoPago;
   canal: CanalPago;
@@ -97,4 +99,28 @@ export interface ReporteDiarioPdfResponse {
   url: string;
   key: string;
   expiraEn: string;
+}
+
+// ── Reporte mensual ────────────────────────────────────────────────────────
+export interface ReporteMensualResponse {
+  mes: number;
+  anio: number;
+  totalRecaudado: number;
+  totalOperaciones: number;
+  porCanal: { CAJA: number; EN_LINEA: number };
+  porServicio: Record<string, { cantidad: number; total: number }>;
+}
+
+// ── Reporte por servicio ───────────────────────────────────────────────────
+export interface ReporteServicioResponse {
+  servicio: { nombre: string; costoBase: number };
+  estadisticas: {
+    totalOrdenes: number;
+    ordenesPagadas: number;
+    ordenesPendientes: number;
+    ordenesExpiradas: number;
+    recaudadoEnLinea: number;
+    recaudadoCaja: number;
+    totalRecaudado: number;
+  };
 }

@@ -1,22 +1,117 @@
 <div class="tesoreria-page">
+
+  <!-- ── ENCABEZADO ──────────────────────────────────────────────────── -->
   <div class="page-header">
-    <h1 class="sagim-title-xl">Tesorería</h1>
-    <p class="sagim-subtitle-light">
-      Gestión financiera, ingresos, egresos y presupuesto municipal
-    </p>
+    <div class="header-left">
+      <h1 class="sagim-title-xl" style="margin-bottom: 4px;">Tesorería</h1>
+      <p class="sagim-subtitle-light">Resumen de ingresos municipales</p>
+    </div>
+
+    <!-- Selector mes/año + botón PDF -->
+    <div class="header-controls">
+      <mat-form-field appearance="outline" class="select-mes" subscriptSizing="dynamic">
+        <mat-label>Mes</mat-label>
+        <mat-select [value]="mesSeleccionado()" (valueChange)="mesSeleccionado.set($event); cargarReporte()">
+          @for (m of meses; track m.valor) {
+            <mat-option [value]="m.valor">{{ m.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="select-anio" subscriptSizing="dynamic">
+        <mat-label>Año</mat-label>
+        <mat-select [value]="anioSeleccionado()" (valueChange)="anioSeleccionado.set($event); cargarReporte()">
+          @for (a of anios; track a) {
+            <mat-option [value]="a">{{ a }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        class="btn-pdf"
+        (click)="onExportarPdf()"
+        [disabled]="generandoPdf() || cargando() || !reporte()"
+        matTooltip="Exportar reporte mensual en PDF"
+      >
+        @if (generandoPdf()) {
+          <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
+        }
+        @if (!generandoPdf()) {
+          <mat-icon>picture_as_pdf</mat-icon>
+        }
+        {{ generandoPdf() ? 'Generando...' : 'Exportar PDF' }}
+      </button>
+    </div>
   </div>
 
-  <div class="dashboard-grid">
-    <mat-card class="stat-card">
-      <mat-card-header>
-        <div class="card-icon">
-          <mat-icon>account_balance_wallet</mat-icon>
-        </div>
-        <mat-card-title>Dashboard</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>Módulo de Tesorería en construcción</p>
-      </mat-card-content>
-    </mat-card>
-  </div>
+  <!-- ── CARGANDO ─────────────────────────────────────────────────────── -->
+  @if (cargando()) {
+    <div class="kpi-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando reporte de {{ mesLabel() }} {{ anioSeleccionado() }}…</p>
+    </div>
+  }
+
+  <!-- ── REPORTE ──────────────────────────────────────────────────────── -->
+  @if (reporte(); as r) {
+    <!-- KPI cards -->
+    <div class="kpi-grid">
+      <app-kpi-card
+        [value]="kpiTotalRecaudado()"
+        label="Total recaudado"
+        icon="account_balance_wallet"
+      />
+      <app-kpi-card
+        [value]="kpiOperaciones()"
+        label="Operaciones"
+        icon="receipt_long"
+      />
+      <app-kpi-card
+        [value]="kpiCaja()"
+        label="Cobrado en caja"
+        icon="point_of_sale"
+      />
+      <app-kpi-card
+        [value]="kpiEnLinea()"
+        label="Pagos en línea"
+        icon="language"
+      />
+    </div>
+
+    <!-- Servicios top -->
+    @if (topServicios().length > 0) {
+      <mat-card class="servicios-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-avatar-icon">bar_chart</mat-icon>
+          <mat-card-title>Ingresos por servicio</mat-card-title>
+          <mat-card-subtitle>{{ mesLabel() }} {{ anioSeleccionado() }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <div class="servicios-list">
+            @for (s of topServicios(); track s.nombre) {
+              <div class="servicio-row-item">
+                <div class="servicio-name-wrap">
+                  <span class="servicio-nombre">{{ s.nombre }}</span>
+                  <span class="servicio-cant">{{ s.cantidad }} operaciones</span>
+                </div>
+                <span class="servicio-total">{{ s.total | currency:'MXN':'symbol-narrow':'1.2-2' }}</span>
+              </div>
+              <mat-divider></mat-divider>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+
+  <!-- ── SIN DATOS ────────────────────────────────────────────────────── -->
+  @if (!cargando() && !reporte()) {
+    <div class="empty-state">
+      <mat-icon>insert_chart_outlined</mat-icon>
+      <p>No hay datos para {{ mesLabel() }} {{ anioSeleccionado() }}</p>
+    </div>
+  }
+
 </div>

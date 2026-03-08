@@ -10,6 +10,8 @@ import {
   ReciboUrlResponse,
   ReporteDiarioResponse,
   ReporteDiarioPdfResponse,
+  ReporteMensualResponse,
+  ReporteServicioResponse,
 } from '../models/caja.model';
 import { environment } from '../../../../environments/environment';
 import { ApiEndpoints } from '../../../core/enums/api-endpoints.enum';
@@ -63,5 +65,47 @@ export class CajaService {
     let params = new HttpParams();
     if (fecha) params = params.set('fecha', fecha);
     return this.http.get<ReporteDiarioPdfResponse>(url, { params });
+  }
+
+  /** Obtiene el resumen de ingresos de un mes completo */
+  getReporteMensual(
+    mes: number,
+    anio: number,
+  ): Observable<ReporteMensualResponse> {
+    const url = `${environment.apiUrl}${ApiEndpoints.TESORERIA_REPORTE_MENSUAL}`;
+    const params = new HttpParams().set('mes', mes).set('año', anio);
+    return this.http.get<ReporteMensualResponse>(url, { params });
+  }
+
+  /** Genera el PDF del reporte mensual y devuelve la signed URL */
+  getReporteMensualPdf(
+    mes: number,
+    anio: number,
+  ): Observable<ReporteDiarioPdfResponse> {
+    const url = `${environment.apiUrl}${ApiEndpoints.TESORERIA_REPORTE_MENSUAL_PDF}`;
+    const params = new HttpParams().set('mes', mes).set('año', anio);
+    return this.http.get<ReporteDiarioPdfResponse>(url, { params });
+  }
+
+  /** Obtiene estadísticas históricas de un servicio */
+  getReporteServicio(servicioId: string): Observable<ReporteServicioResponse> {
+    const url =
+      `${environment.apiUrl}${ApiEndpoints.TESORERIA_REPORTE_SERVICIO}`.replace(
+        ':servicioId',
+        servicioId,
+      );
+    return this.http.get<ReporteServicioResponse>(url);
+  }
+
+  /** Genera el PDF de historial de un servicio y devuelve la signed URL */
+  getReporteServicioPdf(
+    servicioId: string,
+  ): Observable<ReporteDiarioPdfResponse> {
+    const url =
+      `${environment.apiUrl}${ApiEndpoints.TESORERIA_REPORTE_SERVICIO_PDF}`.replace(
+        ':servicioId',
+        servicioId,
+      );
+    return this.http.get<ReporteDiarioPdfResponse>(url);
   }
 }

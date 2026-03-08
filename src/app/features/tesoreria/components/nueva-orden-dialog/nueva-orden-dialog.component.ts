@@ -1,6 +1,5 @@
 import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import dayjs from 'dayjs';
 import {
   FormBuilder,
   FormControl,
@@ -20,28 +19,25 @@ import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Clipboard } from '@angular/cdk/clipboard';
 
 import { OrdenesPagoService } from '../../services/ordenes-pago.service';
 import { CajaService } from '../../services/caja.service';
 import { TesoreriaService } from '../../services/tesoreria.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { NotificationType } from '../../../../shared/models/notification.model';
-import {
-  AREAS_RESPONSABLES,
-  GenerarOrdenResponse,
-} from '../../models/ordenes-pago.model';
+import { AREAS_RESPONSABLES } from '../../models/ordenes-pago.model';
 import { CiudadanoSearchResult } from '../../models/caja.model';
 import { ServicioCobrable } from '../../models/servicios.model';
 import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 
-type DialogVista = 'form' | 'exito';
+
 
 @Component({
   selector: 'app-nueva-orden-dialog',
@@ -53,6 +49,7 @@ type DialogVista = 'form' | 'exito';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatRadioModule,
     MatButtonModule,
     MatIconModule,
     MatAutocompleteModule,
@@ -71,20 +68,17 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
   private cajaService = inject(CajaService);
   private tesoreriaService = inject(TesoreriaService);
   private notification = inject(NotificationService);
-  private clipboard = inject(Clipboard);
   private destroy$ = new Subject<void>();
 
   readonly areas = AREAS_RESPONSABLES;
 
   // ── Estado ───────────────────────────────────────────────────────────────
-  vista = signal<DialogVista>('form');
+  vista = signal<'form'>('form');
+  modoContribuyente = signal<'registrado' | 'manual'>('registrado');
   submitting = signal(false);
-  reenviando = signal(false);
   buscandoCiudadano = signal(false);
   ciudadanosFiltrados = signal<CiudadanoSearchResult[]>([]);
   ciudadanoSeleccionado = signal<CiudadanoSearchResult | null>(null);
-  ordenCreada = signal<GenerarOrdenResponse | null>(null);
-  linkCopiado = signal(false);
   // ── Servicio ──────────────────────────────────────────────────────────────
   buscandoServicio = signal(false);
   serviciosFiltrados = signal<ServicioCobrable[]>([]);
@@ -109,6 +103,7 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
     ],
     emailExterno: ['', [Validators.email]],
     nombreContribuyente: [''],
+    folioDocumento: ['', Validators.maxLength(60)],
   });
 
   ciudadanoBusquedaCtrl = new FormControl('');
@@ -209,17 +204,25 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
     this.ciudadanosFiltrados.set([]);
   }
 
-  get paymentLink(): string {
-    const orden = this.ordenCreada();
-    return orden ? this.ordenesService.buildPaymentLink(orden.token) : '';
+  onModoChange(modo: 'registrado' | 'manual'): void {
+    this.modoContribuyente.set(modo);
+    const emailCtrl = this.form.get('emailExterno')!;
+    if (modo === 'registrado') {
+      this.form.patchValue({ emailExterno: '', nombreContribuyente: '' });
+      emailCtrl.removeValidators(Validators.required);
+    } else {
+      this.limpiarCiudadano();
+      emailCtrl.addValidators(Validators.required);
+    }
+    emailCtrl.updateValueAndValidity();
   }
 
-  get vigenciaTexto(): string {
-    const orden = this.ordenCreada();
-    if (!orden) return '';
-    const horas = this.form.value.horasValidez ?? 48;
-    const vence = dayjs(orden.expiresAt).tz('America/Mexico_City');
-    return `${horas} horas — vence el ${vence.format('DD/MM/YYYY')} a las ${vence.format('HH:mm')}`;
+  get contribuyenteValido(): boolean {
+    if (this.modoContribuyente() === 'registrado') {
+      return !!this.ciudadanoSeleccionado();
+    }
+    const email = this.form.get('emailExterno')?.value?.trim();
+    return !!email;
   }
 
   // ── Acciones ──────────────────────────────────────────────────────────────
@@ -233,6 +236,7 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
       horasValidez,
       emailExterno,
       nombreContribuyente,
+      folioDocumento,
     } = this.form.getRawValue();
     const ciudadano = this.ciudadanoSeleccionado();
 
@@ -253,6 +257,9 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
         ...(this.servicioSeleccionado() && {
           servicioId: this.servicioSeleccionado()!._id,
         }),
+        ...(folioDocumento?.trim() && {
+          folioDocumento: folioDocumento.trim(),
+        }),
       })
       .pipe(
         takeUntil(this.destroy$),
@@ -260,8 +267,11 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (orden) => {
-          this.ordenCreada.set(orden);
-          this.vista.set('exito');
+          this.notification.show({
+            message: 'Orden de pago generada correctamente.',
+            type: NotificationType.SUCCESS,
+          });
+          this.dialogRef.close(orden);
         },
         error: (err) =>
           this.notification.show({
@@ -271,37 +281,7 @@ export class NuevaOrdenDialogComponent implements OnInit, OnDestroy {
       });
   }
 
-  onCopiarLink(): void {
-    this.clipboard.copy(this.paymentLink);
-    this.linkCopiado.set(true);
-    setTimeout(() => this.linkCopiado.set(false), 2500);
-  }
-
-  onReenviarEmail(): void {
-    const orden = this.ordenCreada();
-    if (!orden || this.reenviando()) return;
-    this.reenviando.set(true);
-    this.ordenesService
-      .reenviarLink(orden._id)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => this.reenviando.set(false)),
-      )
-      .subscribe({
-        next: () =>
-          this.notification.show({
-            message: 'Link reenviado al correo del ciudadano.',
-            type: NotificationType.SUCCESS,
-          }),
-        error: () =>
-          this.notification.show({
-            message: 'No se pudo reenviar el link.',
-            type: NotificationType.ERROR,
-          }),
-      });
-  }
-
   onCerrar(): void {
-    this.dialogRef.close(this.ordenCreada());
+    this.dialogRef.close();
   }
 }

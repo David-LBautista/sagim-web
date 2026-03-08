@@ -1,0 +1,175 @@
+<div class="ordenes-internas-page">
+  <!-- ══ ENCABEZADO ═════════════════════════════════════════════════ -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="sagim-title-xl" style="margin-bottom: 5px">
+        Generación de órdenes de pago
+      </h1>
+      <p class="sagim-subtitle-light">{{ areaResponsable }}</p>
+    </div>
+    <div class="header-right">
+      <app-action-button
+        label="Nueva Orden"
+        icon="add"
+        color="primary"
+        (clicked)="onNuevaOrden()"
+      />
+    </div>
+  </div>
+
+  <!-- ══ FILTROS ═════════════════════════════════════════════════ -->
+  <div class="filtros-card">
+    <div class="filtros-row">
+      <mat-form-field
+        appearance="outline"
+        class="filtro-busqueda"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Buscar</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [formControl]="busquedaCtrl"
+          placeholder="Folio o ciudadano..."
+        />
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        class="filtro-estado"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Estado</mat-label>
+        <mat-select [formControl]="estadoCtrl">
+          @for (op of estadoOpciones; track op.value) {
+            <mat-option [value]="op.value">{{ op.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        class="filtro-fecha"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Desde</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerDesde"
+          [formControl]="fechaDesdeCtrl"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="pickerDesde"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerDesde></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        class="filtro-fecha"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Hasta</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerHasta"
+          [formControl]="fechaHastaCtrl"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="pickerHasta"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerHasta></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- ══ TABLA ═══════════════════════════════════════════════════ -->
+  <div class="tabla-card">
+    <div class="tabla-header">
+      <span class="tabla-titulo">
+        Órdenes
+        @if (!loading()) {
+          <span class="tabla-count">({{ ordenes().length }})</span>
+        }
+      </span>
+      <div class="tabla-header-actions">
+        @if (loading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        }
+        <button
+          mat-icon-button
+          (click)="cargarOrdenes()"
+          [disabled]="loading()"
+          matTooltip="Actualizar"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+
+    <app-data-table
+      [dataSource]="ordenes()"
+      [columns]="tableColumns"
+      noDataMessage="No se encontraron órdenes"
+      noDataIcon="receipt_long"
+    >
+      <ng-template #cellTemplate let-o let-col="column">
+        @switch (col) {
+          @case ("folio") {
+            <app-folio-tag [folio]="o.folio" />
+          }
+
+          @case ("ciudadano") {
+            <span class="ciudadano-cell">{{ nombreCiudadano(o) }}</span>
+          }
+
+          @case ("servicio") {
+            <span class="servicio-cell" [matTooltip]="o.servicioId?.nombre">
+              {{ o.servicioId?.nombre ?? o.descripcion }}
+            </span>
+          }
+
+          @case ("monto") {
+            <span class="monto-cell">{{ formatMonto(o.monto) }}</span>
+          }
+
+          @case ("estado") {
+            <app-status-badge
+              [label]="estadoBadge(o.estado).label"
+              [variant]="estadoBadge(o.estado).variant"
+            />
+          }
+
+          @case ("fecha") {
+            <span class="fecha-cell">{{ formatFecha(o.createdAt) }}</span>
+          }
+
+          @case ("acciones") {
+            <div class="acciones-row">
+              @if (o.estado === "PENDIENTE") {
+                <button
+                  mat-icon-button
+                  (click)="onCancelar(o)"
+                  matTooltip="Cancelar orden"
+                  class="action-btn danger"
+                  [disabled]="cancelando() === o._id"
+                >
+                  @if (cancelando() === o._id) {
+                    <mat-spinner diameter="18"></mat-spinner>
+                  } @else {
+                    <mat-icon>cancel</mat-icon>
+                  }
+                </button>
+              } @else {
+                <span class="sin-acciones">—</span>
+              }
+            </div>
+          }
+        }
+      </ng-template>
+    </app-data-table>
+  </div>
+</div>

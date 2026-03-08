@@ -1,0 +1,337 @@
+// ── Dialog title ─────────────────────────────────────────────────────────
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f2a44;
+
+  .dialog-title-icon {
+    color: #1f6fae;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .dialog-area-badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #1f6fae;
+    background: #e8f2fb;
+    padding: 2px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.02em;
+  }
+}
+
+// ── Content ───────────────────────────────────────────────────────────────
+.dialog-content {
+  padding: 8px 24px 0;
+  min-width: 460px;
+  max-width: 520px;
+}
+
+.orden-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #7a7a7a;
+  margin: 12px 0 6px;
+}
+
+.required {
+  color: #d64545;
+}
+
+.section-divider {
+  margin: 12px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.monto-field {
+  margin-top: 8px;
+}
+
+// ── Ciudadano chip ────────────────────────────────────────────────────────
+.ciudadano-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f4f6f8;
+  border: 1px solid #d0dae4;
+  border-radius: 8px;
+  margin-bottom: 4px;
+
+  .chip-icon {
+    color: #1f6fae;
+    flex-shrink: 0;
+  }
+
+  .chip-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .chip-nombre {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #3a3a3a;
+  }
+
+  .chip-curp {
+    font-size: 0.75rem;
+    color: #7a7a7a;
+    font-family: monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .chip-clear {
+    flex-shrink: 0;
+    color: #7a7a7a;
+
+    &:hover {
+      color: #d64545;
+    }
+  }
+}
+
+// ── Servicio chip ─────────────────────────────────────────────────────────
+.servicio-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #e8f0fe;
+  border: 1px solid #c3d5f5;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem 0.6rem 1rem;
+  margin-bottom: 1rem;
+
+  .servicio-chip-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .servicio-chip-nombre {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #3a3a3a;
+    }
+
+    .servicio-chip-meta {
+      font-size: 0.78rem;
+      color: #7a7a7a;
+    }
+  }
+}
+
+// ── Fila Monto + Área ────────────────────────────────────────────────────
+.form-row {
+  display: flex;
+  gap: 12px;
+
+  .monto-field {
+    width: 140px;
+    flex-shrink: 0;
+  }
+
+  .area-field {
+    flex: 1;
+  }
+}
+
+// ── Autocomplete options ──────────────────────────────────────────────────
+.ciudadano-option,
+.servicio-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0;
+
+  .ciudadano-nombre,
+  .servicio-nombre {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #3a3a3a;
+  }
+
+  .ciudadano-curp,
+  .servicio-meta {
+    font-size: 0.75rem;
+    color: #7a7a7a;
+  }
+}
+
+.no-results-option {
+  font-size: 0.8rem;
+  color: #7a7a7a;
+  font-style: italic;
+}
+
+.modo-radio-group {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.requerido-tag {
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: #fef3e2;
+  color: #b35f00;
+  padding: 2px 7px;
+  border-radius: 10px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.modo-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: #7a7a7a;
+  margin: -4px 0 4px;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+}
+
+.btn-registrar-ciudadano {
+  margin-bottom: 4px;
+  width: 100%;
+  border-color: #1f6fae;
+  color: #1f6fae;
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────
+.dialog-actions {
+  padding: 12px 24px;
+}
+
+// ── Éxito ─────────────────────────────────────────────────────────────────
+.exito-container {
+  padding: 32px 32px 24px;
+  text-align: center;
+  min-width: 420px;
+  max-width: 480px;
+
+  .exito-icon-wrap {
+    margin-bottom: 12px;
+  }
+
+  .exito-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #6fae3b;
+  }
+
+  .exito-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0f2a44;
+    margin: 0 0 6px;
+  }
+
+  .exito-subtitle {
+    font-size: 0.9rem;
+    color: #7a7a7a;
+    margin: 0 0 20px;
+  }
+}
+
+.folio-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: #0f2a44;
+  color: white;
+  border-radius: 10px;
+  padding: 14px 24px;
+  margin-bottom: 20px;
+
+  .folio-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+  }
+
+  .folio-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: monospace;
+    letter-spacing: 0.08em;
+  }
+}
+
+.exito-info {
+  background: #f4f6f8;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  text-align: left;
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 5px 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px dashed #dde3ea;
+    }
+  }
+
+  .info-label {
+    font-size: 0.78rem;
+    color: #7a7a7a;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .info-val {
+    font-size: 0.88rem;
+    color: #3a3a3a;
+    text-align: right;
+  }
+
+  .monto-highlight {
+    font-weight: 700;
+    color: #6fae3b;
+    font-size: 0.95rem;
+  }
+}
+
+.exito-hint {
+  font-size: 0.82rem;
+  color: #7a7a7a;
+  background: #fff9e6;
+  border: 1px solid #f0a12a33;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 20px;
+}

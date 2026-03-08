@@ -1,18 +1,27 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../../features/auth/services/auth.service';
+import { WebSocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, MatToolbarModule, MatIconModule],
+  imports: [
+    CommonModule,
+    AsyncPipe,
+    MatToolbarModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent {
   private authService = inject(AuthService);
+  readonly wsService = inject(WebSocketService);
 
   get currentUser() {
     return this.authService.getCurrentUser();

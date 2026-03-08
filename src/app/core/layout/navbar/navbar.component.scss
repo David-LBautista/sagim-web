@@ -90,6 +90,56 @@
   }
 }
 
+// ── Indicador WebSocket ───────────────────────────────────────────────────
+.ws-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  .ws-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &--online {
+    background: rgba(111, 174, 59, 0.2);
+    color: #a8e06a;
+
+    .ws-dot {
+      background: #6fae3b;
+      box-shadow: 0 0 6px #6fae3b;
+      animation: ws-pulse 2s infinite;
+    }
+  }
+
+  &--offline {
+    background: rgba(214, 69, 69, 0.2);
+    color: #f08080;
+
+    .ws-dot {
+      background: #d64545;
+      animation: ws-blink 1s infinite;
+    }
+  }
+}
+
+@keyframes ws-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes ws-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
 // Responsive
 @media (max-width: 768px) {
   .navbar {

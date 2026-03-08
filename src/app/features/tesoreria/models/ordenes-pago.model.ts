@@ -29,6 +29,8 @@ export interface OrdenPagoMetrics {
 export interface OrdenPago {
   _id: string;
   token: string;
+  folio?: string;
+  tipo?: 'INTERNA' | 'EN_LINEA';
   monto: number;
   descripcion: string;
   estado: EstadoOrden;
@@ -57,6 +59,7 @@ export interface GenerarOrdenDto {
   emailCiudadano?: string;
   servicioId?: string;
   nombreContribuyente?: string;
+  folioDocumento?: string;
 }
 
 export interface GenerarOrdenResponse {

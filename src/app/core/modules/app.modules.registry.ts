@@ -2,6 +2,7 @@
 export type AppModulo =
   | 'PRESIDENCIA'
   | 'SECRETARIA_AYUNTAMIENTO'
+  | 'REGISTRO_CIVIL'
   | 'COMUNICACION_SOCIAL'
   | 'UIPPE'
   | 'CONTRALORIA'
@@ -37,12 +38,21 @@ export const APP_MODULES: Record<
       ),
   },
   SECRETARIA_AYUNTAMIENTO: {
-    label: 'Secretaría del Ayuntamiento',
+    label: 'Secretaría',
     route: '/secretaria-ayuntamiento',
     icon: 'assignment',
     loadRoutes: () =>
       import('../../features/secretaria-ayuntamiento/secretaria.routes').then(
         (m) => m.SECRETARIA_ROUTES,
+      ),
+  },
+  REGISTRO_CIVIL: {
+    label: 'Registro Civil',
+    route: '/registro-civil',
+    icon: 'how_to_reg',
+    loadRoutes: () =>
+      import('../../features/registro-civil/registro-civil.routes').then(
+        (m) => m.REGISTRO_CIVIL_ROUTES,
       ),
   },
   COMUNICACION_SOCIAL: {

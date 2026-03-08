@@ -1,0 +1,249 @@
+<!-- ══ Nueva Orden Interna ══════════════════════════════════════════════ -->
+<mat-dialog-content class="dialog-content">
+  <form [formGroup]="form" class="orden-form">
+    <!-- ══ Ciudadano (requerido) ═══════════════════════════════════════ -->
+    <p class="section-label">
+      Vincular ciudadano
+      <span class="requerido-tag">Requerido</span>
+    </p>
+
+    <!-- Radio: modo de captura -->
+    <mat-radio-group
+      class="modo-radio-group"
+      [value]="modoContribuyente()"
+      (change)="onModoChange($event.value)"
+    >
+      <mat-radio-button value="registrado"
+        >Ciudadano registrado</mat-radio-button
+      >
+      <mat-radio-button value="manual">Ingresar manualmente</mat-radio-button>
+    </mat-radio-group>
+
+    <!-- Modo: buscar ciudadano registrado -->
+    @if (modoContribuyente() === "registrado") {
+      @if (!ciudadanoSeleccionado()) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Buscar ciudadano</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            [formControl]="ciudadanoBusquedaCtrl"
+            [matAutocomplete]="autoCiudadano"
+            placeholder="Nombre o CURP"
+          />
+          @if (buscandoCiudadano()) {
+            <mat-spinner matSuffix diameter="18"></mat-spinner>
+          }
+          <mat-autocomplete
+            #autoCiudadano="matAutocomplete"
+            [displayWith]="displayCiudadano"
+            (optionSelected)="onCiudadanoSeleccionado($event.option.value)"
+          >
+            @for (c of ciudadanosFiltrados(); track c._id) {
+              <mat-option [value]="c">
+                <div class="ciudadano-option">
+                  <span class="ciudadano-nombre">
+                    {{ c.nombre }} {{ c.apellidoPaterno }}
+                    {{ c.apellidoMaterno }}
+                  </span>
+                  <span class="ciudadano-curp">{{ c.curp }}</span>
+                </div>
+              </mat-option>
+            }
+            @if (
+              ciudadanosFiltrados().length === 0 &&
+              ciudadanoBusquedaCtrl.value &&
+              ciudadanoBusquedaCtrl.value!.length >= 2 &&
+              !buscandoCiudadano()
+            ) {
+              <mat-option disabled class="no-results-option">
+                Sin resultados
+              </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+        <p class="modo-hint">
+          <mat-icon>info_outline</mat-icon>
+          Busca al ciudadano en el padrón del sistema para vincular su
+          expediente.
+        </p>
+      } @else {
+        <div class="ciudadano-chip">
+          <mat-icon class="chip-icon">person</mat-icon>
+          <div class="chip-info">
+            <span class="chip-nombre">
+              {{ ciudadanoSeleccionado()!.nombre }}
+              {{ ciudadanoSeleccionado()!.apellidoPaterno }}
+              {{ ciudadanoSeleccionado()!.apellidoMaterno }}
+            </span>
+            <span class="chip-curp">{{ ciudadanoSeleccionado()!.curp }}</span>
+          </div>
+          <button
+            mat-icon-button
+            type="button"
+            class="chip-clear"
+            (click)="limpiarCiudadano()"
+            matTooltip="Cambiar ciudadano"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+    }
+
+    <!-- Modo: nombre manual -->
+    @if (modoContribuyente() === "manual") {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre del contribuyente</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
+        <input
+          matInput
+          formControlName="nombreManual"
+          placeholder="Ej. Juan Pérez García"
+          autocomplete="off"
+        />
+        <mat-hint>Se registrará sin vínculo a un ciudadano registrado</mat-hint>
+      </mat-form-field>
+    }
+
+    <mat-divider class="section-divider"></mat-divider>
+
+    <!-- ══ Servicio del catálogo (opcional) ═════════════════════════ -->
+    <p class="section-label">Datos del pago</p>
+
+    @if (!servicioSeleccionado()) {
+      <mat-form-field
+        appearance="outline"
+        class="full-width"
+        style="margin-bottom: 0.5rem"
+      >
+        <mat-label>Buscar servicio del catálogo</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [formControl]="servicioBusquedaCtrl"
+          [matAutocomplete]="autoServicio"
+          placeholder="Ej. acta de nacimiento, predial..."
+        />
+        @if (buscandoServicio()) {
+          <mat-spinner matSuffix diameter="18"></mat-spinner>
+        }
+        <mat-autocomplete
+          #autoServicio="matAutocomplete"
+          [displayWith]="displayServicio"
+          (optionSelected)="onServicioSeleccionado($event.option.value)"
+        >
+          @for (s of serviciosFiltrados(); track s._id) {
+            <mat-option [value]="s">
+              <div class="servicio-option">
+                <span class="servicio-nombre">{{ s.nombre }}</span>
+                <span class="servicio-meta">
+                  {{ s.categoria }} ·
+                  @if (s.montoVariable) {
+                    Monto variable
+                  } @else {
+                    ${{ s.costo | number: "1.2-2" }}
+                  }
+                </span>
+              </div>
+            </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    } @else {
+      <div class="servicio-chip">
+        <div class="servicio-chip-info">
+          <span class="servicio-chip-nombre">{{
+            servicioSeleccionado()!.nombre
+          }}</span>
+          <span class="servicio-chip-meta">
+            {{ servicioSeleccionado()!.categoria }}
+            @if (!servicioSeleccionado()!.montoVariable) {
+              · ${{ servicioSeleccionado()!.costo | number: "1.2-2" }}
+            }
+          </span>
+        </div>
+        <button
+          mat-icon-button
+          type="button"
+          (click)="limpiarServicio()"
+          matTooltip="Quitar servicio"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+
+    <!-- Descripción (siempre bloqueada, pre-rellena desde el servicio) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descripción del trámite</mat-label>
+      <textarea
+        matInput
+        formControlName="descripcion"
+        rows="2"
+        readonly
+        placeholder="Se rellena al seleccionar un servicio"
+      ></textarea>
+    </mat-form-field>
+
+    <!-- Monto + Área responsable (siempre visibles) -->
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="monto-field">
+        <mat-label>Monto</mat-label>
+        <span matPrefix>$&nbsp;</span>
+        <input
+          matInput
+          type="number"
+          formControlName="monto"
+          min="1"
+          placeholder="0"
+        />
+        @if (
+          form.get("monto")?.hasError("required") && form.get("monto")?.touched
+        ) {
+          <mat-error>El monto es requerido</mat-error>
+        }
+        @if (form.get("monto")?.hasError("min")) {
+          <mat-error>Debe ser mayor a $0</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="area-field">
+        <mat-label>Área responsable</mat-label>
+        <input matInput [value]="dialogData.areaResponsable" readonly />
+      </mat-form-field>
+    </div>
+
+    <!-- Folio de documento (opcional) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Folio del documento</mat-label>
+      <mat-icon matPrefix>tag</mat-icon>
+      <input
+        matInput
+        formControlName="folioDocumento"
+        placeholder="Ej. RC-2026-00123"
+        autocomplete="off"
+      />
+      <mat-hint
+        >Opcional — vincula un folio de expediente con la orden</mat-hint
+      >
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button type="button" (click)="onCerrar()">Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="!formValido || submitting()"
+    (click)="onGenerarOrden()"
+  >
+    @if (submitting()) {
+      <mat-spinner diameter="18" style="display: inline-flex"></mat-spinner>
+    } @else {
+      <mat-icon>bolt</mat-icon>
+    }
+    {{ submitting() ? "Generando..." : "Generar Orden" }}
+  </button>
+</mat-dialog-actions>

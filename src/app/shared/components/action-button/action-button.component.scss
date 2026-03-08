@@ -1,15 +1,51 @@
+:host {
+  display: inline-flex;
+}
+
 .action-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--sagim-spacing-xs);
+  gap: 4px;
+  height: 44px;
+  border-radius: 8px !important;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 0 18px !important;
+
+  // Color primary → azul institucional oscuro
+  &.mat-primary {
+    background-color: #0f2a44 !important;
+    color: #ffffff !important;
+
+    mat-icon { color: #ffffff; }
+
+    .btn-spinner ::ng-deep circle { stroke: #ffffff !important; }
+
+    &:disabled { opacity: 0.52; }
+  }
+
+  // Color accent → azul digital
+  &.mat-accent {
+    background-color: #1f6fae !important;
+    color: #ffffff !important;
+
+    mat-icon { color: #ffffff; }
+
+    .btn-spinner ::ng-deep circle { stroke: #ffffff !important; }
+
+    &:disabled { opacity: 0.52; }
+  }
 
   mat-icon {
-    margin-right: var(--sagim-spacing-xs);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-right: 2px;
   }
 
   .btn-spinner {
     display: inline-flex;
-    margin-right: var(--sagim-spacing-xs);
+    margin-right: 4px;
     ::ng-deep circle { stroke: currentColor; }
   }
 }

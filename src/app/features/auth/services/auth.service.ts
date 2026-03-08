@@ -23,6 +23,7 @@ import {
   APP_MODULES,
   AppModulo,
 } from '../../../core/modules/app.modules.registry';
+import { WebSocketService } from '../../../core/services/websocket.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +31,7 @@ import {
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private wsService = inject(WebSocketService);
 
   private readonly TOKEN_KEY = 'sagim_access_token';
   private readonly REFRESH_TOKEN_KEY = 'sagim_refresh_token';
@@ -49,7 +51,22 @@ export class AuthService {
   );
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor() {}
+  constructor() {
+    this.reconnectWsIfAuthenticated();
+  }
+
+  /**
+   * Si hay sesión activa en localStorage al arrancar la app (ej. recarga de página),
+   * reconecta el WebSocket sin necesidad de hacer login de nuevo.
+   */
+  private reconnectWsIfAuthenticated(): void {
+    const token = this.getAccessToken();
+    const user = this.getUserFromStorage();
+    if (token && user?.municipioId) {
+      console.log('[Auth] Sesión existente detectada — reconectando WS');
+      this.wsService.connect(user.municipioId, token);
+    }
+  }
 
   /**
    * Login de usuario
@@ -126,6 +143,14 @@ export class AuthService {
 
     this.currentUserSubject.next(authResult.user);
     this.isAuthenticatedSubject.next(true);
+
+    // Conectar WebSocket
+    if (authResult.user.municipioId) {
+      this.wsService.connect(
+        authResult.user.municipioId,
+        authResult.accessToken,
+      );
+    }
   }
 
   /**
@@ -141,6 +166,7 @@ export class AuthService {
 
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
+    this.wsService.disconnect();
   }
 
   /**
