@@ -29,7 +29,7 @@ export class CajaService {
 
   /** Búsqueda de ciudadanos con debounce en frontend */
   buscarCiudadanos(busqueda: string): Observable<CiudadanoSearchResult[]> {
-    const url = `${environment.apiUrl}${ApiEndpoints.CIUDADANOS_SEARCH}`;
+    const url = `${environment.apiUrl}${ApiEndpoints.CIUDADANOS_LIST}`;
     const params = new HttpParams().set('busqueda', busqueda);
     return this.http.get<CiudadanoSearchResult[]>(url, { params });
   }

@@ -211,8 +211,25 @@ export class SidebarComponent implements OnInit {
             });
           }
         });
+
       }
     });
+
+    // Padrón de ciudadanos: solo visible para ADMIN_MUNICIPIO (ítem fijo, sin módulo)
+    if (this.authService.getRol() === 'ADMIN_MUNICIPIO') {
+      // Insertar header de sección si no hay ningún ítem de Administración visible
+      const yaHayHeader = items.some(
+        (i) => i.isHeader && i.label === 'Administración del Sistema',
+      );
+      if (!yaHayHeader) {
+        items.push({ label: 'Administración del Sistema', isHeader: true });
+      }
+      items.push({
+        icon: 'people',
+        label: 'Padrón de Ciudadanos',
+        route: '/municipios/padron',
+      });
+    }
 
     this.menuItems = items;
   }

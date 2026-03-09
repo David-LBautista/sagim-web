@@ -1,0 +1,473 @@
+<!-- ══ Onboarding Layout ══════════════════════════════════════════════════════ -->
+<div class="ob-shell">
+  <!-- ── Encabezado ─────────────────────────────────────────────────────── -->
+  <header class="ob-header">
+    <div class="ob-header-inner">
+      <img
+        src="/assets/logo/sagim-logo.png"
+        alt="SAGIM"
+        class="ob-logo"
+        onerror="this.style.display = 'none'"
+      />
+      <span class="ob-brand">SAGIM</span>
+    </div>
+  </header>
+
+  <!-- ── Loading inicial ────────────────────────────────────────────────── -->
+  @if (cargando()) {
+    <div class="ob-loading">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Cargando configuración…</p>
+    </div>
+  } @else {
+    <!-- ── Barra de progreso ────────────────────────────────────────────── -->
+    @if (paso() < 5) {
+      <div class="ob-progress">
+        @for (step of [1, 2, 3, 4]; track step) {
+          <div
+            class="ob-step"
+            [class.ob-step--completed]="stepState(step) === 'completed'"
+            [class.ob-step--current]="stepState(step) === 'current'"
+          >
+            <div class="ob-step-circle">
+              @if (stepState(step) === "completed") {
+                <mat-icon>check</mat-icon>
+              } @else {
+                <span>{{ step }}</span>
+              }
+            </div>
+            <span class="ob-step-label">
+              @switch (step) {
+                @case (1) {
+                  Municipio
+                }
+                @case (2) {
+                  Precios
+                }
+                @case (3) {
+                  Equipo
+                }
+                @case (4) {
+                  Padrón
+                }
+              }
+            </span>
+          </div>
+          @if (step < 4) {
+            <div
+              class="ob-step-line"
+              [class.ob-step-line--done]="paso() > step"
+            ></div>
+          }
+        }
+      </div>
+    }
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         PASO 1 — Datos del municipio
+    ═════════════════════════════════════════════════════════════════════════ -->
+    @if (paso() === 1) {
+      <div class="ob-card">
+        <h2 class="ob-card-title">Datos del municipio</h2>
+        <p class="ob-card-subtitle">
+          Verifica que la información de tu municipio sea correcta
+        </p>
+        <mat-divider class="ob-divider"></mat-divider>
+
+        <div class="muni-display">
+          <div class="muni-display-left">
+            @if (state()?.municipio?.logoUrl) {
+              <img
+                [src]="state()!.municipio.logoUrl"
+                alt="Escudo"
+                class="muni-logo"
+              />
+            } @else {
+              <div class="muni-logo-placeholder">
+                <mat-icon>account_balance</mat-icon>
+              </div>
+            }
+          </div>
+          <div class="muni-display-right">
+            <h3 class="muni-nombre">{{ state()?.municipio?.nombre }}</h3>
+            <p class="muni-estado">
+              {{
+                state()?.municipio?.estadoId?.nombre ??
+                  state()?.municipio?.estado ??
+                  "—"
+              }}
+              @if (state()?.municipio?.poblacion) {
+                &nbsp;·&nbsp;
+                {{ state()!.municipio.poblacion! | number }} habitantes
+              }
+            </p>
+            <mat-divider class="muni-inner-divider"></mat-divider>
+            <div class="muni-fields">
+              <div class="muni-field">
+                <span class="muni-field-label">Email de contacto</span>
+                <span class="muni-field-value">{{
+                  state()?.municipio?.contactoEmail || "—"
+                }}</span>
+              </div>
+              <div class="muni-field">
+                <span class="muni-field-label">Teléfono</span>
+                <span class="muni-field-value">{{
+                  state()?.municipio?.contactoTelefono || "—"
+                }}</span>
+              </div>
+              <div class="muni-field">
+                <span class="muni-field-label">Dirección</span>
+                <span class="muni-field-value">{{
+                  state()?.municipio?.direccion || "—"
+                }}</span>
+              </div>
+              <div class="muni-field">
+                <span class="muni-field-label">% de contribución</span>
+                <span class="muni-field-value">
+                  {{
+                    state()?.municipio?.porcentajeContribucion != null
+                      ? state()!.municipio.porcentajeContribucion + "%"
+                      : "—"
+                  }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <label class="equipo-confirm">
+          <mat-checkbox
+            color="primary"
+            [checked]="datosConfirmado()"
+            (change)="datosConfirmado.set($event.checked)"
+          >
+            Los datos de mi municipio son correctos
+          </mat-checkbox>
+        </label>
+
+        <div class="ob-card-footer">
+          <span></span>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onContinuarDatos()"
+            [disabled]="!datosConfirmado() || datosContinuando()"
+          >
+            @if (datosContinuando()) {
+              <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
+              Guardando…
+            } @else {
+              <span class="btn-label"
+                >Continuar <mat-icon>arrow_forward</mat-icon></span
+              >
+            }
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         PASO 2 — Catálogo de servicios
+    ═════════════════════════════════════════════════════════════════════════ -->
+    @if (paso() === 2) {
+      <div class="ob-card">
+        <h2 class="ob-card-title">Catálogo de servicios</h2>
+        <p class="ob-card-subtitle">
+          Verifica que los precios sean correctos. Puedes ajustarlos ahora o en
+          cualquier momento desde Tesorería.
+        </p>
+        <mat-divider class="ob-divider"></mat-divider>
+
+        @if (cargandoServicios()) {
+          <div class="ob-loading-sm">
+            <mat-spinner diameter="32"></mat-spinner>
+          </div>
+        } @else {
+          <div class="catalogo-list">
+            @for (grupo of catalogoGrupos(); track grupo.nombre) {
+              <div class="catalogo-grupo">
+                <button
+                  class="catalogo-grupo-header"
+                  type="button"
+                  (click)="toggleCategoria(grupo)"
+                >
+                  <span class="catalogo-grupo-nombre">{{ grupo.nombre }}</span>
+                  <mat-icon class="catalogo-toggle-icon">
+                    {{ grupo.expanded ? "expand_less" : "expand_more" }}
+                  </mat-icon>
+                </button>
+                @if (grupo.expanded) {
+                  <div class="catalogo-rows">
+                    @for (row of grupo.servicios; track row.servicio._id) {
+                      <div class="catalogo-row">
+                        <span class="catalogo-row-name">{{
+                          row.servicio.nombre
+                        }}</span>
+
+                        @if (row.editing) {
+                          <!-- Editar precio inline -->
+                          <div class="inline-edit">
+                            <span class="inline-edit-prefix">$</span>
+                            <input
+                              [id]="'costo-' + row.servicio.clave"
+                              type="number"
+                              class="inline-edit-input"
+                              [(ngModel)]="row.editCosto"
+                              (keydown)="onKeydown($event, row)"
+                              (blur)="onGuardarPrecio(row)"
+                              min="0"
+                            />
+                            @if (row.saving) {
+                              <mat-spinner diameter="16"></mat-spinner>
+                            } @else {
+                              <button
+                                mat-icon-button
+                                class="inline-btn"
+                                (click)="onGuardarPrecio(row)"
+                                matTooltip="Guardar"
+                              >
+                                <mat-icon class="icon-sm">check</mat-icon>
+                              </button>
+                              <button
+                                mat-icon-button
+                                class="inline-btn"
+                                (click)="onCancelarPrecio(row)"
+                                matTooltip="Cancelar"
+                              >
+                                <mat-icon class="icon-sm">close</mat-icon>
+                              </button>
+                            }
+                          </div>
+                        } @else {
+                          <!-- Mostrar precio -->
+                          <span class="catalogo-row-costo">
+                            @if (row.servicio.montoVariable) {
+                              Monto variable
+                            } @else {
+                              ${{ row.servicio.costo | number: "1.2-2" }}
+                            }
+                          </span>
+                          <button
+                            mat-icon-button
+                            class="btn-edit-precio"
+                            (click)="onEditarPrecio(row)"
+                            matTooltip="Editar precio"
+                          >
+                            <mat-icon class="icon-sm">edit</mat-icon>
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <label class="equipo-confirm">
+          <mat-checkbox
+            color="primary"
+            [checked]="serviciosConfirmado()"
+            (change)="serviciosConfirmado.set($event.checked)"
+          >
+            Los precios del catálogo son correctos
+          </mat-checkbox>
+        </label>
+
+        <div class="ob-card-footer">
+          <span></span>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onContinuarServicios()"
+            [disabled]="
+              !serviciosConfirmado() ||
+              serviciosContinuando() ||
+              cargandoServicios()
+            "
+          >
+            @if (serviciosContinuando()) {
+              <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
+              Guardando…
+            } @else {
+              <span class="btn-label"
+                >Continuar <mat-icon>arrow_forward</mat-icon></span
+              >
+            }
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         PASO 3 — Equipo
+    ═════════════════════════════════════════════════════════════════════════ -->
+    @if (paso() === 3) {
+      <div class="ob-card">
+        <h2 class="ob-card-title">Equipo</h2>
+        <p class="ob-card-subtitle">
+          Gestiona a las personas que usarán el sistema desde la sección de
+          usuarios.
+        </p>
+        <mat-divider class="ob-divider"></mat-divider>
+
+        <div class="equipo-info">
+          <mat-icon class="equipo-info-icon">info_outline</mat-icon>
+          <p>
+            Asegúrate de dar de alta a tus operadores en la sección de
+            <strong>Usuarios</strong> una vez que hayas completado la
+            configuración inicial.
+          </p>
+        </div>
+
+        <label class="equipo-confirm">
+          <mat-checkbox
+            color="primary"
+            [checked]="equipoConfirmado()"
+            (change)="equipoConfirmado.set($event.checked)"
+          >
+            Entendido, daré de alta a mis operadores en la sección de Usuarios
+          </mat-checkbox>
+        </label>
+
+        <div class="ob-card-footer">
+          <span></span>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onContinuarEquipo()"
+            [disabled]="!equipoConfirmado() || equipoContinuando()"
+          >
+            @if (equipoContinuando()) {
+              <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
+              Guardando…
+            } @else {
+              <span class="btn-label"
+                >Continuar <mat-icon>arrow_forward</mat-icon></span
+              >
+            }
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         PASO 4 — Padrón
+    ═════════════════════════════════════════════════════════════════════════ -->
+    @if (paso() === 4) {
+      <div class="ob-card">
+        <h2 class="ob-card-title">Padrón de ciudadanos</h2>
+        <p class="ob-card-subtitle">Importa tu padrón de ciudadanos</p>
+        <mat-divider class="ob-divider"></mat-divider>
+
+        <div class="padron-opciones">
+          <div class="padron-opcion">
+            <button mat-stroked-button color="primary" class="btn-importar">
+              <mat-icon>upload_file</mat-icon>
+              Importar padrón
+            </button>
+            <p class="padron-opcion-hint">
+              Podrás importarlo desde un documento Excel
+            </p>
+          </div>
+
+          <div class="padron-separator"><span>o</span></div>
+
+          <div class="padron-opcion">
+            <button
+              mat-stroked-button
+              class="btn-saltar"
+              (click)="onSaltarPadron()"
+              [disabled]="padronContinuando()"
+            >
+              @if (padronContinuando()) {
+                <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
+                Continuando…
+              } @else {
+                Saltar
+              }
+            </button>
+            <p class="padron-opcion-hint">
+              Podrás importar tu padrón en cualquier momento desde
+              Administración &rsaquo; Ciudadanos o registrarlos manualmente
+            </p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         PASO FINAL — Todo listo
+    ═════════════════════════════════════════════════════════════════════════ -->
+    @if (paso() === 5) {
+      <div class="ob-card ob-card--final">
+        <div class="final-emoji">🎉</div>
+        <h2 class="ob-card-title">¡Tu sistema está listo!</h2>
+
+        <div class="final-checks">
+          <div
+            class="final-check"
+            [class.final-check--done]="state()?.steps?.datos"
+          >
+            <span class="final-check-dot"></span>
+            <span>Datos del municipio verificados.</span>
+          </div>
+          <div
+            class="final-check"
+            [class.final-check--done]="state()?.steps?.servicios"
+          >
+            <span class="final-check-dot"></span>
+            <span>Catálogo de servicios revisado.</span>
+          </div>
+          <div
+            class="final-check"
+            [class.final-check--done]="state()?.steps?.equipo"
+          >
+            <span class="final-check-dot"></span>
+            <span>Comienza a registrar tu personal.</span>
+          </div>
+          <div
+            class="final-check"
+            [class.final-check--done]="state()?.steps?.padron"
+          >
+            <span class="final-check-dot"></span>
+            <span>
+              @if (state()?.steps?.padron) {
+                Padrón importado.
+              } @else {
+                Puedes importar tu padrón de ciudadanos en cualquier momento.
+              }
+            </span>
+          </div>
+        </div>
+
+        @if (modulosHabilitadosLabels().length > 0) {
+          <div class="final-modulos">
+            <p class="final-modulos-label">Módulos habilitados:</p>
+            <div class="final-chips">
+              @for (m of modulosHabilitadosLabels(); track m) {
+                <span class="modulo-chip">{{ m }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        <button
+          mat-raised-button
+          color="primary"
+          class="btn-ir-sistema"
+          (click)="onIrAlSistema()"
+          [disabled]="finalizando()"
+        >
+          @if (finalizando()) {
+            <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
+            Finalizando…
+          } @else {
+            Ir al sistema
+          }
+        </button>
+      </div>
+    }
+  }
+</div>

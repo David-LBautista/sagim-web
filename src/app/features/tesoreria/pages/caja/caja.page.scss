@@ -147,36 +147,19 @@ $radius: 10px;
 
 .servicio-option {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  font-size: 0.875rem;
-
-  .servicio-info {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 0;
-  }
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0;
 
   .servicio-nombre {
+    font-size: 0.875rem;
     font-weight: 500;
     color: $text-dark;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
-  .servicio-clave {
+  .servicio-meta {
     font-size: 0.75rem;
     color: $text-mid;
-    background: $bg-light;
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    font-family: monospace;
-    white-space: nowrap;
-    flex-shrink: 0;
   }
 
   .servicio-costo {
@@ -251,13 +234,6 @@ $radius: 10px;
     color: $text-mid;
     font-family: monospace;
   }
-}
-
-.btn-registrar-ciudadano {
-  color: $secondary;
-  border-color: $secondary;
-  font-size: 0.85rem;
-  width: 100%;
 }
 
 .ciudadano-selected-chip {

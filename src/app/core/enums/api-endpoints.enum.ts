@@ -19,6 +19,16 @@ export enum ApiEndpoints {
   MUNICIPIOS_DELETE = '/api/v1/municipios/:id',
 
   // ========================================
+  // ONBOARDING ENDPOINTS
+  // ========================================
+  ONBOARDING_GET = '/api/v1/municipios/:id/onboarding',
+  ONBOARDING_DATOS = '/api/v1/municipios/:id/onboarding/datos',
+  ONBOARDING_SERVICIOS = '/api/v1/municipios/:id/onboarding/servicios',
+  ONBOARDING_EQUIPO = '/api/v1/municipios/:id/onboarding/equipo',
+  ONBOARDING_PADRON = '/api/v1/municipios/:id/onboarding/padron',
+  ONBOARDING_COMPLETAR = '/api/v1/municipios/:id/onboarding/completar',
+
+  // ========================================
   // CATÁLOGOS ENDPOINTS
   // ========================================
   CATALOGOS_ESTADOS = '/api/v1/catalogos/estados',
@@ -126,8 +136,14 @@ export enum ApiEndpoints {
   // ========================================
   // CIUDADANOS
   // ========================================
-  CIUDADANOS_SEARCH = '/api/v1/ciudadanos',
+  CIUDADANOS_LIST = '/api/v1/ciudadanos',
   CIUDADANOS_CREATE = '/api/v1/ciudadanos',
+  CIUDADANOS_ESTADISTICAS = '/api/v1/ciudadanos/estadisticas',
+  CIUDADANOS_EXPORTAR = '/api/v1/ciudadanos/exportar',
+  CIUDADANOS_IMPORTAR = '/api/v1/ciudadanos/importar',
+  CIUDADANOS_GET = '/api/v1/ciudadanos/:id',
+  CIUDADANOS_UPDATE = '/api/v1/ciudadanos/:id',
+  CIUDADANOS_DESACTIVAR = '/api/v1/ciudadanos/:id/desactivar',
 
   // ========================================
   // DASHBOARD EJECUTIVO — TESORERÍA

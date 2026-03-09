@@ -1,0 +1,122 @@
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon>person_add</mat-icon>
+  Agregar operador
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-grid">
+    <!-- Nombre completo -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre completo</mat-label>
+      <mat-icon matPrefix>person</mat-icon>
+      <input
+        matInput
+        formControlName="nombre"
+        placeholder="Ej. Carlos Hernández González"
+        autocomplete="off"
+      />
+      @if (
+        form.get("nombre")?.hasError("required") && form.get("nombre")?.touched
+      ) {
+        <mat-error>Requerido</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <mat-icon matPrefix>email</mat-icon>
+      <input
+        matInput
+        formControlName="email"
+        placeholder="operador@municipio.gob.mx"
+        autocomplete="off"
+      />
+      @if (
+        form.get("email")?.hasError("required") && form.get("email")?.touched
+      ) {
+        <mat-error>Requerido</mat-error>
+      }
+      @if (form.get("email")?.hasError("email") && form.get("email")?.touched) {
+        <mat-error>Email inválido</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Contraseña -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contraseña temporal</mat-label>
+      <mat-icon matPrefix>lock</mat-icon>
+      <input
+        matInput
+        formControlName="password"
+        [type]="mostrarPassword() ? 'text' : 'password'"
+        placeholder="Mínimo 6 caracteres"
+        autocomplete="new-password"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="mostrarPassword.set(!mostrarPassword())"
+      >
+        <mat-icon>{{
+          mostrarPassword() ? "visibility_off" : "visibility"
+        }}</mat-icon>
+      </button>
+      @if (
+        form.get("password")?.hasError("required") &&
+        form.get("password")?.touched
+      ) {
+        <mat-error>Requerido</mat-error>
+      }
+      @if (
+        form.get("password")?.hasError("minlength") &&
+        form.get("password")?.touched
+      ) {
+        <mat-error>Mínimo 6 caracteres</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Módulo asignado -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Módulo asignado</mat-label>
+      <mat-icon matPrefix>apps</mat-icon>
+      <mat-select formControlName="moduloId">
+        @for (m of modulos(); track m._id) {
+          <mat-option [value]="m._id">{{ m.label }}</mat-option>
+        }
+      </mat-select>
+      @if (
+        form.get("moduloId")?.hasError("required") &&
+        form.get("moduloId")?.touched
+      ) {
+        <mat-error>Requerido</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-button
+    type="button"
+    (click)="onCancelar()"
+    [disabled]="loading()"
+  >
+    Cancelar
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="onGuardar()"
+    [disabled]="loading()"
+  >
+    @if (loading()) {
+      <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
+      Guardando...
+    } @else {
+      Agregar operador
+    }
+  </button>
+</mat-dialog-actions>

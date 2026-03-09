@@ -35,7 +35,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatDialog } from '@angular/material/dialog';
 
 import { CajaService } from '../../services/caja.service';
 import { OrdenesInternasService } from '../../services/ordenes-internas.service';
@@ -55,7 +54,6 @@ import {
   nombreCiudadano,
   CobrarOrdenDto,
 } from '../../models/ordenes-internas.model';
-import { CiudadanoFormDialogComponent } from '../../components/ciudadano-form-dialog/ciudadano-form-dialog.component';
 import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { FolioTagComponent } from '../../../../shared/components/folio-tag/folio-tag.component';
 import { WebSocketService } from '../../../../core/services/websocket.service';
@@ -89,7 +87,6 @@ export class CajaPage implements OnInit, OnDestroy {
   private ordenesService = inject(OrdenesInternasService);
   private authService = inject(AuthService);
   private notification = inject(NotificationService);
-  private dialog = inject(MatDialog);
   private fb = inject(FormBuilder);
   private wsService = inject(WebSocketService);
   private destroy$ = new Subject<void>();
@@ -107,7 +104,6 @@ export class CajaPage implements OnInit, OnDestroy {
   ciudadanosFiltrados = signal<CiudadanoSearchResult[]>([]);
   ciudadanoSeleccionado = signal<CiudadanoSearchResult | null>(null);
   buscandoCiudadano = signal(false);
-  mostrarRegistrarCiudadano = signal(false);
   modoContribuyente = signal<'registrado' | 'manual'>('registrado');
 
   // Tab "Cobrar orden"
@@ -256,7 +252,6 @@ export class CajaPage implements OnInit, OnDestroy {
         switchMap((valor) => {
           if (typeof valor !== 'string' || valor.length < 3) {
             this.ciudadanosFiltrados.set([]);
-            this.mostrarRegistrarCiudadano.set(false);
             return of([]);
           }
           this.buscandoCiudadano.set(true);
@@ -266,10 +261,6 @@ export class CajaPage implements OnInit, OnDestroy {
       .subscribe({
         next: (resultados) => {
           this.ciudadanosFiltrados.set(resultados);
-          this.mostrarRegistrarCiudadano.set(
-            resultados.length === 0 &&
-              (this.ciudadanoBusquedaCtrl.value?.length ?? 0) >= 3,
-          );
           this.buscandoCiudadano.set(false);
         },
         error: () => this.buscandoCiudadano.set(false),
@@ -332,7 +323,6 @@ export class CajaPage implements OnInit, OnDestroy {
       emitEvent: false,
     });
     this.ciudadanosFiltrados.set([]);
-    this.mostrarRegistrarCiudadano.set(false);
   }
 
   displayCiudadano(c: CiudadanoSearchResult | null): string {
@@ -343,24 +333,12 @@ export class CajaPage implements OnInit, OnDestroy {
     this.ciudadanoSeleccionado.set(null);
     this.ciudadanoBusquedaCtrl.setValue('', { emitEvent: false });
     this.ciudadanosFiltrados.set([]);
-    this.mostrarRegistrarCiudadano.set(false);
   }
 
   onModoContribuyenteChange(modo: 'registrado' | 'manual'): void {
     this.modoContribuyente.set(modo);
     this.limpiarCiudadano();
     this.form.get('nombreLibre')!.setValue('');
-  }
-
-  onRegistrarCiudadanoNuevo(): void {
-    const ref = this.dialog.open(CiudadanoFormDialogComponent, {
-      width: '440px',
-      maxWidth: '95vw',
-      disableClose: true,
-    });
-    ref.afterClosed().subscribe((c: CiudadanoSearchResult | null) => {
-      if (c) this.onCiudadanoSeleccionado(c);
-    });
   }
 
   // ── Validación del botón cobrar ──────────────────────────────────────────
@@ -452,7 +430,6 @@ export class CajaPage implements OnInit, OnDestroy {
     });
     this.form.get('monto')!.disable();
     this.ciudadanosFiltrados.set([]);
-    this.mostrarRegistrarCiudadano.set(false);
   }
 
   // ── Tab: Cobrar orden ────────────────────────────────────────────────────

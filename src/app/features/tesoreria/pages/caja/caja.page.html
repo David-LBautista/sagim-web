@@ -106,12 +106,6 @@
               </div>
             }
 
-            @if (mostrarRegistrarCiudadano()) {
-              <button mat-stroked-button class="btn-registrar-ciudadano" (click)="onRegistrarCiudadanoNuevo()">
-                <mat-icon>person_add</mat-icon>
-                Registrar nuevo ciudadano
-              </button>
-            }
           }
 
           @if (modoContribuyente() === 'manual') {
@@ -152,12 +146,14 @@
                 @for (s of serviciosFiltrados(); track s._id) {
                   <mat-option [value]="s">
                     <div class="servicio-option">
-                      <div class="servicio-info">
-                        <span class="servicio-nombre">{{ s.nombre }}</span>
-                        <span class="servicio-clave">{{ s.clave }}</span>
-                      </div>
-                      <span class="servicio-costo">
-                        @if (s.montoVariable) { Variable } @else { MXN {{ formatCurrency(s.costo) }} }
+                      <span class="servicio-nombre">{{ s.nombre }}</span>
+                      <span class="servicio-meta">
+                        {{ s.categoria }} ·
+                        @if (s.montoVariable) {
+                          Monto variable
+                        } @else {
+                          ${{ s.costo | number: '1.2-2' }}
+                        }
                       </span>
                     </div>
                   </mat-option>

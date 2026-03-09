@@ -13,8 +13,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
-import { LoginRequest } from '../../models/auth.model';
+import { LoginRequest, UserRole } from '../../models/auth.model';
 import { NotificationService } from '../../../../shared/services/notification.service';
+import { OnboardingService } from '../../../onboarding/services/onboarding.service';
 
 @Component({
   selector: 'app-login',
@@ -36,6 +37,7 @@ export class LoginPage {
   private router = inject(Router);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
+  private onboardingService = inject(OnboardingService);
 
   loginForm: FormGroup;
   hidePassword = true;
@@ -64,9 +66,29 @@ export class LoginPage {
             `¡Bienvenido ${response.user.nombre}! Inicio de sesión exitoso.`,
           );
 
-          // Redirigir a la ruta del primer módulo del usuario
-          const landingRoute = this.authService.getLandingRoute();
-          this.router.navigateByUrl(landingRoute);
+          const { rol, municipioId } = response.user;
+          const esAdmin =
+            rol === UserRole.ADMIN || rol === UserRole.ADMIN_MUNICIPIO;
+
+          // Solo los admins con municipio asignado pasan por el flujo de onboarding
+          if (esAdmin && municipioId) {
+            this.onboardingService.getState(municipioId).subscribe({
+              next: (state) => {
+                if (!state.onboardingCompletado) {
+                  this.router.navigate(['/onboarding']);
+                } else {
+                  this.router.navigateByUrl(this.authService.getLandingRoute());
+                }
+              },
+              error: () => {
+                // Si el endpoint falla, no bloqueamos el acceso — navegamos normal
+                this.router.navigateByUrl(this.authService.getLandingRoute());
+              },
+            });
+          } else {
+            // Cualquier otro rol: directo al landing route del módulo
+            this.router.navigateByUrl(this.authService.getLandingRoute());
+          }
         },
         error: (error) => {
           this.isLoading = false;

@@ -1,0 +1,28 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f2a44;
+
+  mat-icon {
+    color: #1f6fae;
+  }
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.spinner-inline {
+  display: inline-flex;
+  margin-right: 6px;
+}

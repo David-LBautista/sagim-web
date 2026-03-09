@@ -1,0 +1,204 @@
+<h2 mat-dialog-title>
+  {{ esEdicion ? "Editar ciudadano" : "Nuevo ciudadano" }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="ciudadano-form">
+    <!-- Sección: Información personal -->
+    <p class="form-section-title">Información personal</p>
+
+    <div class="form-grid two-col">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>CURP</mat-label>
+        <input
+          matInput
+          formControlName="curp"
+          placeholder="PEPJ900101HVERRN09"
+          maxlength="18"
+          style="text-transform: uppercase"
+        />
+        @if (esEdicion) {
+          <mat-icon
+            matSuffix
+            matTooltip="La CURP no puede modificarse"
+            class="lock-icon"
+            >lock</mat-icon
+          >
+        }
+        @if (
+          form.get("curp")?.hasError("required") && form.get("curp")?.touched
+        ) {
+          <mat-error>La CURP es requerida</mat-error>
+        } @else if (
+          form.get("curp")?.hasError("minlength") ||
+          form.get("curp")?.hasError("maxlength")
+        ) {
+          <mat-error>La CURP debe tener 18 caracteres</mat-error>
+        } @else if (form.get("curp")?.hasError("pattern")) {
+          <mat-error>CURP inválida (solo mayúsculas y números)</mat-error>
+        } @else if (form.get("curp")?.hasError("duplicado")) {
+          <mat-error>La CURP ya está registrada en este municipio</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Fecha de nacimiento</mat-label>
+        <input matInput type="date" formControlName="fechaNacimiento" />
+        @if (
+          form.get("fechaNacimiento")?.hasError("required") &&
+          form.get("fechaNacimiento")?.touched
+        ) {
+          <mat-error>La fecha de nacimiento es requerida</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="form-grid three-col">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Nombre(s)</mat-label>
+        <input matInput formControlName="nombre" />
+        @if (
+          form.get("nombre")?.hasError("required") &&
+          form.get("nombre")?.touched
+        ) {
+          <mat-error>El nombre es requerido</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Apellido paterno</mat-label>
+        <input matInput formControlName="apellidoPaterno" />
+        @if (
+          form.get("apellidoPaterno")?.hasError("required") &&
+          form.get("apellidoPaterno")?.touched
+        ) {
+          <mat-error>Requerido</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Apellido materno</mat-label>
+        <input matInput formControlName="apellidoMaterno" />
+        @if (
+          form.get("apellidoMaterno")?.hasError("required") &&
+          form.get("apellidoMaterno")?.touched
+        ) {
+          <mat-error>Requerido</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="form-grid two-col">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Teléfono</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
+        <input matInput formControlName="telefono" type="tel" maxlength="10" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Correo electrónico</mat-label>
+        <mat-icon matPrefix>email</mat-icon>
+        <input matInput formControlName="email" type="email" />
+        @if (
+          form.get("email")?.hasError("email") && form.get("email")?.touched
+        ) {
+          <mat-error>Correo inválido</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Sección: Dirección -->
+    <p class="form-section-title">Dirección</p>
+
+    <div class="form-grid three-col">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Localidad</mat-label>
+        <input matInput formControlName="localidad" />
+        @if (
+          form.get("localidad")?.hasError("required") &&
+          form.get("localidad")?.touched
+        ) {
+          <mat-error>Requerida</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Colonia</mat-label>
+        <input matInput formControlName="colonia" />
+        @if (
+          form.get("colonia")?.hasError("required") &&
+          form.get("colonia")?.touched
+        ) {
+          <mat-error>Requerida</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Código postal</mat-label>
+        <input matInput formControlName="codigoPostal" maxlength="5" />
+      </mat-form-field>
+    </div>
+
+    <div class="form-grid two-col">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Calle</mat-label>
+        <input matInput formControlName="calle" />
+        @if (
+          form.get("calle")?.hasError("required") && form.get("calle")?.touched
+        ) {
+          <mat-error>Requerida</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Número</mat-label>
+        <input matInput formControlName="numero" />
+        @if (
+          form.get("numero")?.hasError("required") &&
+          form.get("numero")?.touched
+        ) {
+          <mat-error>Requerido</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="full-width"
+    >
+      <mat-label>Referencias</mat-label>
+      <input
+        matInput
+        formControlName="referencias"
+        placeholder="Frente a la plaza..."
+      />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-stroked-button
+    type="button"
+    (click)="onCancelar()"
+    [disabled]="guardando"
+  >
+    Cancelar
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    (click)="onGuardar()"
+    [disabled]="guardando"
+  >
+    @if (guardando) {
+      <mat-spinner
+        diameter="18"
+        style="display: inline-block; margin-right: 6px"
+      ></mat-spinner>
+    }
+    {{ esEdicion ? "Guardar cambios" : "Registrar ciudadano" }}
+  </button>
+</mat-dialog-actions>

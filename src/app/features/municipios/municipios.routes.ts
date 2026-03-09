@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { moduloGuard } from '../auth/guards/modulo.guard';
+import { moduloGuard, roleGuard } from '../auth/guards/modulo.guard';
 
 export const MUNICIPIOS_ROUTES: Routes = [
   {
@@ -17,5 +17,11 @@ export const MUNICIPIOS_ROUTES: Routes = [
         pathMatch: 'full',
       },
     ],
+  },
+  {
+    path: 'padron',
+    canActivate: [roleGuard(['SUPER_ADMIN', 'ADMIN', 'ADMIN_MUNICIPIO'])],
+    loadComponent: () =>
+      import('./pages/padron/padron.page').then((m) => m.PadronPage),
   },
 ];
