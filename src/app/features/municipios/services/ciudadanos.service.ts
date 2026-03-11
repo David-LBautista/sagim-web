@@ -67,11 +67,11 @@ export class CiudadanosService {
   // ----------------------------------------------------------------
 
   /**
-   * GET /ciudadanos?curp=
+   * GET /ciudadanos?curp=&limit=1  → devuelve el ciudadano directamente
    */
   getCiudadanoByCurp(curp: string): Observable<Ciudadano> {
     const url = `${environment.apiUrl}${ApiEndpoints.CIUDADANOS_LIST}`;
-    const params = new HttpParams().set('curp', curp);
+    const params = new HttpParams().set('curp', curp).set('limit', '1');
     return this.http.get<Ciudadano>(url, { params });
   }
 

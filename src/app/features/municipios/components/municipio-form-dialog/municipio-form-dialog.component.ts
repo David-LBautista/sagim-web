@@ -19,6 +19,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatIconModule } from '@angular/material/icon';
+import { SagimDialogComponent } from '../../../../shared/components/sagim-dialog/sagim-dialog.component';
 import { Municipio } from '../../models/municipio.model';
 import {
   APP_MODULES,
@@ -48,6 +49,7 @@ import { map, startWith } from 'rxjs/operators';
     MatProgressSpinnerModule,
     MatAutocompleteModule,
     MatIconModule,
+    SagimDialogComponent,
   ],
   templateUrl: './municipio-form-dialog.component.html',
   styleUrls: ['./municipio-form-dialog.component.scss'],

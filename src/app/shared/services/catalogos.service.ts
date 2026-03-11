@@ -12,6 +12,7 @@ import {
   GrupoVulnerableCatalogo,
   TipoApoyoCatalogo,
   LocalidadCatalogo,
+  CategoriaServicioCatalogo,
 } from '../models/catalogo.model';
 
 @Injectable({
@@ -150,5 +151,35 @@ export class CatalogosService {
         municipioId,
       );
     return this.http.get<LocalidadCatalogo[]>(url);
+  }
+
+  /**
+   * Obtener catálogo de categorías de servicios cobrables
+   */
+  getCategoriasServicios(): Observable<CategoriaServicioCatalogo[]> {
+    const url = `${environment.apiUrl}${ApiEndpoints.CATALOGOS_CATEGORIAS_SERVICIOS}`;
+    return this.http.get<CategoriaServicioCatalogo[]>(url);
+  }
+
+  /**
+   * Obtener categoría de servicio por nombre
+   */
+  getCategoriaServicioPorNombre(
+    nombre: string,
+  ): Observable<CategoriaServicioCatalogo> {
+    const url =
+      `${environment.apiUrl}${ApiEndpoints.CATALOGOS_CATEGORIA_SERVICIO_POR_NOMBRE}`.replace(
+        ':nombre',
+        encodeURIComponent(nombre),
+      );
+    return this.http.get<CategoriaServicioCatalogo>(url);
+  }
+
+  /**
+   * Obtener áreas responsables únicas
+   */
+  getAreasResponsables(): Observable<string[]> {
+    const url = `${environment.apiUrl}${ApiEndpoints.CATALOGOS_AREAS_RESPONSABLES}`;
+    return this.http.get<string[]>(url);
   }
 }

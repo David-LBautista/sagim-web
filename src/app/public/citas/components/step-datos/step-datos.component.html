@@ -1,0 +1,155 @@
+<div class="step-datos">
+  <div class="step-datos__intro">
+    <h2 class="step-datos__titulo">Tus datos</h2>
+    <p class="step-datos__subtitulo">
+      Ingresa tus datos para confirmar la cita
+    </p>
+  </div>
+
+  <!-- Resumen de lo seleccionado -->
+  @if (area || fecha) {
+    <div class="step-datos__resumen">
+      @if (area) {
+        <div class="resumen-item">
+          <mat-icon>business</mat-icon>
+          <span>{{ area }}{{ tramite ? " — " + tramite : "" }}</span>
+        </div>
+      }
+      @if (fecha && horario) {
+        <div class="resumen-item">
+          <mat-icon>event</mat-icon>
+          <span>{{ fecha }} a las {{ horario }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="enviar()"
+    class="step-datos__form"
+    novalidate
+  >
+    <!-- CURP -->
+    <mat-form-field
+      appearance="outline"
+      class="step-datos__field step-datos__field--full"
+    >
+      <mat-label>CURP</mat-label>
+      <input
+        matInput
+        formControlName="curp"
+        placeholder="ABCD900101HVZXXX00"
+        maxlength="18"
+        style="text-transform: uppercase"
+        (blur)="onCurpBlur()"
+        autocomplete="off"
+      />
+      <mat-hint>18 caracteres · Mayúsculas</mat-hint>
+      @if (cargandoCurp()) {
+        <mat-spinner matSuffix diameter="18" />
+      } @else {
+        <mat-icon matSuffix>badge</mat-icon>
+      }
+      @if (getError("curp")) {
+        <mat-error>{{ getError("curp") }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Nombre completo -->
+    <mat-form-field
+      appearance="outline"
+      class="step-datos__field step-datos__field--full"
+    >
+      <mat-label>Nombre completo</mat-label>
+      <input
+        matInput
+        formControlName="nombreCompleto"
+        placeholder="JUAN CARLOS LOPEZ GONZALEZ"
+        autocomplete="name"
+      />
+      <mat-icon matSuffix>person</mat-icon>
+      @if (getError("nombreCompleto")) {
+        <mat-error>{{ getError("nombreCompleto") }}</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="step-datos__row">
+      <!-- Teléfono -->
+      <mat-form-field appearance="outline" class="step-datos__field">
+        <mat-label>Teléfono</mat-label>
+        <input
+          matInput
+          formControlName="telefono"
+          type="tel"
+          placeholder="2721234567"
+          maxlength="10"
+          autocomplete="tel"
+        />
+        <mat-icon matSuffix>phone</mat-icon>
+        @if (getError("telefono")) {
+          <mat-error>{{ getError("telefono") }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Correo (opcional) -->
+      <mat-form-field appearance="outline" class="step-datos__field">
+        <mat-label>Correo electrónico (opcional)</mat-label>
+        <input
+          matInput
+          formControlName="correo"
+          type="email"
+          placeholder="juan@email.com"
+          autocomplete="email"
+        />
+        <mat-icon matSuffix>mail</mat-icon>
+        @if (getError("correo")) {
+          <mat-error>{{ getError("correo") }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Notas -->
+    <mat-form-field
+      appearance="outline"
+      class="step-datos__field step-datos__field--full"
+    >
+      <mat-label>Notas adicionales (opcional)</mat-label>
+      <textarea
+        matInput
+        formControlName="notasCiudadano"
+        rows="3"
+        placeholder="Ej: Vendré con mi esposa, necesito acceso para silla de ruedas…"
+      ></textarea>
+      <mat-icon matSuffix>notes</mat-icon>
+    </mat-form-field>
+
+    @if (errorEnvio()) {
+      <div class="step-datos__error-envio">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorEnvio() }}</span>
+      </div>
+    }
+
+    <!-- Acciones -->
+    <div class="step-datos__acciones">
+      <button mat-stroked-button type="button" (click)="atras.emit()">
+        <mat-icon>arrow_back</mat-icon>
+        Atrás
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="enviando()"
+      >
+        {{ enviando() ? "Confirmando…" : "Confirmar cita" }}
+        @if (enviando()) {
+          <mat-spinner diameter="18" color="accent" />
+        } @else {
+          <mat-icon iconPositionEnd>check_circle</mat-icon>
+        }
+      </button>
+    </div>
+  </form>
+</div>

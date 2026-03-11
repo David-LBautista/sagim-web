@@ -1,0 +1,340 @@
+:host {
+  display: block;
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────
+.page-header {
+  margin-bottom: var(--sagim-spacing-md);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sagim-spacing-md);
+
+  .header-text {
+    h1 {
+      margin: 0;
+    }
+    p {
+      margin: var(--sagim-spacing-xs) 0 0;
+    }
+  }
+
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--sagim-spacing-sm);
+    flex-wrap: wrap;
+
+    .select-periodo {
+      width: 160px;
+    }
+  }
+}
+
+// ─── KPI Grid ─────────────────────────────────────────────────────────────
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sagim-spacing-md);
+  margin-bottom: var(--sagim-spacing-lg);
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi-exec-card {
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  mat-card-header {
+    padding: 10px 16px 0;
+
+    mat-icon[mat-card-avatar] {
+      width: 28px;
+      height: 28px;
+      font-size: 28px;
+      color: var(--sagim-secondary);
+      opacity: 0.6;
+    }
+  }
+
+  mat-card-content {
+    text-align: center;
+    padding: 6px 16px 14px;
+  }
+}
+
+.kpi-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--sagim-text-dark);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sagim-text-mid);
+  margin-bottom: 6px;
+}
+
+.kpi-meta {
+  font-size: 11px;
+  color: var(--sagim-text-mid);
+  margin-top: 2px;
+}
+
+// ─── Chart card ────────────────────────────────────────────────────────────
+.chart-card {
+  margin-bottom: var(--sagim-spacing-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: white;
+
+  mat-card-header {
+    padding: 16px 20px 0;
+    align-items: center;
+
+    mat-icon[mat-card-avatar] {
+      width: 28px;
+      height: 28px;
+      font-size: 28px;
+      color: var(--sagim-secondary);
+      opacity: 0.7;
+    }
+
+    mat-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--sagim-text-dark);
+      margin: 0;
+    }
+
+    mat-card-subtitle {
+      font-size: 12px;
+      color: var(--sagim-text-mid);
+      margin: 0;
+    }
+  }
+
+  mat-card-content {
+    padding: 8px 12px 4px;
+  }
+}
+
+.chart-loading {
+  height: 280px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--sagim-spacing-md);
+
+  mat-progress-bar {
+    width: 60%;
+  }
+
+  &--sm {
+    height: 140px;
+  }
+}
+
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 200px;
+  color: var(--sagim-text-mid);
+  opacity: 0.5;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+  p {
+    font-size: 13px;
+    margin: 0;
+  }
+}
+
+// ─── Grid 2 columnas ──────────────────────────────────────────────────────
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--sagim-spacing-md);
+  margin-bottom: var(--sagim-spacing-lg);
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── Accesos table ────────────────────────────────────────────────────────
+.accesos-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    background: #fafafa;
+    color: var(--sagim-text-dark);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 12px;
+    border-bottom: 2px solid rgba(15, 42, 68, 0.1);
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(15, 42, 68, 0.05);
+    font-size: 13px;
+    color: var(--sagim-text-dark);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+  tr:hover td {
+    background: rgba(31, 111, 174, 0.03);
+  }
+
+  .td-hora {
+    color: var(--sagim-text-mid);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+  }
+  .td-usuario {
+    font-weight: 500;
+  }
+  .td-ip {
+    color: var(--sagim-text-mid);
+    font-size: 12px;
+    font-family: monospace;
+  }
+}
+
+.rol-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(31, 111, 174, 0.1);
+  color: var(--sagim-secondary);
+}
+
+// ─── Acciones críticas ────────────────────────────────────────────────────
+.criticas-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    background: #fafafa;
+    color: var(--sagim-text-dark);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 12px;
+    border-bottom: 2px solid rgba(15, 42, 68, 0.1);
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(15, 42, 68, 0.05);
+    font-size: 13px;
+    color: var(--sagim-text-dark);
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+  tr:hover td {
+    background: rgba(31, 111, 174, 0.03);
+  }
+
+  .td-fecha {
+    color: var(--sagim-text-mid);
+    font-size: 12px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .td-modulo {
+    font-weight: 500;
+    color: var(--sagim-primary);
+    white-space: nowrap;
+  }
+  .td-entidad {
+    color: var(--sagim-text-mid);
+  }
+  .td-usuario {
+    font-weight: 500;
+  }
+  .td-desc {
+    color: var(--sagim-text-mid);
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// ─── Accion badge ─────────────────────────────────────────────────────────
+.accion-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.badge-danger {
+    background: rgba(214, 69, 69, 0.1);
+    color: var(--sagim-danger);
+  }
+  &.badge-warning {
+    background: rgba(240, 161, 42, 0.12);
+    color: #c88200;
+  }
+  &.badge-success {
+    background: rgba(111, 174, 59, 0.12);
+    color: #4a7d1e;
+  }
+  &.badge-info {
+    background: rgba(31, 111, 174, 0.1);
+    color: var(--sagim-secondary);
+  }
+  &.badge-neutral {
+    background: rgba(122, 122, 122, 0.1);
+    color: var(--sagim-text-mid);
+  }
+}
+
+// ─── Loading bar ──────────────────────────────────────────────────────────
+.loading-bar {
+  margin-bottom: var(--sagim-spacing-md);
+  border-radius: var(--sagim-radius-sm);
+}

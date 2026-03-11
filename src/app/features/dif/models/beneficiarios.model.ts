@@ -73,6 +73,48 @@ export interface ApoyoHistorial {
   entregadoPor: EntregadoPorRef;
 }
 
+// ─── Estadísticas ───────────────────────────────────────────────────────────
+
+export interface BeneficiariosEstadisticas {
+  total: number;
+  activos: number;
+  registradosEsteMes: number;
+  porGrupoVulnerable: Record<string, number>;
+}
+
+// ─── Importar ────────────────────────────────────────────────────────────────
+
+export type AccionDuplicadosBen = 'ignorar' | 'actualizar';
+
+export interface ImportarBenefErrorDetalle {
+  fila: number;
+  nombre: string;
+  error: string;
+}
+
+export interface ImportarBeneficiariosParams {
+  archivo: File;
+  mapeo: string;
+  accionDuplicados: AccionDuplicadosBen;
+}
+
+export interface ImportarBeneficiariosResponse {
+  importados: number;
+  actualizados: number;
+  ignorados: number;
+  errores: number;
+  ciudadanosCreados: number;
+  detalleErrores: ImportarBenefErrorDetalle[];
+}
+
+// ─── Programas ───────────────────────────────────────────────────────────────
+
+export interface ProgramaDIF {
+  _id: string;
+  nombre: string;
+  descripcion?: string;
+}
+
 export interface ApoyosHistorialPaginated {
   data: ApoyoHistorial[];
   total: number;

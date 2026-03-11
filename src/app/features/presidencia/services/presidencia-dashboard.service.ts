@@ -2,6 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 import { environment } from '../../../../environments/environment';
 import { ApiEndpoints } from '../../../core/enums/api-endpoints.enum';
 import type {
@@ -201,13 +206,14 @@ export class PresidenciaDashboardService {
   }
 
   private firstDayOfMonth(): string {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+    return dayjs()
+      .tz('America/Mexico_City')
+      .startOf('month')
+      .format('YYYY-MM-DD');
   }
 
   private today(): string {
-    const now = new Date();
-    return now.toISOString().slice(0, 10);
+    return dayjs().tz('America/Mexico_City').format('YYYY-MM-DD');
   }
 
   getIngresosMesActual(): Observable<IngresosPorDiaItem[]> {

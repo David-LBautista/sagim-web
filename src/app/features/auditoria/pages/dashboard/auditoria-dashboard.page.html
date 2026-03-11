@@ -1,0 +1,207 @@
+<div class="auditoria-page">
+  <!-- ── ENCABEZADO ─────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1 class="sagim-title-xl" style="margin-bottom: 4px">Auditoría</h1>
+      <p class="sagim-subtitle-light">Bitácora del sistema</p>
+    </div>
+    <div class="header-controls">
+      <mat-form-field
+        appearance="outline"
+        class="select-periodo"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Período</mat-label>
+        <mat-select
+          [value]="diasSeleccionados()"
+          (valueChange)="onDiasChange($event)"
+        >
+          @for (op of opciones; track op.valor) {
+            <mat-option [value]="op.valor">{{ op.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <app-action-button
+        label="Ver bitácora completa"
+        icon="list_alt"
+        color="accent"
+        (clicked)="irALogs()"
+      />
+    </div>
+  </div>
+
+  <!-- ── CARGANDO ───────────────────────────────────────────────────────── -->
+  @if (cargando()) {
+    <mat-progress-bar class="loading-bar" mode="indeterminate" />
+  }
+
+  @if (!cargando()) {
+    <!-- ── KPI CARDS ─────────────────────────────────────────────────────── -->
+    <div class="kpi-grid">
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>manage_search</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ resumen()?.accionesTotales ?? 0 }}</div>
+          <div class="kpi-label">Acciones totales</div>
+          <div class="kpi-meta">{{ resumen()?.periodo ?? "" }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>group</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ resumen()?.usuariosActivos ?? 0 }}</div>
+          <div class="kpi-label">Usuarios activos</div>
+          <div class="kpi-meta">{{ resumen()?.periodo ?? "" }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>layers</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ resumen()?.modulosAuditados ?? 0 }}</div>
+          <div class="kpi-label">Módulos auditados</div>
+          <div class="kpi-meta">&nbsp;</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>login</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ resumen()?.ultimosAccesos ?? 0 }}</div>
+          <div class="kpi-label">Últimos accesos</div>
+          <div class="kpi-meta">{{ resumen()?.periodo ?? "" }}</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- ── FILA: ACTIVIDAD + ACCESOS ────────────────────────────────────── -->
+    <div class="charts-row">
+      <!-- Actividad por módulo -->
+      <mat-card appearance="outlined" class="chart-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar style="opacity: 0.7">bar_chart</mat-icon>
+          <mat-card-title>Actividad por módulo</mat-card-title>
+          <mat-card-subtitle
+            >Últimos {{ diasSeleccionados() }} días</mat-card-subtitle
+          >
+        </mat-card-header>
+        <mat-card-content>
+          @if (actividadModulo().length > 0) {
+            <apx-chart
+              [series]="barSeries()"
+              [chart]="barChartConfig"
+              [plotOptions]="barPlotOptions"
+              [dataLabels]="barDataLabels"
+              [tooltip]="barTooltip"
+              [grid]="barGrid"
+              [colors]="barColors"
+              [xaxis]="barXAxis()"
+              [yaxis]="barYAxis"
+            />
+          } @else {
+            <div class="chart-empty">
+              <mat-icon>bar_chart</mat-icon>
+              <p>Sin actividad en el período</p>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Últimos accesos -->
+      <mat-card appearance="outlined" class="chart-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar style="opacity: 0.7">login</mat-icon>
+          <mat-card-title>Últimos accesos</mat-card-title>
+          <mat-card-subtitle>Ingresos al sistema</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="accesos-content">
+          @if (accesos().length === 0) {
+            <div class="chart-empty">
+              <mat-icon>login</mat-icon>
+              <p>Sin accesos registrados</p>
+            </div>
+          } @else {
+            <table class="accesos-table">
+              <thead>
+                <tr>
+                  <th>Hora</th>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                  <th>IP</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (a of accesos().slice(0, 8); track a.fecha) {
+                  <tr>
+                    <td class="td-hora">{{ formatHora(a.fecha) }}</td>
+                    <td class="td-usuario">{{ a.usuario }}</td>
+                    <td>
+                      <span class="rol-badge">{{ rolLabel(a.rol) }}</span>
+                    </td>
+                    <td class="td-ip">{{ a.ip }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- ── ACCIONES CRÍTICAS ─────────────────────────────────────────────── -->
+    <mat-card appearance="outlined" class="chart-card criticas-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar style="opacity: 0.7; color: #d64545"
+          >warning</mat-icon
+        >
+        <mat-card-title>Acciones críticas</mat-card-title>
+        <mat-card-subtitle
+          >Últimos {{ diasSeleccionados() }} días</mat-card-subtitle
+        >
+      </mat-card-header>
+      <mat-card-content>
+        @if (accionesCriticas().length === 0) {
+          <div class="chart-empty">
+            <mat-icon>check_circle</mat-icon>
+            <p>No hay acciones críticas en el período</p>
+          </div>
+        } @else {
+          <table class="criticas-table">
+            <thead>
+              <tr>
+                <th>Fecha/Hora</th>
+                <th>Acción</th>
+                <th>Módulo</th>
+                <th>Entidad</th>
+                <th>Usuario</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of accionesCriticas(); track c.fecha) {
+                <tr>
+                  <td class="td-fecha">{{ formatFecha(c.fecha) }}</td>
+                  <td>
+                    <span class="accion-badge" [class]="accionClass(c.accion)">
+                      {{ accionLabel(c.accion) }}
+                    </span>
+                  </td>
+                  <td class="td-modulo">{{ c.modulo }}</td>
+                  <td class="td-entidad">{{ c.entidad }}</td>
+                  <td class="td-usuario">{{ c.usuario }}</td>
+                  <td class="td-desc">{{ c.descripcion }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

@@ -124,3 +124,11 @@ export interface ReporteServicioResponse {
     totalRecaudado: number;
   };
 }
+
+// ── Alertas dashboard ─────────────────────────────────────────────────────
+export interface AlertaTesoreria {
+  tipo: 'BAJA_RECAUDACION' | 'ORDENES_POR_EXPIRAR' | string;
+  mensaje: string;
+  severidad: 'info' | 'warning' | 'danger';
+  meta?: Record<string, unknown>;
+}

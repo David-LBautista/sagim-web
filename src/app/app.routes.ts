@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './features/auth/guards/auth.guard';
 import { onboardingCompleteGuard } from './features/onboarding/guards/onboarding-complete.guard';
 import { MainLayoutComponent } from './core/layout/main-layout/main-layout.component';
+import { PublicLayoutComponent } from './public/layout/public-layout.component';
 
 export const routes: Routes = [
   {
@@ -135,6 +136,13 @@ export const routes: Routes = [
           import('./features/citas/citas.routes').then((m) => m.CITAS_ROUTES),
       },
       {
+        path: 'auditoria',
+        loadChildren: () =>
+          import('./features/auditoria/auditoria.routes').then(
+            (m) => m.AUDITORIA_ROUTES,
+          ),
+      },
+      {
         path: '',
         redirectTo: 'presidencia',
         pathMatch: 'full',
@@ -159,8 +167,33 @@ export const routes: Routes = [
   // ── Página de pago pública (sin autenticación) ──────────────────────────
   {
     path: 'pago/:token',
-    loadComponent: () =>
-      import('./pages/pago/pago.page').then((m) => m.PagoPage),
+    component: PublicLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./public/pago/pago.page').then((m) => m.PagoPage),
+      },
+    ],
+  },
+  // ── Portal público ciudadano (sin autenticación) ─────────────────────────
+  {
+    path: 'public/:slug',
+    component: PublicLayoutComponent,
+    children: [
+      {
+        path: 'citas',
+        loadChildren: () =>
+          import('./public/citas/public-citas.routes').then(
+            (m) => m.PUBLIC_CITAS_ROUTES,
+          ),
+      },
+      {
+        path: '',
+        redirectTo: 'citas',
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: '',

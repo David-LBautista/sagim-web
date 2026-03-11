@@ -3,3 +3,4 @@ export * from './action-button/action-button.component';
 export * from './data-table/data-table.component';
 export * from './info-alert/info-alert.component';
 export * from './folio-tag/folio-tag.component';
+export * from './sagim-dialog/sagim-dialog.component';

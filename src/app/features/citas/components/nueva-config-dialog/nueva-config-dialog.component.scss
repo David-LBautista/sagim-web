@@ -1,0 +1,115 @@
+.areas-list {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.modulo-label {
+  font-size: 0.75rem;
+  color: #7a7a7a;
+}
+
+.dialog-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 16px;
+  color: #7a7a7a;
+  text-align: center;
+}
+
+.state-icon {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.state-icon--error {
+  color: #d64545;
+}
+
+.state-icon--success {
+  color: #6fae3b;
+}
+
+.dialog-hint {
+  font-size: 0.875rem;
+  color: #7a7a7a;
+  margin: 0 0 12px;
+}
+
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-row.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-section-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3a3a3a;
+  margin: 8px 0 4px;
+}
+
+.tramite-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .full-width {
+    flex: 1;
+  }
+}
+
+.dias-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dia-row {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #fafafa;
+}
+
+.bloques {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.bloque-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-field {
+  flex: 1;
+}
+
+.cap-field {
+  width: 90px;
+}
+
+.add-bloque-btn {
+  font-size: 0.8rem;
+  align-self: flex-start;
+  margin-top: 2px;
+}

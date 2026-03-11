@@ -1,0 +1,231 @@
+<div class="consultar">
+  <div class="consultar__container">
+    <!-- ── FORMULARIO DE CONSULTA ──────────────────────────────────────── -->
+    @if (vista() === "formulario") {
+      <div class="consultar__card">
+        <div class="consultar__header">
+          <mat-icon class="consultar__header-icon">search</mat-icon>
+          <div>
+            <h2 class="consultar__titulo">Consultar mi cita</h2>
+            <p class="consultar__subtitulo">
+              Ingresa los datos que llegaron a tu correo
+            </p>
+          </div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="consultar()" novalidate>
+          <mat-form-field appearance="outline" class="consultar__field">
+            <mat-label>Folio de cita</mat-label>
+            <input
+              matInput
+              formControlName="folio"
+              placeholder="CIT-2604-0001"
+              autocomplete="off"
+            />
+            <mat-icon matSuffix>confirmation_number</mat-icon>
+            @if (form.get("folio")?.touched && form.get("folio")?.invalid) {
+              <mat-error>El folio es requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="consultar__field">
+            <mat-label>CURP</mat-label>
+            <input
+              matInput
+              formControlName="curp"
+              placeholder="ABCD900101HVZRRN01"
+              autocomplete="off"
+              maxlength="18"
+              style="text-transform: uppercase"
+            />
+            <mat-icon matSuffix>badge</mat-icon>
+            @if (form.get("curp")?.touched && form.get("curp")?.invalid) {
+              <mat-error>Ingresa tu CURP (18 caracteres)</mat-error>
+            }
+          </mat-form-field>
+
+          @if (error()) {
+            <div class="consultar__error">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          <div class="consultar__acciones">
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="cargando()"
+            >
+              {{ cargando() ? "Consultando…" : "Consultar" }}
+              @if (cargando()) {
+                <mat-spinner diameter="18" color="accent" />
+              } @else {
+                <mat-icon>search</mat-icon>
+              }
+            </button>
+          </div>
+        </form>
+
+        <mat-divider class="consultar__divider" />
+
+        <div class="consultar__nueva-link">
+          <a [routerLink]="['/public', slug(), 'citas']">
+            <mat-icon>add_circle_outline</mat-icon>
+            Agendar una nueva cita
+          </a>
+        </div>
+      </div>
+    }
+
+    <!-- ── RESULTADO DE CONSULTA ───────────────────────────────────────── -->
+    @if (vista() === "resultado" && cita()) {
+      <div class="consultar__card">
+        <div class="consultar__header">
+          <mat-icon class="consultar__header-icon">event_note</mat-icon>
+          <div>
+            <h2 class="consultar__titulo">Tu cita</h2>
+            <p class="consultar__subtitulo">
+              Folio: <strong>{{ cita()!.folio }}</strong>
+            </p>
+          </div>
+        </div>
+
+        <!-- Estado badge -->
+        <div class="consultar__estado-wrap">
+          <span class="estado-badge estado-badge--{{ cita()!.estado }}">
+            {{ getEstadoLabel(cita()!.estado) }}
+          </span>
+        </div>
+
+        <!-- Detalle -->
+        <div class="consultar__detalle">
+          <div class="detalle-row">
+            <mat-icon>business</mat-icon>
+            <div>
+              <span class="detalle-row__label">Área</span>
+              <span class="detalle-row__valor">{{ cita()!.area }}</span>
+            </div>
+          </div>
+          <div class="detalle-row">
+            <mat-icon>assignment</mat-icon>
+            <div>
+              <span class="detalle-row__label">Trámite</span>
+              <span class="detalle-row__valor">{{ cita()!.tramite }}</span>
+            </div>
+          </div>
+          <div class="detalle-row">
+            <mat-icon>event</mat-icon>
+            <div>
+              <span class="detalle-row__label">Fecha</span>
+              <span class="detalle-row__valor">{{ cita()!.fechaCita }}</span>
+            </div>
+          </div>
+          <div class="detalle-row">
+            <mat-icon>schedule</mat-icon>
+            <div>
+              <span class="detalle-row__label">Horario</span>
+              <span class="detalle-row__valor">{{ cita()!.horario }}</span>
+            </div>
+          </div>
+          @if (cita()!.instrucciones) {
+            <div class="detalle-row detalle-row--instrucciones">
+              <mat-icon>info</mat-icon>
+              <div>
+                <span class="detalle-row__label">Instrucciones</span>
+                <span class="detalle-row__valor">{{
+                  cita()!.instrucciones
+                }}</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Cancelación -->
+        @if (cita()!.puedeCancelar) {
+          <div class="consultar__cancelar-seccion">
+            @if (!mostrarMotivo()) {
+              <button
+                mat-stroked-button
+                color="warn"
+                (click)="mostrarMotivo.set(true)"
+                type="button"
+              >
+                Cancelar mi cita
+              </button>
+            } @else {
+              <form [formGroup]="motivoForm" (ngSubmit)="cancelar()" novalidate>
+                <p class="consultar__cancelar-aviso">
+                  <mat-icon>warning</mat-icon>
+                  ¿Seguro que deseas cancelar esta cita? Esta acción no se puede
+                  deshacer.
+                </p>
+                <mat-form-field appearance="outline" class="consultar__field">
+                  <mat-label>Motivo de cancelación (opcional)</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="motivo"
+                    rows="2"
+                    placeholder="Ej: Ya no puedo asistir"
+                  ></textarea>
+                </mat-form-field>
+                @if (errorCancelacion()) {
+                  <div class="consultar__error">
+                    <mat-icon>error_outline</mat-icon>
+                    <span>{{ errorCancelacion() }}</span>
+                  </div>
+                }
+                <div class="consultar__cancelar-acciones">
+                  <button
+                    mat-button
+                    type="button"
+                    (click)="mostrarMotivo.set(false)"
+                  >
+                    No, regresar
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="warn"
+                    type="submit"
+                    [disabled]="cancelando()"
+                  >
+                    @if (cancelando()) {
+                      <mat-spinner diameter="18" color="accent" />
+                      Cancelando…
+                    } @else {
+                      Sí, cancelar cita
+                    }
+                  </button>
+                </div>
+              </form>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── CITA CANCELADA EXITOSAMENTE ────────────────────────────────── -->
+    @if (vista() === "cancelada") {
+      <div class="consultar__card consultar__card--centrado">
+        <div class="consultar__exito-icon consultar__exito-icon--warn">
+          <mat-icon>cancel</mat-icon>
+        </div>
+        <h2 class="consultar__titulo">Cita cancelada</h2>
+        <p class="consultar__subtitulo">
+          Tu cita ha sido cancelada correctamente.
+        </p>
+        <div class="consultar__acciones">
+          <a
+            mat-raised-button
+            color="primary"
+            [routerLink]="['/public', slug(), 'citas']"
+          >
+            <mat-icon>add_circle</mat-icon>
+            Agendar otra cita
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,255 @@
+<div class="lista-citas">
+  <div class="page-header">
+    <h1 class="sagim-title-xl">Historial de Citas</h1>
+    <p class="sagim-subtitle-light">
+      Consulta y gestiona el historial completo de citas
+    </p>
+  </div>
+
+  <!-- Filtros -->
+  <mat-card appearance="outlined" class="filters-card">
+    <mat-card-content>
+      <form [formGroup]="filtros" class="filters-form">
+        <mat-form-field appearance="outline">
+          <mat-label>CURP</mat-label>
+          <input
+            matInput
+            formControlName="curp"
+            placeholder="CURP del ciudadano"
+          />
+          <mat-icon matSuffix>badge</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Trámite</mat-label>
+          <input
+            matInput
+            formControlName="tramite"
+            placeholder="Buscar trámite"
+          />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Área</mat-label>
+          <mat-select formControlName="area">
+            <mat-option value="">Todas</mat-option>
+            @for (cfg of configs(); track cfg._id) {
+              <mat-option [value]="cfg.area._id">{{
+                cfg.area.nombre
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            <mat-option value="">Todos</mat-option>
+            @for (e of estados; track e) {
+              <mat-option [value]="e">{{ estadoLabels[e] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Origen</mat-label>
+          <mat-select formControlName="origen">
+            <mat-option value="">Todos</mat-option>
+            @for (o of origenes; track o.value) {
+              <mat-option [value]="o.value">{{ o.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha desde</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerDesde"
+            formControlName="fechaInicio"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="pickerDesde"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerDesde></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha hasta</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerHasta"
+            formControlName="fechaFin"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="pickerHasta"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerHasta></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-stroked-button type="button" (click)="limpiarFiltros()">
+          <mat-icon>clear</mat-icon>
+          Limpiar
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading -->
+  @if (cargando()) {
+    <mat-progress-bar
+      mode="indeterminate"
+      class="loading-bar"
+    ></mat-progress-bar>
+  }
+
+  <!-- Tabla -->
+  @if (!cargando()) {
+    <mat-card appearance="outlined" class="chart-card table-card">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="citas()" class="citas-table">
+          <!-- Columna: Fecha/Hora -->
+          <ng-container matColumnDef="hora">
+            <th mat-header-cell *matHeaderCellDef>Fecha / Hora</th>
+            <td mat-cell *matCellDef="let cita">
+              <div class="fecha-col">
+                <span class="fecha-col__fecha">{{
+                  cita.fecha | date: "dd/MM/yyyy"
+                }}</span>
+                <span class="fecha-col__hora">{{ cita.hora }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna: Folio -->
+          <ng-container matColumnDef="folio">
+            <th mat-header-cell *matHeaderCellDef>Folio</th>
+            <td mat-cell *matCellDef="let cita">
+              <span class="folio-badge">{{ cita.folio }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Columna: Ciudadano -->
+          <ng-container matColumnDef="ciudadano">
+            <th mat-header-cell *matHeaderCellDef>Ciudadano</th>
+            <td mat-cell *matCellDef="let cita">
+              <div class="ciudadano-col">
+                <span class="ciudadano-col__nombre">{{
+                  cita.ciudadano.nombre
+                }}</span>
+                <span class="ciudadano-col__curp">{{
+                  cita.ciudadano.curp
+                }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna: Trámite -->
+          <ng-container matColumnDef="tramite">
+            <th mat-header-cell *matHeaderCellDef>Trámite</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.tramite }}</td>
+          </ng-container>
+
+          <!-- Columna: Área -->
+          <ng-container matColumnDef="area">
+            <th mat-header-cell *matHeaderCellDef>Área</th>
+            <td mat-cell *matCellDef="let cita">{{ cita.area.nombre }}</td>
+          </ng-container>
+
+          <!-- Columna: Estado -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let cita">
+              <span class="estado-chip" [ngClass]="estadoColor(cita.estado)">
+                {{ getEstadoLabel(cita.estado) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Columna: Origen -->
+          <ng-container matColumnDef="origen">
+            <th mat-header-cell *matHeaderCellDef>Origen</th>
+            <td mat-cell *matCellDef="let cita">
+              <mat-icon
+                class="origen-icon"
+                [matTooltip]="
+                  cita.origen === 'portal_publico'
+                    ? 'Portal ciudadano'
+                    : 'Recepción'
+                "
+              >
+                {{
+                  cita.origen === "portal_publico" ? "public" : "support_agent"
+                }}
+              </mat-icon>
+            </td>
+          </ng-container>
+
+          <!-- Columna: Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let cita">
+              <div class="acciones-col">
+                @if (cambiandoEstado() === cita._id) {
+                  <mat-progress-bar
+                    mode="indeterminate"
+                    style="width: 60px; height: 3px; border-radius: 2px"
+                  ></mat-progress-bar>
+                } @else if (
+                  cita.estado !== "cancelada" &&
+                  cita.estado !== "no_se_presento"
+                ) {
+                  <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="menu"
+                    matTooltip="Cambiar estado"
+                  >
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu">
+                    @for (e of estados; track e) {
+                      <button
+                        mat-menu-item
+                        (click)="cambiarEstado(cita, e)"
+                        [disabled]="cita.estado === e"
+                      >
+                        {{ estadoLabels[e] }}
+                      </button>
+                    }
+                  </mat-menu>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+          <tr
+            mat-row
+            *matRowDef="let cita; columns: columnas"
+            [class.row-expanded]="citaExpandida() === cita._id"
+          ></tr>
+
+          <tr class="mat-row no-data-row" *matNoDataRow>
+            <td class="mat-cell" [attr.colspan]="columnas.length">
+              <div class="no-data">
+                <mat-icon>search_off</mat-icon>
+                <p>No se encontraron citas con los filtros seleccionados</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="limit()"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPage($event)"
+        showFirstLastButtons
+      ></mat-paginator>
+    </mat-card>
+  }
+</div>

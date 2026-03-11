@@ -17,7 +17,8 @@ export type AppModulo =
   | 'USUARIOS'
   | 'MUNICIPIOS'
   | 'REPORTES'
-  | 'CITAS';
+  | 'CITAS'
+  | 'AUDITORIA';
 
 export const APP_MODULES: Record<
   AppModulo,
@@ -192,5 +193,15 @@ export const APP_MODULES: Record<
     icon: 'event',
     loadRoutes: () =>
       import('../../features/citas/citas.routes').then((m) => m.CITAS_ROUTES),
+  },
+
+  AUDITORIA: {
+    label: 'Auditoría',
+    route: '/auditoria',
+    icon: 'manage_search',
+    loadRoutes: () =>
+      import('../../features/auditoria/auditoria.routes').then(
+        (m) => m.AUDITORIA_ROUTES,
+      ),
   },
 };

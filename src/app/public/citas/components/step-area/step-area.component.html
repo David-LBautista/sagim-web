@@ -1,0 +1,96 @@
+<div class="step-area">
+  <div class="step-area__intro">
+    <h2 class="step-area__titulo">¿Qué trámite necesitas?</h2>
+    <p class="step-area__subtitulo">
+      Selecciona el área y el trámite que deseas agendar
+    </p>
+  </div>
+
+  @if (cargando()) {
+    <div class="step-area__loading">
+      <mat-spinner diameter="40" />
+      <span>Cargando áreas disponibles…</span>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="step-area__error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+  }
+
+  @if (!cargando() && !error()) {
+    <div class="step-area__lista">
+      @for (area of areas(); track area.area) {
+        <div
+          class="area-card"
+          [class.area-card--activa]="areaSeleccionada()?.area === area.area"
+          (click)="seleccionarArea(area)"
+          tabindex="0"
+          role="button"
+          [attr.aria-pressed]="areaSeleccionada()?.area === area.area"
+          (keydown.enter)="seleccionarArea(area)"
+          (keydown.space)="seleccionarArea(area)"
+        >
+          <div class="area-card__header">
+            <mat-icon class="area-card__icono">business</mat-icon>
+            <div class="area-card__info">
+              <span class="area-card__nombre">{{ area.area }}</span>
+              @if (area.instrucciones) {
+                <span class="area-card__instrucciones">{{
+                  area.instrucciones
+                }}</span>
+              }
+            </div>
+            @if (areaSeleccionada()?.area === area.area) {
+              <mat-icon class="area-card__check">check_circle</mat-icon>
+            }
+          </div>
+
+          @if (areaSeleccionada()?.area === area.area) {
+            <div class="area-card__tramites">
+              <p class="area-card__tramites-label">Selecciona el trámite:</p>
+              <div class="area-card__tramites-lista">
+                @for (tramite of area.tramites; track tramite) {
+                  <button
+                    class="tramite-btn"
+                    [class.tramite-btn--seleccionado]="
+                      tramiteSeleccionado() === tramite
+                    "
+                    (click)="
+                      $event.stopPropagation(); seleccionarTramite(tramite)
+                    "
+                    type="button"
+                  >
+                    {{ tramite }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (areas().length === 0) {
+        <div class="step-area__vacio">
+          <mat-icon>event_busy</mat-icon>
+          <p>No hay áreas con citas disponibles por el momento.</p>
+        </div>
+      }
+    </div>
+
+    <div class="step-area__acciones">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!puedeContinuar()"
+        (click)="continuar()"
+        class="step-area__btn-continuar"
+      >
+        Siguiente
+        <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+      </button>
+    </div>
+  }
+</div>

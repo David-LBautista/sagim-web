@@ -1,24 +1,6 @@
-<div class="pago-shell">
-  <!-- ── Cabecera ────────────────────────────────────────────────────────── -->
-  <header class="pago-header">
-    <div class="header-content">
-      <img
-        class="logo"
-        [src]="orden()?.municipio?.logoUrl || '/assets/logo/sagim_logo_white.png'"
-        alt="SAGIM"
-        onerror="this.style.display = 'none'"
-      />
-      <div class="header-text">
-        <span class="municipio">Municipio de {{
-          orden()?.municipio?.nombre || "Municipio"
-        }}</span>
-        <span class="subtitulo">Sistema de Pagos Municipales — SAGIM</span>
-      </div>
-    </div>
-  </header>
-
+<div class="pago-page">
   <!-- ── Cuerpo ────────────────────────────────────────────────────────── -->
-  <main class="pago-main">
+  <main class="pago-content">
     <!-- Estado: cargando -->
     @if (estado() === "cargando") {
       <div class="estado-card estado-cargando">
@@ -35,8 +17,8 @@
         </div>
         <h2>¡Pago realizado!</h2>
         <p>
-          Tu pago se procesó correctamente.
-          Guarda o descarga tu recibo como comprobante.
+          Tu pago se procesó correctamente. Guarda o descarga tu recibo como
+          comprobante.
         </p>
         @if (orden(); as o) {
           <div class="recibo-resumen">
@@ -171,7 +153,6 @@
 
       <!-- Sección de tarjeta de pago -->
       <div class="card-payment-section">
-
         <!-- Cabecera: label + marcas aceptadas -->
         <div class="card-section-header">
           <span class="card-section-title">
@@ -229,13 +210,7 @@
           <mat-icon>security</mat-icon>
           Pago seguro procesado por Stripe. Este enlace es de uso único.
         </p>
-
       </div>
     }
   </main>
-
-  <!-- ── Pie de página ─────────────────────────────────────────────────── -->
-  <footer class="pago-footer">
-    Generado por SAGIM — Sistema de Atención y Gestión Integral Municipal
-  </footer>
 </div>

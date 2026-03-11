@@ -1,173 +1,137 @@
-<h2 mat-dialog-title>Nuevo Apoyo</h2>
-
-<mat-dialog-content>
+<app-sagim-dialog
+  title="Nuevo Apoyo"
+  submitLabel="Registrar Apoyo"
+  [isSubmitting]="isSubmitting"
+  [submitDisabled]="form.invalid || !beneficiarioSeleccionado"
+  (submitClick)="onSubmit()"
+  (cancelClick)="onCancel()"
+>
   <form [formGroup]="form" class="apoyo-form">
-    <!-- Buscar beneficiario -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Buscar beneficiario (nombre, CURP o folio)</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input
-        matInput
-        formControlName="beneficiarioSearch"
-        [matAutocomplete]="autoBeneficiario"
-        placeholder="Escribe para buscar..."
-      />
-      <mat-autocomplete
-        #autoBeneficiario="matAutocomplete"
-        (optionSelected)="onSeleccionarBeneficiario($event.option.value)"
-        [displayWith]="displayBeneficiario"
-      >
-        @if (isSearchingBeneficiario) {
-          <mat-option disabled>Buscando...</mat-option>
-        }
-        @for (b of beneficiariosSugeridos; track b._id) {
-          <mat-option [value]="b">
-            <span class="beneficiario-option">
-              <strong
-                >{{ b.nombre }} {{ b.apellidoPaterno }}
-                {{ b.apellidoMaterno }}</strong
-              >
-              <small>{{ b.curp }}</small>
-            </span>
-          </mat-option>
-        }
-        @if (
-          !isSearchingBeneficiario &&
-          beneficiariosSugeridos.length === 0 &&
-          form.get("beneficiarioSearch")?.value?.length >= 2
-        ) {
-          <mat-option disabled>Sin resultados</mat-option>
-        }
-      </mat-autocomplete>
-      @if (
-        form.get("beneficiarioId")?.invalid &&
-        form.get("beneficiarioSearch")?.touched
-      ) {
-        <mat-error>Selecciona un beneficiario de la lista</mat-error>
-      }
-    </mat-form-field>
 
-    @if (beneficiarioSeleccionado) {
-      <div class="row two-cols">
-        <!-- Programa -->
-        <mat-form-field appearance="outline">
-          <mat-label>Programa</mat-label>
-          <mat-select formControlName="programaId">
-            @for (p of programas; track p._id) {
-              <mat-option [value]="p._id">{{ p.nombre }}</mat-option>
-            }
-          </mat-select>
-          <mat-error>Este campo es requerido</mat-error>
-        </mat-form-field>
+    <!-- ═══ BUSCAR BENEFICIARIO ═══ -->
+    <div class="form-section">
+      <p class="section-title">Beneficiario</p>
 
-        <!-- Tipo de apoyo -->
-        <mat-form-field appearance="outline">
-          <mat-label>Tipo de apoyo</mat-label>
-          <mat-select
-            formControlName="tipo"
-            [disabled]="!form.get('programaId')?.value"
+      @if (!beneficiarioSeleccionado) {
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
+          <mat-label>Buscar por nombre, CURP o folio</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            formControlName="beneficiarioSearch"
+            [matAutocomplete]="autoBeneficiario"
+            placeholder="Escribe para buscar..."
+          />
+          @if (isSearchingBeneficiario) {
+            <mat-spinner matSuffix diameter="18"></mat-spinner>
+          }
+          <mat-autocomplete
+            #autoBeneficiario="matAutocomplete"
+            (optionSelected)="onSeleccionarBeneficiario($event.option.value)"
+            [displayWith]="displayBeneficiario"
           >
-            @for (t of tiposApoyoDisponibles; track t) {
-              <mat-option [value]="t">{{ t }}</mat-option>
+            @if (isSearchingBeneficiario) {
+              <mat-option disabled>Buscando...</mat-option>
             }
-            @if (
-              tiposApoyoDisponibles.length === 0 &&
-              form.get("programaId")?.value
-            ) {
-              <mat-option disabled>Sin tipos de apoyo disponibles</mat-option>
+            @for (b of beneficiariosSugeridos; track b._id) {
+              <mat-option [value]="b">
+                <span class="beneficiario-option">
+                  <strong>{{ b.nombre }} {{ b.apellidoPaterno }} {{ b.apellidoMaterno }}</strong>
+                  <small>{{ b.curp }}</small>
+                </span>
+              </mat-option>
             }
-          </mat-select>
-          @if (!form.get("programaId")?.value) {
-            <mat-hint>Selecciona un programa primero</mat-hint>
-          }
-          <mat-error>Este campo es requerido</mat-error>
-        </mat-form-field>
-      </div>
-
-      <div class="row two-cols">
-        <!-- Fecha -->
-        <mat-form-field appearance="outline">
-          <mat-label>Fecha del apoyo</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="fecha" />
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-          <mat-error>Este campo es requerido</mat-error>
-        </mat-form-field>
-
-        <!-- Monto -->
-        <mat-form-field appearance="outline">
-          <mat-label>Monto</mat-label>
-          <mat-icon matPrefix>attach_money</mat-icon>
-          <input
-            matInput
-            type="number"
-            formControlName="monto"
-            min="0"
-            placeholder="0.00"
-          />
-          <span matTextSuffix>MXN</span>
-          @if (!esApoyoEconomico) {
-            <mat-hint>Solo aplica para apoyo económico</mat-hint>
+            @if (!isSearchingBeneficiario && beneficiariosSugeridos.length === 0 && form.get('beneficiarioSearch')?.value?.length >= 2) {
+              <mat-option disabled>Sin resultados</mat-option>
+            }
+          </mat-autocomplete>
+          @if (form.get('beneficiarioId')?.invalid && form.get('beneficiarioSearch')?.touched) {
+            <mat-error>Selecciona un beneficiario de la lista</mat-error>
           }
         </mat-form-field>
-      </div>
 
-      <!-- Cantidad -->
-      @if (!esApoyoEconomico) {
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Cantidad</mat-label>
-          <input
-            matInput
-            type="number"
-            formControlName="cantidad"
-            min="1"
-            placeholder="1"
-          />
-          <mat-error>La cantidad es requerida y debe ser mayor a 0</mat-error>
-        </mat-form-field>
+        <div class="search-hint">
+          <mat-icon>info</mat-icon>
+          Busca y selecciona un beneficiario para continuar
+        </div>
+      } @else {
+        <div class="beneficiario-card">
+          <mat-icon class="beneficiario-card__icon">person</mat-icon>
+          <div class="beneficiario-card__info">
+            <span class="beneficiario-card__nombre">{{ beneficiarioSeleccionado.nombre }} {{ beneficiarioSeleccionado.apellidoPaterno }} {{ beneficiarioSeleccionado.apellidoMaterno }}</span>
+            <span class="beneficiario-card__curp">{{ beneficiarioSeleccionado.curp }}</span>
+          </div>
+          <button type="button" mat-icon-button class="beneficiario-card__clear" (click)="limpiarBeneficiario()" matTooltip="Cambiar beneficiario">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
       }
+    </div>
 
-      <!-- Observaciones -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Observaciones</mat-label>
-        <textarea
-          matInput
-          formControlName="observaciones"
-          rows="3"
-          placeholder="Observaciones adicionales..."
-        ></textarea>
-      </mat-form-field>
-    } @else {
-      <div class="beneficiario-pending-hint">
-        <span>Busca y selecciona un beneficiario para continuar</span>
+    <!-- ═══ DATOS DEL APOYO ═══ -->
+    @if (beneficiarioSeleccionado) {
+      <div class="form-section">
+        <p class="section-title">Datos del apoyo</p>
+
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Programa</mat-label>
+            <mat-select formControlName="programaId">
+              @for (p of programas; track p._id) {
+                <mat-option [value]="p._id">{{ p.nombre }}</mat-option>
+              }
+            </mat-select>
+            <mat-error>Este campo es requerido</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Tipo de apoyo</mat-label>
+            <mat-select formControlName="tipo" [disabled]="!form.get('programaId')?.value">
+              @for (t of tiposApoyoDisponibles; track t) {
+                <mat-option [value]="t">{{ t }}</mat-option>
+              }
+              @if (tiposApoyoDisponibles.length === 0 && form.get('programaId')?.value) {
+                <mat-option disabled>Sin tipos de apoyo disponibles</mat-option>
+              }
+            </mat-select>
+            @if (!form.get('programaId')?.value) {
+              <mat-hint>Selecciona un programa primero</mat-hint>
+            }
+            <mat-error>Este campo es requerido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha del apoyo</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fecha" />
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error>Este campo es requerido</mat-error>
+          </mat-form-field>
+
+          @if (esApoyoEconomico) {
+            <mat-form-field appearance="outline">
+              <mat-label>Monto</mat-label>
+              <mat-icon matPrefix>attach_money</mat-icon>
+              <input matInput type="number" formControlName="monto" min="0" placeholder="0.00" />
+              <span matTextSuffix>MXN</span>
+            </mat-form-field>
+          } @else {
+            <mat-form-field appearance="outline">
+              <mat-label>Cantidad</mat-label>
+              <input matInput type="number" formControlName="cantidad" min="1" placeholder="1" />
+              <mat-error>La cantidad es requerida y debe ser mayor a 0</mat-error>
+            </mat-form-field>
+          }
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Observaciones</mat-label>
+          <textarea matInput formControlName="observaciones" rows="3" placeholder="Observaciones adicionales..."></textarea>
+        </mat-form-field>
       </div>
     }
-  </form>
-</mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button
-    mat-button
-    type="button"
-    (click)="onCancel()"
-    [disabled]="isSubmitting"
-  >
-    Cancelar
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    type="button"
-    (click)="onSubmit()"
-    [disabled]="form.invalid || isSubmitting"
-  >
-    @if (isSubmitting) {
-      <mat-spinner diameter="18"></mat-spinner>
-    } @else {
-      Registrar Apoyo
-    }
-  </button>
-</mat-dialog-actions>
+  </form>
+</app-sagim-dialog>

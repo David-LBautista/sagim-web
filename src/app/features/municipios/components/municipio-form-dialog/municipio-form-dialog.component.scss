@@ -129,17 +129,6 @@
   }
 }
 
-mat-dialog-actions {
-  padding: var(--sagim-spacing-md) var(--sagim-spacing-lg);
-  gap: var(--sagim-spacing-sm);
-
-  button {
-    mat-spinner {
-      display: inline-block;
-      margin: 0;
-    }
-  }
-}
 
 @media (max-width: 768px) {
   .municipio-form {

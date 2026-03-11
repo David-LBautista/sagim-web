@@ -15,6 +15,7 @@ import {
 import { PagoService } from './pago.service';
 import { environment } from '../../../environments/environment';
 import type { OrdenPagoPublica } from '../../features/tesoreria/models/ordenes-pago.model';
+import { MunicipioContextService } from '../municipios/municipio-context.service';
 
 // ── Estados de la vista ────────────────────────────────────────────────
 type PagoEstado =
@@ -38,6 +39,7 @@ export class PagoPage implements OnInit {
   private route = inject(ActivatedRoute);
   private pagoService = inject(PagoService);
   private destroyRef = inject(DestroyRef);
+  private municipioContext = inject(MunicipioContextService);
 
   // ── Estado ──────────────────────────────────────────────────────────
   estado = signal<PagoEstado>('cargando');
@@ -68,6 +70,16 @@ export class PagoPage implements OnInit {
       .subscribe({
         next: (orden) => {
           this.orden.set(orden);
+          // Set shared public layout context
+          this.municipioContext.init(
+            '',
+            {
+              nombre: orden.municipio?.nombre ?? 'Municipio',
+              slug: '',
+              logoUrl: orden.municipio?.logoUrl,
+            },
+            'Sistema de Pagos Municipales — SAGIM',
+          );
 
           if (orden.estado === 'PAGADA') {
             this.estado.set('pagada');
@@ -177,7 +189,6 @@ export class PagoPage implements OnInit {
     const token = this.route.snapshot.paramMap.get('token')!;
 
     // Paso 1: Stripe confirma el cobro
-    console.log('[Pago] clientSecret:', this.clientSecret);
     const { paymentIntent, error } = await this.stripe.confirmCardPayment(
       this.clientSecret,
       { payment_method: { card: this.cardNumberElement } },
@@ -198,7 +209,6 @@ export class PagoPage implements OnInit {
     }
 
     // Paso 2: Notificar al backend y obtener folio + pagoId
-    console.log('[pagar] paymentIntent.id:', paymentIntent?.id);
     this.pagoService.pagar(token, paymentIntent!.id).subscribe({
       next: (res) => {
         this.folio.set(res.folio);

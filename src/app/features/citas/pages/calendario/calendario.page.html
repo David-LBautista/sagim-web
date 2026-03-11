@@ -1,0 +1,186 @@
+<div class="calendario-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="sagim-title-xl">Calendario de Citas</h1>
+      <p class="sagim-subtitle-light">Vista mensual de la agenda</p>
+    </div>
+    <div class="page-header__actions">
+      @if (configs().length > 1) {
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="area-select"
+        >
+          <mat-label>Área</mat-label>
+          <mat-select
+            [value]="areaFiltro()"
+            (selectionChange)="onAreaChange($event.value)"
+          >
+            <mat-option value="">Todas las áreas</mat-option>
+            @for (c of configs(); track c._id) {
+              <mat-option [value]="getAreaId(c)">{{
+                getAreaNombre(c)
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+      <app-action-button
+        label="Hoy"
+        icon="today"
+        color="accent"
+        (clicked)="irHoy()"
+      />
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar" />
+  }
+
+  <div class="calendar-layout" [class.has-panel]="diaSeleccionado()">
+    <!-- Calendario -->
+    <mat-card appearance="outlined" class="calendar-card">
+      <!-- Navegación -->
+      <div class="cal-nav">
+        <button
+          mat-icon-button
+          (click)="mesAnterior()"
+          matTooltip="Mes anterior"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="cal-nav__label">{{ mesLabel() }}</span>
+        <button
+          mat-icon-button
+          (click)="mesSiguiente()"
+          matTooltip="Mes siguiente"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <!-- Cabecera días -->
+      <div class="cal-grid cal-grid--header">
+        @for (d of diasSemana; track d) {
+          <div class="cal-cell cal-cell--header">{{ d }}</div>
+        }
+      </div>
+
+      <!-- Celdas -->
+      <div class="cal-grid">
+        @for (dia of calendarioDias(); track dia.fecha.toISOString()) {
+          <div
+            class="cal-cell"
+            [class.cal-cell--otro-mes]="!dia.esDelMes"
+            [class.cal-cell--hoy]="dia.esHoy"
+            [class.cal-cell--seleccionado]="esDiaSeleccionado(dia)"
+            [class.cal-cell--con-citas]="dia.citas.length > 0"
+            (click)="seleccionarDia(dia)"
+          >
+            <span class="cal-cell__num">{{ dia.fecha.getDate() }}</span>
+
+            @if (dia.citas.length > 0) {
+              <div class="cal-cell__dots">
+                @for (cita of dia.citas.slice(0, 3); track cita._id) {
+                  <span
+                    class="cal-dot cal-dot--{{ estadoColor(cita.estado) }}"
+                  ></span>
+                }
+                @if (dia.citas.length > 3) {
+                  <span class="cal-cell__more"
+                    >+{{ dia.citas.length - 3 }}</span
+                  >
+                }
+              </div>
+              <div class="cal-cell__badge">{{ dia.citas.length }}</div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Leyenda -->
+      <div class="cal-legend">
+        <span class="cal-legend__item"
+          ><span class="cal-dot cal-dot--warn-chip"></span> Pendiente</span
+        >
+        <span class="cal-legend__item"
+          ><span class="cal-dot cal-dot--info-chip"></span> Confirmada</span
+        >
+        <span class="cal-legend__item"
+          ><span class="cal-dot cal-dot--success-chip"></span> Atendida</span
+        >
+        <span class="cal-legend__item"
+          ><span class="cal-dot cal-dot--neutral-chip"></span> No se
+          presentó</span
+        >
+        <span class="cal-legend__item"
+          ><span class="cal-dot cal-dot--danger-chip"></span> Cancelada</span
+        >
+      </div>
+    </mat-card>
+
+    <!-- Panel lateral del día seleccionado -->
+    @if (diaSeleccionado()) {
+      <mat-card appearance="outlined" class="dia-panel">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>event_note</mat-icon>
+          <mat-card-title>{{ diaLabel(diaSeleccionado()!) }}</mat-card-title>
+          <mat-card-subtitle
+            >{{ citasDiaSeleccionado().length }} cita(s)</mat-card-subtitle
+          >
+        </mat-card-header>
+        <mat-card-content>
+          @if (citasDiaSeleccionado().length === 0) {
+            <div class="dia-panel__empty">
+              <mat-icon>event_busy</mat-icon>
+              <p>Sin citas este día</p>
+            </div>
+          } @else {
+            <div class="citas-list">
+              @for (cita of citasDiaSeleccionado(); track cita._id) {
+                <div class="cita-row" (click)="abrirDetalle(cita)">
+                  <div class="cita-row__hora">{{ cita.hora }}</div>
+                  <div class="cita-row__info">
+                    <span class="cita-row__nombre">{{
+                      cita.ciudadano.nombre
+                    }}</span>
+                    <span class="cita-row__tramite">{{ cita.tramite }}</span>
+                  </div>
+                  <div
+                    class="cita-row__actions"
+                    (click)="$event.stopPropagation()"
+                  >
+                    @if (cambiandoEstado() === cita._id) {
+                      <mat-progress-bar
+                        mode="indeterminate"
+                        style="width: 60px"
+                      />
+                    } @else {
+                      <span
+                        class="estado-chip {{ estadoColor(cita.estado) }}"
+                        [matMenuTriggerFor]="menuEstado"
+                        >{{ estadoLabels[cita.estado] }}</span
+                      >
+                      <mat-menu #menuEstado="matMenu">
+                        @for (estado of estadosAccion; track estado) {
+                          <button
+                            mat-menu-item
+                            (click)="cambiarEstado(cita, estado)"
+                          >
+                            {{ estadoLabels[estado] }}
+                          </button>
+                        }
+                      </mat-menu>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+</div>

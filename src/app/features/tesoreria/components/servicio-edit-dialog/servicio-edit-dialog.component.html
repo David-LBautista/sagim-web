@@ -1,6 +1,11 @@
-<h2 mat-dialog-title class="dialog-title">Editar Servicio</h2>
-
-<mat-dialog-content>
+<app-sagim-dialog
+  title="Editar Servicio"
+  submitLabel="Guardar cambios"
+  [isSubmitting]="isSubmitting"
+  [submitDisabled]="form.invalid"
+  (submitClick)="onSubmit()"
+  (cancelClick)="onCancel()"
+>
   <div class="servicio-ref">
     <span class="ref-nombre">{{ data.servicio.nombre }}</span>
   </div>
@@ -62,24 +67,4 @@
       </div>
     </div>
   </form>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
-    Cancelar
-  </button>
-  <button
-    mat-flat-button
-    color="primary"
-    (click)="onSubmit()"
-    [disabled]="isSubmitting || form.invalid"
-  >
-    @if (isSubmitting) {
-      <mat-spinner
-        diameter="18"
-        style="display: inline-block; margin-right: 8px"
-      />
-    }
-    Guardar cambios
-  </button>
-</mat-dialog-actions>
+</app-sagim-dialog>

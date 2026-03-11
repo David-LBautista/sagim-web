@@ -29,6 +29,10 @@ import type {
   PresidenciaDashboardData,
   ServicioTop,
 } from '../models/presidencia-dashboard.model';
+import {
+  WebSocketService,
+  PresidencialDashboardUpdateEvent,
+} from '../../../core/services/websocket.service';
 
 @Component({
   selector: 'app-presidencia',
@@ -45,6 +49,7 @@ import type {
 })
 export class PresidenciaPage implements OnInit, OnDestroy {
   private dashboardService = inject(PresidenciaDashboardService);
+  private wsService = inject(WebSocketService);
   private destroy$ = new Subject<void>();
 
   loading = true;
@@ -302,6 +307,8 @@ export class PresidenciaPage implements OnInit, OnDestroy {
   alertasDif: AlertaItem[] = [];
 
   ngOnInit(): void {
+    this.suscribirWebSocket();
+
     this.dashboardService
       .getDashboard()
       .pipe(takeUntil(this.destroy$))
@@ -413,6 +420,73 @@ export class PresidenciaPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  private suscribirWebSocket(): void {
+    this.wsService.presidencialDashboardUpdate$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((ev: PresidencialDashboardUpdateEvent) => {
+        // ── Tesorería ────────────────────────────────────────────────────
+        if (this.data) {
+          this.data = {
+            ...this.data,
+            tesoreriaResumen: {
+              ...this.data.tesoreriaResumen,
+              recaudacionTotal: ev.tesoreria.resumen.recaudacionTotal,
+              pagosRealizados: ev.tesoreria.resumen.pagosRealizados,
+            },
+            comparativoMensual: ev.tesoreria.comparativoMensual,
+            difResumen: {
+              ...this.data.difResumen,
+              beneficiariosUnicos: ev.dif.resumen.beneficiariosUnicos,
+              apoyosEntregados: ev.dif.resumen.apoyosEntregados,
+            },
+            beneficiariosPorLocalidad: ev.dif.beneficiariosPorLocalidad,
+          };
+        }
+
+        if (ev.tesoreria.ingresos?.length) {
+          this.buildIngresosChart(ev.tesoreria.ingresos);
+        }
+        if (ev.tesoreria.ingresosPorArea?.length) {
+          this.ingresosPorArea = ev.tesoreria.ingresosPorArea;
+          this.buildAreaChart(ev.tesoreria.ingresosPorArea);
+        }
+        if (ev.tesoreria.serviciosTop?.length) {
+          this.serviciosTop = ev.tesoreria.serviciosTop;
+        }
+        if (ev.tesoreria.alertas) {
+          this.alertasTesoreria = ev.tesoreria.alertas;
+        }
+
+        // ── DIF ──────────────────────────────────────────────────────────
+        if (ev.dif.apoyosPorPrograma?.length) {
+          this.buildApoyosChart(ev.dif.apoyosPorPrograma);
+        }
+        if (ev.dif.comparativoMensual?.length) {
+          this.buildComparativoDifChart(ev.dif.comparativoMensual);
+        }
+        if (ev.dif.alertas) {
+          this.alertasDif = ev.dif.alertas;
+        }
+      });
+
+    // Reconexión → recargar HTTP snapshot
+    this.wsService.reconectado$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loading = true;
+      this.dashboardService
+        .getDashboard()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (d) => {
+            this.data = d;
+            this.loading = false;
+          },
+          error: () => {
+            this.loading = false;
+          },
+        });
+    });
+  }
+
   private buildIngresosChart(items: IngresosPorDiaItem[]): void {
     const sorted = [...items].sort((a, b) => a.fecha.localeCompare(b.fecha));
     const categories = sorted.map((i) => {
@@ -518,7 +592,54 @@ export class PresidenciaPage implements OnInit, OnDestroy {
       })
     );
   }
+  get periodoLabel(): string {
+    if (!this.data?.comparativoMensual?.length) return '';
+    const sorted = [...this.data.comparativoMensual].sort((a, b) =>
+      a.mes.localeCompare(b.mes),
+    );
+    const ultimo = sorted[sorted.length - 1].mes;
+    const [anio, mes] = ultimo.split('-');
+    const MESES = [
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre',
+    ];
+    return `${MESES[parseInt(mes, 10) - 1]} ${anio}`;
+  }
 
+  get periodoAnteriorLabel(): string {
+    if (!this.data?.comparativoMensual?.length) return 'mes anterior';
+    const sorted = [...this.data.comparativoMensual].sort((a, b) =>
+      a.mes.localeCompare(b.mes),
+    );
+    if (sorted.length < 2) return 'mes anterior';
+    const penultimo = sorted[sorted.length - 2].mes;
+    const [, mes] = penultimo.split('-');
+    const MESES = [
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic',
+    ];
+    return MESES[parseInt(mes, 10) - 1];
+  }
   // ─── KPI 2: Variación mensual ──────────────────────────────────────────────
   get variacionMensual(): number | null {
     if (!this.data?.comparativoMensual?.length) return null;
@@ -551,7 +672,7 @@ export class PresidenciaPage implements OnInit, OnDestroy {
     const v = this.variacionMensual;
     if (v === null) return { label: '', direction: 'neutral' };
     return {
-      label: `${v > 0 ? '+' : ''}${v}% vs mes anterior`,
+      label: `${v > 0 ? '+' : ''}${v}% vs ${this.periodoAnteriorLabel}`,
       direction: v > 0 ? 'up' : v < 0 ? 'down' : 'neutral',
     };
   }

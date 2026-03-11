@@ -15,6 +15,7 @@ import {
 import { UserTableComponent } from '../components/user-table/user-table.component';
 import { UserFormDialogComponent } from '../components/user-form-dialog/user-form-dialog.component';
 import { AuthService } from '../../auth/services/auth.service';
+import { ActionButtonComponent } from '../../../shared/components/action-button/action-button.component';
 
 @Component({
   selector: 'app-users-dashboard',
@@ -27,6 +28,7 @@ import { AuthService } from '../../auth/services/auth.service';
     MatCardModule,
     UserFiltersComponent,
     UserTableComponent,
+    ActionButtonComponent,
   ],
   templateUrl: './users-dashboard.page.html',
   styleUrls: ['./users-dashboard.page.scss'],

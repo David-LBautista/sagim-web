@@ -23,6 +23,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { TesoreriaService } from '../../services/tesoreria.service';
 import { CajaService } from '../../services/caja.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
+import { CatalogosService } from '../../../../shared/services/catalogos.service';
+import { CategoriaServicioCatalogo } from '../../../../shared/models/catalogo.model';
 import {
   ServicioCobrable,
   CategoriaServicio,
@@ -30,6 +32,7 @@ import {
 } from '../../models/servicios.model';
 import { NotificationType } from '../../../../shared/models/notification.model';
 import { ServicioEditDialogComponent } from '../../components/servicio-edit-dialog/servicio-edit-dialog.component';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 
 export const CATEGORIA_CONFIG: Record<
   CategoriaServicio,
@@ -60,6 +63,7 @@ export const CATEGORIA_CONFIG: Record<
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatChipsModule,
+    ActionButtonComponent,
   ],
   templateUrl: './servicios.page.html',
   styleUrls: ['./servicios.page.scss'],
@@ -68,6 +72,7 @@ export class ServiciosTesoreriaPage implements OnInit, OnDestroy {
   private tesoreriaService = inject(TesoreriaService);
   private cajaService = inject(CajaService);
   private notificationService = inject(NotificationService);
+  private catalogosService = inject(CatalogosService);
   private dialog = inject(MatDialog);
   private destroy$ = new Subject<void>();
   private busquedaSubject = new Subject<string>();
@@ -75,9 +80,7 @@ export class ServiciosTesoreriaPage implements OnInit, OnDestroy {
   readonly CATEGORIA_CONFIG = CATEGORIA_CONFIG;
 
   servicios = signal<ServicioCobrable[]>([]);
-  categorias = signal<CategoriaServicio[]>(
-    Object.keys(CATEGORIA_CONFIG) as CategoriaServicio[],
-  );
+  categorias = signal<CategoriaServicioCatalogo[]>([]);
   hasOverrides = signal(false);
   loading = signal(true);
   restableciendo = signal(false);
@@ -100,7 +103,7 @@ export class ServiciosTesoreriaPage implements OnInit, OnDestroy {
   ];
 
   ngOnInit(): void {
-    this.loadCatalogo();
+    this.loadCategorias();
     this.checkOverrides();
     this.loadServicios();
 
@@ -143,17 +146,16 @@ export class ServiciosTesoreriaPage implements OnInit, OnDestroy {
       });
   }
 
-  private loadCatalogo(): void {
-    this.tesoreriaService
-      .getCatalogo()
+  private loadCategorias(): void {
+    this.catalogosService
+      .getCategoriasServicios()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res) => {
-          if (res.categorias?.length) {
-            this.categorias.set(res.categorias);
+        next: (data) => {
+          if (data?.length) {
+            this.categorias.set(data.filter((c) => c.activo));
           }
         },
-        // Si falla el endpoint, el selector ya tiene las categorías del CATEGORIA_CONFIG
         error: () => {},
       });
   }

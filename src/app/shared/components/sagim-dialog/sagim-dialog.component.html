@@ -1,0 +1,31 @@
+<h2 mat-dialog-title class="sagim-dialog-title">{{ title }}</h2>
+
+<mat-dialog-content class="sagim-dialog-content">
+  @if (isLoading) {
+    <div class="sagim-dialog-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando información...</p>
+    </div>
+  } @else {
+    <ng-content></ng-content>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="sagim-dialog-actions">
+  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
+    {{ cancelLabel }}
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="submitDisabled || isSubmitting || isLoading"
+  >
+    @if (isSubmitting) {
+      <mat-spinner diameter="20"></mat-spinner>
+      <span>{{ submitLabel }}...</span>
+    } @else {
+      <span>{{ submitLabel }}</span>
+    }
+  </button>
+</mat-dialog-actions>

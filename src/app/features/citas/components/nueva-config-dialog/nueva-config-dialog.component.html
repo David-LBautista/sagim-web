@@ -1,0 +1,205 @@
+<app-sagim-dialog
+  [title]="dialogTitle()"
+  [submitLabel]="submitLabel()"
+  [cancelLabel]="cancelLabel()"
+  [isLoading]="cargando()"
+  [submitDisabled]="!puedeAvanzar()"
+  (submitClick)="onSubmit()"
+  (cancelClick)="onCancel()"
+>
+  <!-- ── Paso 1: seleccionar área ─────────────────────────────────── -->
+  @if (paso() === 1) {
+    @if (error()) {
+      <div class="dialog-empty-state">
+        <mat-icon class="state-icon state-icon--error">error_outline</mat-icon>
+        <p>{{ error() }}</p>
+      </div>
+    } @else if (!cargando() && areas().length === 0) {
+      <div class="dialog-empty-state">
+        <mat-icon class="state-icon state-icon--success"
+          >check_circle_outline</mat-icon
+        >
+        <p>Todas las áreas activas del municipio ya están configuradas.</p>
+      </div>
+    } @else {
+      <p class="dialog-hint">
+        Selecciona el área para crear su configuración de citas:
+      </p>
+      <mat-selection-list [multiple]="false" class="areas-list">
+        @for (item of areas(); track item.area) {
+          <mat-list-option
+            [value]="item"
+            [selected]="seleccionada()?.area === item.area"
+            (click)="seleccionada.set(item)"
+          >
+            <mat-icon matListItemIcon>business</mat-icon>
+            <span matListItemTitle>{{ item.area }}</span>
+            <span matListItemLine class="modulo-label">{{ item.modulo }}</span>
+          </mat-list-option>
+        }
+      </mat-selection-list>
+    }
+  }
+
+  <!-- ── Paso 2: parámetros generales ────────────────────────────── -->
+  @if (paso() === 2) {
+    <form
+      [formGroup]="configForm"
+      class="config-form"
+      style="padding-top: 32px"
+    >
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Duración del slot</mat-label>
+          <mat-select formControlName="duracionSlotMinutos">
+            @for (opt of duracionOptions; track opt) {
+              <mat-option [value]="opt">{{ opt }} min</mat-option>
+            }
+          </mat-select>
+          <mat-icon matSuffix>timer</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Días mín. anticipación</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="diasAnticipacionMinima"
+            min="0"
+          />
+          <mat-hint>0 = mismo día</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Días máx. anticipación</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="diasAnticipacionMaxima"
+            min="1"
+          />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Instrucciones para el ciudadano</mat-label>
+        <textarea
+          matInput
+          formControlName="instrucciones"
+          rows="2"
+          placeholder="Ej: Presentarse con identificación oficial…"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Trámites -->
+      <p class="form-section-label">Trámites disponibles</p>
+      <div class="tramite-input-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Agregar trámite</mat-label>
+          <input
+            matInput
+            #tramiteInput
+            [matAutocomplete]="autoTramite"
+            (input)="filtroTramite.set(tramiteInput.value)"
+            (keydown.enter)="addTramite(tramiteInput); $event.preventDefault()"
+          />
+          @if (cargandoServicios()) {
+            <mat-spinner matSuffix diameter="18" />
+          }
+        </mat-form-field>
+        <button
+          mat-icon-button
+          type="button"
+          color="primary"
+          (click)="addTramite(tramiteInput)"
+        >
+          <mat-icon>add_circle</mat-icon>
+        </button>
+      </div>
+
+      <mat-autocomplete
+        #autoTramite="matAutocomplete"
+        (optionSelected)="onServicioSelected($event, tramiteInput)"
+      >
+        @for (s of serviciosFiltrados(); track s) {
+          <mat-option [value]="s">{{ s }}</mat-option>
+        }
+      </mat-autocomplete>
+
+      @if (tramites().length > 0) {
+        <mat-chip-set>
+          @for (t of tramites(); track t) {
+            <mat-chip (removed)="removeTramite(t)">
+              {{ t }}
+              <button matChipRemove><mat-icon>cancel</mat-icon></button>
+            </mat-chip>
+          }
+        </mat-chip-set>
+      } @else {
+        <p class="dialog-hint">Sin trámites aún (opcional)</p>
+      }
+    </form>
+  }
+
+  <!-- ── Paso 3: horarios ─────────────────────────────────────────── -->
+  @if (paso() === 3) {
+    <p class="dialog-hint">
+      Define los bloques de atención por día de la semana.
+    </p>
+    <form [formGroup]="horarioForm">
+      <div class="dias-list" formGroupName="horarios">
+        @for (dia of diasSemana; track dia.key) {
+          <div class="dia-row" [formGroupName]="dia.key">
+            <mat-slide-toggle formControlName="activo" color="primary">
+              {{ dia.label }}
+            </mat-slide-toggle>
+
+            @if (
+              horarioForm.get("horarios")?.get(dia.key)?.get("activo")?.value
+            ) {
+              <div class="bloques" formArrayName="bloques">
+                @for (b of getBloquesCtrl(dia.key); track $index) {
+                  <div class="bloque-row" [formGroupName]="$index">
+                    <mat-form-field appearance="outline" class="time-field">
+                      <mat-label>Inicio</mat-label>
+                      <input matInput type="time" formControlName="inicio" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="time-field">
+                      <mat-label>Fin</mat-label>
+                      <input matInput type="time" formControlName="fin" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="cap-field">
+                      <mat-label>Cap.</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        formControlName="capacidadPorSlot"
+                        min="1"
+                      />
+                    </mat-form-field>
+                    <button
+                      mat-icon-button
+                      type="button"
+                      color="warn"
+                      (click)="removeBloque(dia.key, $index)"
+                    >
+                      <mat-icon>remove_circle_outline</mat-icon>
+                    </button>
+                  </div>
+                }
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="add-bloque-btn"
+                  (click)="addBloque(dia.key)"
+                >
+                  <mat-icon>add</mat-icon> Bloque
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </form>
+  }
+</app-sagim-dialog>

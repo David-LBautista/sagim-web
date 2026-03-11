@@ -6,15 +6,14 @@
         <h1 class="sagim-title-xl">Usuarios</h1>
         <p class="sagim-subtitle-light">Administración de cuentas</p>
       </div>
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="onCreateUser()"
-        class="create-button"
-      >
-        <mat-icon>add</mat-icon>
-        Crear Usuario
-      </button>
+      <div class="action-buttons">
+        <app-action-button
+          label="Crear Usuario"
+          icon="add"
+          color="primary"
+          (clicked)="onCreateUser()"
+        />
+      </div>
     </div>
   </div>
 

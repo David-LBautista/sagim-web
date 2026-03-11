@@ -1,0 +1,509 @@
+<div class="configuracion-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="sagim-title-xl">Configuración de Citas</h1>
+      <p class="sagim-subtitle-light">
+        Horarios, slots y bloqueos por área de atención
+      </p>
+    </div>
+    <div class="page-header__actions">
+      <app-action-button
+        label="Actualizar"
+        icon="refresh"
+        color="accent"
+        (clicked)="cargar()"
+      />
+      <app-action-button
+        label="Agregar área"
+        icon="add"
+        color="primary"
+        (clicked)="agregarArea()"
+      />
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar" />
+  }
+
+  @if (!cargando() && configs().length === 0) {
+    <div class="empty-state">
+      <mat-icon>settings_suggest</mat-icon>
+      <p>No hay áreas configuradas</p>
+    </div>
+  }
+
+  @if (configs().length > 0) {
+    <div class="config-layout">
+      <!-- ── Left: Areas panel ──────────────────────────────────────────── -->
+      <div class="areas-panel">
+        <div class="areas-panel__header">
+          <span class="areas-panel__title">Áreas</span>
+          <span class="areas-panel__count">{{ configs().length }}</span>
+        </div>
+        <div class="areas-panel__list">
+          @for (config of configs(); track config._id) {
+            <div
+              class="area-row"
+              [class.area-row--selected]="
+                areaSeleccionada()?._id === config._id
+              "
+              [class.area-row--active]="config.activo"
+              [class.area-row--inactive]="!config.activo"
+              (click)="seleccionarArea(config)"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="area-row__dot"
+                [class.area-row__dot--on]="config.activo"
+              ></div>
+              <span class="area-row__name">{{ getAreaNombre(config) }}</span>
+              @if (togglando() === config._id) {
+                <mat-icon class="spin-icon area-row__spinner"
+                  >autorenew</mat-icon
+                >
+              } @else {
+                <button
+                  mat-icon-button
+                  class="area-row__toggle-btn"
+                  [matTooltip]="config.activo ? 'Desactivar' : 'Activar'"
+                  (click)="toggleActivo(config); $event.stopPropagation()"
+                >
+                  <mat-icon>{{
+                    config.activo ? "pause_circle" : "play_circle"
+                  }}</mat-icon>
+                </button>
+              }
+            </div>
+          }
+        </div>
+        <!-- Footer: add area -->
+        <div class="areas-panel__footer">
+          <button
+            mat-stroked-button
+            class="areas-panel__add-btn"
+            (click)="agregarArea()"
+          >
+            <mat-icon>add</mat-icon>
+            Agregar área
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Right: Config detail ───────────────────────────────────────── -->
+      <div class="config-detail">
+        @if (!areaSeleccionada()) {
+          <div class="config-detail__placeholder">
+            <mat-icon>tune</mat-icon>
+            <p>Selecciona un área para configurar</p>
+          </div>
+        } @else {
+          @if (getForm(areaSeleccionada()!._id); as form) {
+            <form [formGroup]="form">
+              <!-- Section 1: General -->
+              <mat-card appearance="outlined" class="section-card">
+                <mat-card-header style="margin-bottom: 16px">
+                  <mat-card-title>Configuración General</mat-card-title>
+                  <mat-card-subtitle>{{
+                    getAreaNombre(areaSeleccionada()!)
+                  }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="general-grid">
+                    <div class="general-grid__toggle">
+                      <mat-slide-toggle
+                        formControlName="activo"
+                        color="primary"
+                      >
+                        Agenda activa
+                      </mat-slide-toggle>
+                      <p class="toggle-hint">
+                        {{
+                          form.get("activo")?.value
+                            ? "Los ciudadanos pueden agendar citas en esta área"
+                            : "Esta área no acepta nuevas citas"
+                        }}
+                      </p>
+                    </div>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Días mín. anticipación</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        formControlName="diasAnticipacionMinima"
+                        min="0"
+                        max="365"
+                      />
+                      <mat-icon matSuffix>calendar_today</mat-icon>
+                      <mat-hint>0 = mismo día</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Días máx. anticipación</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        formControlName="diasAnticipacionMaxima"
+                        min="1"
+                        max="365"
+                      />
+                      <mat-icon matSuffix>calendar_today</mat-icon>
+                      <mat-hint
+                        >Cuántos días puede agendar por adelantado</mat-hint
+                      >
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Duración del slot</mat-label>
+                      <mat-select formControlName="duracionSlotMinutos">
+                        @for (opt of duracionOptions; track opt) {
+                          <mat-option [value]="opt"
+                            >{{ opt }} minutos</mat-option
+                          >
+                        }
+                      </mat-select>
+                      <mat-icon matSuffix>timer</mat-icon>
+                      <mat-hint>Tiempo asignado a cada cita</mat-hint>
+                    </mat-form-field>
+                  </div>
+
+                  <mat-form-field appearance="outline" class="full-field">
+                    <mat-label>Instrucciones para el ciudadano</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="instrucciones"
+                      rows="3"
+                      placeholder="Ej: Favor de presentarse con identificación oficial y comprobante de domicilio…"
+                    ></textarea>
+                    <mat-hint
+                      >Se mostrará al ciudadano al momento de agendar su
+                      cita</mat-hint
+                    >
+                  </mat-form-field>
+
+                  <!-- Trámites -->
+                  <div class="tramites-section">
+                    <p class="tramites-section__label">Trámites / servicios</p>
+                    <div class="tramite-input-row">
+                      <mat-form-field
+                        appearance="outline"
+                        class="tramite-field"
+                      >
+                        <mat-label>Agregar trámite</mat-label>
+                        <input
+                          matInput
+                          #tramiteInputEdit
+                          formControlName="tramitesInput"
+                          [matAutocomplete]="autoTramiteEdit"
+                          (input)="
+                            filtroTramiteEdit.set(tramiteInputEdit.value)
+                          "
+                          (keydown.enter)="
+                            addTramite(
+                              areaSeleccionada()!._id,
+                              tramiteInputEdit
+                            );
+                            $event.preventDefault()
+                          "
+                        />
+                        @if (cargandoServicios()) {
+                          <mat-spinner matSuffix diameter="18" />
+                        }
+                      </mat-form-field>
+                      <button
+                        mat-icon-button
+                        type="button"
+                        color="primary"
+                        (click)="
+                          addTramite(areaSeleccionada()!._id, tramiteInputEdit)
+                        "
+                      >
+                        <mat-icon>add_circle</mat-icon>
+                      </button>
+                    </div>
+
+                    <mat-autocomplete
+                      #autoTramiteEdit="matAutocomplete"
+                      (optionSelected)="
+                        onServicioEditSelected($event, tramiteInputEdit)
+                      "
+                    >
+                      @for (s of serviciosFiltradosEdit(); track s) {
+                        <mat-option [value]="s">{{ s }}</mat-option>
+                      }
+                    </mat-autocomplete>
+                    @if (getTramites(areaSeleccionada()!._id).length > 0) {
+                      <mat-chip-set>
+                        @for (
+                          t of getTramites(areaSeleccionada()!._id);
+                          track t
+                        ) {
+                          <mat-chip
+                            (removed)="
+                              removeTramite(areaSeleccionada()!._id, t)
+                            "
+                          >
+                            {{ t }}
+                            <button matChipRemove>
+                              <mat-icon>cancel</mat-icon>
+                            </button>
+                          </mat-chip>
+                        }
+                      </mat-chip-set>
+                    } @else {
+                      <p class="tramites-section__empty">
+                        Sin trámites configurados
+                      </p>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+              <!-- Section 2: Horarios por Día -->
+              <mat-card
+                appearance="outlined"
+                class="section-card"
+                style="margin-top: 16px"
+              >
+                <mat-card-header>
+                  <mat-card-title>Horarios por Día</mat-card-title>
+                  <mat-card-subtitle
+                    >Define los bloques de atención para cada día de la
+                    semana</mat-card-subtitle
+                  >
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="dias-grid" formGroupName="horarios">
+                    @for (dia of diasSemana; track dia.key) {
+                      @if (dia.key !== "sabado" && dia.key !== "domingo") {
+                        <mat-card class="dia-card" [formGroupName]="dia.key">
+                          <div class="dia-card__header">
+                            <mat-slide-toggle
+                              formControlName="activo"
+                              color="primary"
+                            >
+                              {{ dia.label }}
+                            </mat-slide-toggle>
+                          </div>
+                          @if (
+                            getDiaGroup(form, dia.key).get("activo")?.value
+                          ) {
+                            <div
+                              class="dia-card__bloques"
+                              formArrayName="bloques"
+                            >
+                              @for (
+                                bloque of getBloques(form, dia.key);
+                                track $index
+                              ) {
+                                <div
+                                  class="bloque-row"
+                                  [formGroupName]="$index"
+                                >
+                                  <mat-form-field
+                                    appearance="outline"
+                                    class="bloque-row__time"
+                                  >
+                                    <mat-label>Inicio</mat-label>
+                                    <input
+                                      matInput
+                                      type="time"
+                                      formControlName="inicio"
+                                    />
+                                  </mat-form-field>
+                                  <mat-form-field
+                                    appearance="outline"
+                                    class="bloque-row__time"
+                                  >
+                                    <mat-label>Fin</mat-label>
+                                    <input
+                                      matInput
+                                      type="time"
+                                      formControlName="fin"
+                                    />
+                                  </mat-form-field>
+                                  <mat-form-field
+                                    appearance="outline"
+                                    class="bloque-row__cap"
+                                  >
+                                    <mat-label>Cupo</mat-label>
+                                    <input
+                                      matInput
+                                      type="number"
+                                      formControlName="capacidadPorSlot"
+                                      min="1"
+                                    />
+                                  </mat-form-field>
+                                  <button
+                                    mat-icon-button
+                                    type="button"
+                                    color="warn"
+                                    matTooltip="Eliminar bloque"
+                                    (click)="
+                                      removeBloque(form, dia.key, $index)
+                                    "
+                                  >
+                                    <mat-icon>remove_circle_outline</mat-icon>
+                                  </button>
+                                </div>
+                              }
+                              <button
+                                mat-stroked-button
+                                type="button"
+                                class="add-bloque-btn"
+                                (click)="addBloque(form, dia.key)"
+                              >
+                                <mat-icon>add</mat-icon>
+                                Agregar bloque
+                              </button>
+                            </div>
+                          } @else {
+                            <p class="dia-card__inactive-hint">
+                              Sin atención este día
+                            </p>
+                          }
+                        </mat-card>
+                      }
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+              <!-- Save -->
+              <div class="save-row">
+                @if (guardando() === areaSeleccionada()!._id) {
+                  <mat-progress-bar mode="indeterminate" class="save-bar" />
+                } @else {
+                  <button
+                    mat-flat-button
+                    color="primary"
+                    type="button"
+                    (click)="guardar(areaSeleccionada()!)"
+                    [disabled]="form.invalid"
+                  >
+                    <mat-icon>save</mat-icon>
+                    Guardar configuración
+                  </button>
+                }
+              </div>
+            </form>
+          }
+
+          <!-- Section 3: Bloqueos (outside the schedule form) -->
+          <mat-card appearance="outlined" class="section-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>event_busy</mat-icon>
+              <mat-card-title>Bloqueos de Fechas</mat-card-title>
+              <mat-card-subtitle
+                >Festivos, reuniones u otras fechas sin
+                servicio</mat-card-subtitle
+              >
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="bloqueoForm" class="bloqueo-form">
+                <mat-form-field appearance="outline">
+                  <mat-label>Fecha inicio</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="pickerIni"
+                    formControlName="fechaInicio"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="pickerIni"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #pickerIni></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Fecha fin</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="pickerFin"
+                    formControlName="fechaFin"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="pickerFin"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #pickerFin></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field
+                  appearance="outline"
+                  class="bloqueo-form__motivo"
+                >
+                  <mat-label>Motivo</mat-label>
+                  <input
+                    matInput
+                    formControlName="motivo"
+                    placeholder="Ej: Día festivo, reunión de consejo…"
+                  />
+                </mat-form-field>
+
+                @if (guardandoBloqueo()) {
+                  <mat-progress-bar
+                    mode="indeterminate"
+                    class="bloqueo-saving"
+                  />
+                } @else {
+                  <button
+                    mat-flat-button
+                    color="warn"
+                    type="button"
+                    (click)="crearBloqueo()"
+                    [disabled]="bloqueoForm.invalid"
+                  >
+                    <mat-icon>block</mat-icon>
+                    Bloquear
+                  </button>
+                }
+              </form>
+
+              @if (bloqueosFiltrados().length === 0) {
+                <div class="bloqueos-empty">
+                  <mat-icon>event_available</mat-icon>
+                  <span>Sin fechas bloqueadas para esta área</span>
+                </div>
+              } @else {
+                <div class="bloqueos-lista">
+                  @for (b of bloqueosFiltrados(); track b._id) {
+                    <div class="bloqueo-item">
+                      <mat-icon class="bloqueo-item__icon"
+                        >do_not_disturb_on</mat-icon
+                      >
+                      <div class="bloqueo-item__info">
+                        <span class="bloqueo-item__rango">
+                          {{ b.fechaInicio | date: "dd/MM/yyyy" }}
+                          @if (b.fechaFin !== b.fechaInicio) {
+                            &nbsp;—&nbsp;{{ b.fechaFin | date: "dd/MM/yyyy" }}
+                          }
+                        </span>
+                        <span class="bloqueo-item__motivo">{{ b.motivo }}</span>
+                      </div>
+                      @if (eliminandoBloqueo() === b._id) {
+                        <mat-icon class="spin-icon">autorenew</mat-icon>
+                      } @else {
+                        <button
+                          mat-icon-button
+                          color="warn"
+                          matTooltip="Eliminar bloqueo"
+                          (click)="eliminarBloqueo(b._id)"
+                        >
+                          <mat-icon>delete_outline</mat-icon>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    </div>
+  }
+</div>

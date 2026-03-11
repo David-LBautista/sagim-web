@@ -12,6 +12,7 @@ import {
   ReporteDiarioPdfResponse,
   ReporteMensualResponse,
   ReporteServicioResponse,
+  AlertaTesoreria,
 } from '../models/caja.model';
 import { environment } from '../../../../environments/environment';
 import { ApiEndpoints } from '../../../core/enums/api-endpoints.enum';
@@ -107,5 +108,11 @@ export class CajaService {
         servicioId,
       );
     return this.http.get<ReporteDiarioPdfResponse>(url);
+  }
+
+  /** Alertas activas del dashboard de tesorería */
+  getAlertas(): Observable<AlertaTesoreria[]> {
+    const url = `${environment.apiUrl}${ApiEndpoints.DASHBOARD_TESORERIA_ALERTAS}`;
+    return this.http.get<AlertaTesoreria[]>(url);
   }
 }

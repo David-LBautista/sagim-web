@@ -16,8 +16,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { SagimDialogComponent } from '../../../../shared/components/sagim-dialog/sagim-dialog.component';
 import { ApoyosService } from '../../services/apoyos.service';
+
 import { BeneficiariosService } from '../../services/beneficiarios.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import type { Programa } from '../../models/apoyos.model';
@@ -39,6 +42,8 @@ import type { Beneficiario } from '../../models/beneficiarios.model';
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatAutocompleteModule,
+    MatTooltipModule,
+    SagimDialogComponent,
   ],
   templateUrl: './apoyo-form-dialog.component.html',
   styleUrls: ['./apoyo-form-dialog.component.scss'],
@@ -167,6 +172,12 @@ export class ApoyoFormDialogComponent implements OnInit, OnDestroy {
       beneficiarioId: beneficiario._id,
       beneficiarioSearch: beneficiario,
     });
+    this.beneficiariosSugeridos = [];
+  }
+
+  limpiarBeneficiario(): void {
+    this.beneficiarioSeleccionado = null;
+    this.form.patchValue({ beneficiarioId: '', beneficiarioSearch: '' });
     this.beneficiariosSugeridos = [];
   }
 

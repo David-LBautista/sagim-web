@@ -165,7 +165,6 @@ h1, .sagim-title-xl {
   font-size: 32px;
   font-weight: 700;
   color: var(--sagim-primary);
-  margin: 0 0 var(--sagim-spacing-lg) 0;
   line-height: 1.2;
   letter-spacing: -0.5px;
 }
@@ -379,6 +378,83 @@ p, .sagim-text {
     .mdc-dialog__surface {
       border-radius: 12px;
       overflow: hidden;
+    }
+  }
+}
+
+/* ============================================
+   SAGIM Dialog - Estilos globales de modales
+   ============================================ */
+.sagim-dialog-panel {
+  .mat-mdc-dialog-container {
+    .mdc-dialog__surface {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+  }
+}
+
+// Título del diálogo
+h2[mat-dialog-title].sagim-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: var(--sagim-spacing-sm);
+  color: var(--sagim-primary);
+  margin: 0;
+  padding: var(--sagim-spacing-lg);
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+// Contenido del diálogo
+.sagim-dialog-content {
+  padding: var(--sagim-spacing-lg);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+// Estado de carga del diálogo
+.sagim-dialog-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sagim-spacing-xxl, 48px);
+  gap: var(--sagim-spacing-md);
+
+  p {
+    color: var(--sagim-text-mid);
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+// Acciones del diálogo (footer)
+.sagim-dialog-actions {
+  padding: var(--sagim-spacing-md) var(--sagim-spacing-lg);
+  border-top: 1px solid #e0e0e0;
+  gap: var(--sagim-spacing-sm);
+
+  button {
+    min-width: 100px;
+
+    &[mat-raised-button],
+    &[mat-flat-button] {
+      display: flex;
+      align-items: center;
+      gap: var(--sagim-spacing-sm);
+
+      mat-spinner {
+        display: inline-block;
+      }
     }
   }
 }

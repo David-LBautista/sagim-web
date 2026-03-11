@@ -1,0 +1,284 @@
+<h2 mat-dialog-title>Importar beneficiarios DIF</h2>
+
+<mat-dialog-content class="import-dialog-content">
+  <!-- ===================== PASO 0 — Subir archivo ===================== -->
+  @if (pasoActual() === 0) {
+    <div class="step-container" style="margin-top: 24px">
+      <div class="step-indicator">
+        <span class="step-dot active">1</span>
+        <span class="step-line"></span>
+        <span class="step-dot">2</span>
+        <span class="step-line"></span>
+        <span class="step-dot">3</span>
+      </div>
+      <p class="step-label">Selecciona el archivo</p>
+
+      <div
+        class="drop-zone"
+        [class.drag-over]="dragOver"
+        [class.has-file]="archivoSeleccionado"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+        (click)="fileInput.click()"
+      >
+        <input
+          #fileInput
+          type="file"
+          accept=".xlsx,.xls,.csv"
+          style="display: none"
+          (change)="onFileInput($event)"
+        />
+        @if (archivoSeleccionado) {
+          <mat-icon class="drop-icon has-file-icon">check_circle</mat-icon>
+          <p class="drop-title">{{ nombreArchivo }}</p>
+          <p class="drop-hint">Haz clic para cambiar el archivo</p>
+        } @else {
+          <mat-icon class="drop-icon">folder_open</mat-icon>
+          <p class="drop-title">Arrastra tu archivo aquí</p>
+          <p class="drop-hint">o haz clic para seleccionar</p>
+          <p class="drop-formats">.xlsx, .xls, .csv — máx 10 MB</p>
+        }
+      </div>
+
+      <div class="plantilla-hint">
+        <mat-icon>info</mat-icon>
+        <span>¿No tienes el formato?</span>
+        <a
+          href="/assets/plantilla-beneficiarios.xlsx"
+          download
+          class="plantilla-link"
+        >
+          Descargar plantilla DIF
+        </a>
+      </div>
+    </div>
+  }
+
+  <!-- ===================== PASO 1 — Mapeo de columnas ===================== -->
+  @if (pasoActual() === 1) {
+    <div class="step-container" style="margin-top: 24px">
+      <div class="step-indicator">
+        <span class="step-dot done">✓</span>
+        <span class="step-line done"></span>
+        <span class="step-dot active">2</span>
+        <span class="step-line"></span>
+        <span class="step-dot">3</span>
+      </div>
+      <p class="step-label">Mapeo de columnas</p>
+      <p class="step-description">
+        Indica el nombre exacto de la columna de tu archivo para cada campo. Los
+        valores pre-rellenados corresponden a la plantilla oficial. Para
+        <strong>Grupos vulnerables</strong> usa valores separados por coma:
+        <code>ADULTO_MAYOR,DISCAPACIDAD</code>
+      </p>
+
+      @if (!curpMapeado) {
+        <div class="curp-warning">
+          <mat-icon>warning</mat-icon>
+          <span>CURP no está mapeado — es requerido para continuar</span>
+        </div>
+      }
+
+      <div class="mapping-table">
+        <div class="mapping-header">
+          <span>Campo del sistema</span>
+          <span>Columna en tu archivo</span>
+        </div>
+        @for (campo of campos; track campo.campo) {
+          <div class="mapping-row" [class.row-required]="campo.requerido">
+            <span class="field-label">
+              {{ campo.label }}
+              @if (campo.requerido) {
+                <span class="req-star">*</span>
+              }
+            </span>
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="mapping-input"
+            >
+              <input
+                matInput
+                [(ngModel)]="campo.columnaArchivo"
+                placeholder="nombre de columna"
+              />
+            </mat-form-field>
+          </div>
+        }
+      </div>
+
+      <div class="duplicados-section">
+        <p class="duplicados-label">¿Qué hacer con duplicados?</p>
+        <mat-radio-group [(ngModel)]="accionDuplicados" class="radio-group">
+          <mat-radio-button value="ignorar"
+            >Ignorar (no sobreescribir)</mat-radio-button
+          >
+          <mat-radio-button value="actualizar"
+            >Actualizar datos existentes</mat-radio-button
+          >
+        </mat-radio-group>
+      </div>
+    </div>
+  }
+
+  <!-- ===================== PASO 2 — Resultado ===================== -->
+  @if (pasoActual() === 2) {
+    <div class="step-container" style="margin-top: 24px">
+      <div class="step-indicator">
+        <span class="step-dot done">✓</span>
+        <span class="step-line done"></span>
+        <span class="step-dot done">✓</span>
+        <span class="step-line done"></span>
+        <span class="step-dot active">3</span>
+      </div>
+      <p class="step-label">Importación completada</p>
+
+      @if (resultado(); as res) {
+        <div class="resultado-grid">
+          <div class="resultado-item success">
+            <mat-icon>check_circle</mat-icon>
+            <div>
+              <span class="resultado-valor">{{ res.importados }}</span>
+              <span class="resultado-etiqueta">Importados</span>
+            </div>
+          </div>
+          <div class="resultado-item info">
+            <mat-icon>update</mat-icon>
+            <div>
+              <span class="resultado-valor">{{ res.actualizados }}</span>
+              <span class="resultado-etiqueta">Actualizados</span>
+            </div>
+          </div>
+          <div class="resultado-item neutral">
+            <mat-icon>remove_circle</mat-icon>
+            <div>
+              <span class="resultado-valor">{{ res.ignorados }}</span>
+              <span class="resultado-etiqueta">Ignorados</span>
+            </div>
+          </div>
+          <div
+            class="resultado-item"
+            [class.danger]="res.errores > 0"
+            [class.neutral]="res.errores === 0"
+          >
+            <mat-icon>{{
+              res.errores > 0 ? "error" : "check_circle"
+            }}</mat-icon>
+            <div>
+              <span class="resultado-valor">{{ res.errores }}</span>
+              <span class="resultado-etiqueta">Con errores</span>
+            </div>
+          </div>
+        </div>
+
+        @if (res.ciudadanosCreados > 0) {
+          <div class="ciudadanos-creados-info">
+            <mat-icon>person_add</mat-icon>
+            <span>
+              Se crearon <strong>{{ res.ciudadanosCreados }}</strong> ciudadanos
+              nuevos en el padrón municipal como resultado de esta importación.
+            </span>
+          </div>
+        }
+
+        @if (res.detalleErrores.length > 0) {
+          <div class="errores-section">
+            <button
+              mat-button
+              type="button"
+              (click)="mostrarErrores.set(!mostrarErrores())"
+            >
+              <mat-icon>{{
+                mostrarErrores() ? "expand_less" : "expand_more"
+              }}</mat-icon>
+              {{ mostrarErrores() ? "Ocultar" : "Ver" }} detalle de errores ({{
+                res.detalleErrores.length
+              }})
+            </button>
+
+            @if (mostrarErrores()) {
+              <div class="errores-tabla">
+                <div class="errores-header">
+                  <span>Fila</span>
+                  <span>Nombre</span>
+                  <span>Error</span>
+                </div>
+                @for (err of res.detalleErrores; track err.fila) {
+                  <div class="errores-row">
+                    <span class="error-fila">{{ err.fila }}</span>
+                    <span>{{ err.nombre }}</span>
+                    <span class="error-msg">{{ err.error }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <!-- Paso 0 -->
+  @if (pasoActual() === 0) {
+    <button mat-button type="button" (click)="cerrar()">Cancelar</button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      [disabled]="!archivoSeleccionado"
+      (click)="irAPaso1()"
+    >
+      Continuar
+      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+    </button>
+  }
+
+  <!-- Paso 1 -->
+  @if (pasoActual() === 1) {
+    <button
+      mat-button
+      type="button"
+      (click)="volverAPaso0()"
+      [disabled]="importando()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      Regresar
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      [disabled]="!curpMapeado || importando()"
+      (click)="iniciarImportacion()"
+    >
+      <span class="btn-label">
+        @if (importando()) {
+          <mat-spinner
+            diameter="18"
+            style="display: inline-block"
+          ></mat-spinner>
+          <span>Importando…</span>
+        } @else {
+          <mat-icon>upload</mat-icon>
+          <span>Importar</span>
+        }
+      </span>
+    </button>
+  }
+
+  <!-- Paso 2 -->
+  @if (pasoActual() === 2) {
+    @if (resultado()?.errores ?? 0 > 0) {
+      <button mat-button type="button" (click)="descargarReporteErrores()">
+        <mat-icon>download</mat-icon>
+        Descargar reporte de errores
+      </button>
+    }
+    <button mat-raised-button color="primary" type="button" (click)="cerrar()">
+      Cerrar
+    </button>
+  }
+</mat-dialog-actions>

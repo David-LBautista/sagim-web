@@ -207,7 +207,7 @@
 
 .drawer-overlay {
   position: fixed;
-  inset: 0;
+  inset: 64px 0 0 0;
   background: rgba(0, 0, 0, 0.35);
   z-index: 200;
   animation: fadeIn 0.2s ease;
@@ -215,7 +215,7 @@
 
 .detail-drawer {
   position: fixed;
-  top: 0;
+  top: 64px;
   right: 0;
   bottom: 0;
   width: 360px;

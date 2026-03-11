@@ -1,0 +1,120 @@
+<div class="step-cal">
+  <div class="step-cal__intro">
+    <h2 class="step-cal__titulo">Elige fecha y horario</h2>
+    <p class="step-cal__subtitulo">
+      Selecciona un día disponible y luego un horario
+    </p>
+  </div>
+
+  @if (cargando()) {
+    <div class="step-cal__loading">
+      <mat-spinner diameter="40" />
+      <span>Cargando disponibilidad…</span>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="step-cal__error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+      <button mat-button (click)="cargarDisponibilidad()">Reintentar</button>
+    </div>
+  }
+
+  @if (!cargando() && !error()) {
+    <div class="step-cal__contenido">
+      <!-- Calendario -->
+      <div class="step-cal__calendario-wrap">
+        <mat-calendar
+          [dateFilter]="filtroFechas"
+          [minDate]="hoy"
+          [maxDate]="maxFecha"
+          [selected]="fechaSeleccionada()"
+          (selectedChange)="onFechaSeleccionada($event)"
+        />
+        <p class="step-cal__leyenda">
+          <span class="leyenda-disponible"></span> Con disponibilidad
+          <span class="leyenda-sin"></span> Sin disponibilidad
+        </p>
+      </div>
+
+      <!-- Slots del día seleccionado -->
+      @if (fechaSeleccionada()) {
+        <div class="step-cal__slots">
+          <h3 class="step-cal__slots-titulo">
+            <mat-icon>schedule</mat-icon>
+            {{ formatFechaLarga(fechaSeleccionada()) | titlecase }}
+          </h3>
+
+          @if (slotsDelDia().length === 0) {
+            <p class="step-cal__slots-vacio">
+              No hay horarios disponibles para este día.
+            </p>
+          } @else {
+            <div class="step-cal__slots-lista">
+              @for (slot of slotsDelDia(); track slot.horario) {
+                <button
+                  class="slot-btn"
+                  [class.slot-btn--disponible]="slot.disponible"
+                  [class.slot-btn--lleno]="!slot.disponible"
+                  [class.slot-btn--seleccionado]="
+                    horarioSeleccionado() === slot.horario
+                  "
+                  [disabled]="!slot.disponible"
+                  (click)="seleccionarHorario(slot)"
+                  type="button"
+                  [attr.aria-label]="
+                    slot.horario + (slot.disponible ? '' : ' - Sin lugares')
+                  "
+                >
+                  <span class="slot-btn__hora">{{ slot.horario }}</span>
+                  @if (!slot.disponible) {
+                    <span class="slot-btn__lleno">Lleno</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="step-cal__hint">
+          <mat-icon>touch_app</mat-icon>
+          <p>
+            Selecciona un día en el calendario para ver los horarios disponibles
+          </p>
+        </div>
+      }
+    </div>
+
+    <!-- Resumen de selección -->
+    @if (puedeContinuar()) {
+      <div class="step-cal__resumen">
+        <mat-icon>event_available</mat-icon>
+        <span>
+          <strong>{{
+            formatFechaLarga(fechaSeleccionada()) | titlecase
+          }}</strong>
+          a las <strong>{{ horarioSeleccionado() }}</strong>
+        </span>
+      </div>
+    }
+
+    <!-- Acciones -->
+    <div class="step-cal__acciones">
+      <button mat-stroked-button (click)="atras.emit()" type="button">
+        <mat-icon>arrow_back</mat-icon>
+        Atrás
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!puedeContinuar()"
+        (click)="continuar()"
+        type="button"
+      >
+        Siguiente
+        <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+      </button>
+    </div>
+  }
+</div>

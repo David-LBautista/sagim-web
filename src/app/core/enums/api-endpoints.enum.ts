@@ -43,6 +43,9 @@ export enum ApiEndpoints {
   CATALOGOS_TIPOS_APOYO = '/api/v1/catalogos/tipos-apoyo',
   CATALOGOS_TIPO_APOYO_POR_CLAVE = '/api/v1/catalogos/tipos-apoyo/:clave',
   CATALOGOS_LOCALIDADES_POR_MUNICIPIO = '/api/v1/catalogos/localidades/municipio/:municipioId',
+  CATALOGOS_CATEGORIAS_SERVICIOS = '/api/v1/catalogos/categorias-servicios',
+  CATALOGOS_CATEGORIA_SERVICIO_POR_NOMBRE = '/api/v1/catalogos/categorias-servicios/:nombre',
+  CATALOGOS_AREAS_RESPONSABLES = '/api/v1/catalogos/areas-responsables',
 
   // ========================================
   // MÓDULOS ENDPOINTS
@@ -77,6 +80,10 @@ export enum ApiEndpoints {
   DIF_BENEFICIARIOS_GET_BY_CURP = '/api/v1/dif/beneficiarios/curp/:curp',
   DIF_BENEFICIARIOS_GET = '/api/v1/dif/beneficiarios/:id',
   DIF_BENEFICIARIOS_UPDATE = '/api/v1/dif/beneficiarios/:id',
+  DIF_BENEFICIARIOS_DESACTIVAR = '/api/v1/dif/beneficiarios/:id/desactivar',
+  DIF_BENEFICIARIOS_ESTADISTICAS = '/api/v1/dif/beneficiarios/estadisticas',
+  DIF_BENEFICIARIOS_EXPORTAR = '/api/v1/dif/beneficiarios/exportar',
+  DIF_BENEFICIARIOS_IMPORTAR = '/api/v1/dif/beneficiarios/importar',
 
   // ========================================
   // DIF APOYOS ENDPOINTS
@@ -172,4 +179,56 @@ export enum ApiEndpoints {
   DASHBOARD_DIF_APOYOS_POR_TIPO = '/api/v1/dashboard/dif/apoyos-por-tipo',
   DASHBOARD_DIF_COMPARATIVO_MENSUAL = '/api/v1/dashboard/dif/comparativo-mensual',
   DASHBOARD_DIF_ALERTAS = '/api/v1/dashboard/dif/alertas',
+
+  // ========================================
+  // AUDITORÍA
+  // ========================================
+  AUDITORIA_LOGS_LIST = '/api/v1/auditoria/logs',
+  AUDITORIA_LOGS_CREATE = '/api/v1/auditoria/logs',
+  AUDITORIA_HISTORIAL = '/api/v1/auditoria/historial/:entidad/:entidadId',
+  AUDITORIA_USUARIO = '/api/v1/auditoria/usuario/:usuarioId',
+
+  // ========================================
+  // DASHBOARD — AUDITORÍA
+  // ========================================
+  DASHBOARD_AUDITORIA_RESUMEN = '/api/v1/dashboard/auditoria/resumen',
+  DASHBOARD_AUDITORIA_ACTIVIDAD_MODULO = '/api/v1/dashboard/auditoria/actividad-por-modulo',
+  DASHBOARD_AUDITORIA_ACCIONES_CRITICAS = '/api/v1/dashboard/auditoria/acciones-criticas',
+  DASHBOARD_AUDITORIA_ACCESOS = '/api/v1/dashboard/auditoria/accesos',
+
+  // ========================================
+  // PORTAL PÚBLICO — MUNICIPIO INFO
+  // ========================================
+  PUBLIC_MUNICIPIO_INFO = '/api/v1/public/:slug/info',
+
+  // ========================================
+  // PORTAL PÚBLICO — CITAS CIUDADANO
+  // ========================================
+  PUBLIC_CITAS_AREAS = '/api/v1/public/:slug/citas/areas',
+  PUBLIC_CITAS_DISPONIBILIDAD = '/api/v1/public/:slug/citas/disponibilidad',
+  PUBLIC_CITAS_CREAR = '/api/v1/public/:slug/citas',
+  PUBLIC_CITAS_CONSULTAR = '/api/v1/public/:slug/citas/consultar',
+  PUBLIC_CITAS_CANCELAR = '/api/v1/public/:slug/citas/cancelar',
+  PUBLIC_CITAS_CIUDADANO_CURP = '/api/v1/public/:slug/citas/ciudadano/:curp',
+
+  // ========================================
+  // PANEL INTERNO — CITAS (autenticado)
+  // ========================================
+  CITAS_LIST = '/api/v1/citas',
+  CITAS_HOY = '/api/v1/citas/hoy',
+  CITAS_METRICAS = '/api/v1/citas/metricas',
+  CITAS_DETAIL = '/api/v1/citas/:id',
+  CITAS_CREAR = '/api/v1/citas',
+  CITAS_CAMBIAR_ESTADO = '/api/v1/citas/:id/estado',
+  CITAS_REAGENDAR = '/api/v1/citas/:id/reagendar',
+
+  // Configuración de citas
+  CITAS_CONFIG_LIST = '/api/v1/citas/configuracion',
+  CITAS_CONFIG_CREAR = '/api/v1/citas/configuracion',
+  CITAS_CONFIG_AREAS_DISPONIBLES = '/api/v1/citas/configuracion/areas-disponibles',
+  CITAS_CONFIG_UPSERT = '/api/v1/citas/configuracion/:areaId',
+  CITAS_CONFIG_TOGGLE = '/api/v1/citas/configuracion/:areaId/toggle',
+  CITAS_CONFIG_BLOQUEOS_LIST = '/api/v1/citas/configuracion/bloqueos',
+  CITAS_CONFIG_BLOQUEOS_CREAR = '/api/v1/citas/configuracion/bloqueos',
+  CITAS_CONFIG_BLOQUEOS_ELIMINAR = '/api/v1/citas/configuracion/bloqueos/:id',
 }

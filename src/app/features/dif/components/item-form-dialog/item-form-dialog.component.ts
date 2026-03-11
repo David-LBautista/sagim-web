@@ -20,6 +20,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject, takeUntil } from 'rxjs';
+import { SagimDialogComponent } from '../../../../shared/components/sagim-dialog/sagim-dialog.component';
 import { InventarioService } from '../../services/inventario.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import {
@@ -43,6 +44,7 @@ import {
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    SagimDialogComponent,
   ],
   templateUrl: './item-form-dialog.component.html',
   styleUrls: ['./item-form-dialog.component.scss'],

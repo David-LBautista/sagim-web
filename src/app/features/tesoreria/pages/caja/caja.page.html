@@ -6,22 +6,13 @@
       <p class="sagim-subtitle-light">{{ fechaFormateada }}</p>
     </div>
     <div class="header-right">
-      <button
-        mat-raised-button
-        (click)="onCorteDia()"
-        class="btn-corte"
-        [disabled]="generandoCorte()"
-      >
-        <mat-spinner
-          diameter="18"
-          class="spinner-inline"
-          [style.display]="generandoCorte() ? 'inline-flex' : 'none'"
-        ></mat-spinner>
-        <mat-icon [style.display]="generandoCorte() ? 'none' : 'inline-flex'"
-          >picture_as_pdf</mat-icon
-        >
-        {{ generandoCorte() ? "Generando..." : "Corte del día" }}
-      </button>
+      <app-action-button
+        label="Corte del día"
+        icon="picture_as_pdf"
+        color="accent"
+        [loading]="generandoCorte()"
+        (clicked)="onCorteDia()"
+      />
     </div>
   </div>
 
@@ -79,7 +70,7 @@
                   @for (c of ciudadanosFiltrados(); track c._id) {
                     <mat-option [value]="c">
                       <div class="ciudadano-option">
-                        <span class="ciudadano-nombre">{{ c.nombreCompleto }}</span>
+                        <span class="ciudadano-nombre">{{ c.nombre }} {{ c.apellidoPaterno }} {{ c.apellidoMaterno ?? '' }}</span>
                         <span class="ciudadano-curp">{{ c.curp }}</span>
                       </div>
                     </mat-option>
@@ -97,7 +88,7 @@
               <div class="ciudadano-chip">
                 <mat-icon class="chip-icon">person</mat-icon>
                 <div class="chip-info">
-                  <span class="chip-nombre">{{ ciudadanoSeleccionado()!.nombreCompleto }}</span>
+                  <span class="chip-nombre">{{ ciudadanoSeleccionado()!.nombre }} {{ ciudadanoSeleccionado()!.apellidoPaterno }} {{ ciudadanoSeleccionado()!.apellidoMaterno ?? '' }}</span>
                   <span class="chip-curp">{{ ciudadanoSeleccionado()!.curp }}</span>
                 </div>
                 <button mat-icon-button type="button" class="chip-clear" (click)="limpiarCiudadano()" matTooltip="Cambiar ciudadano">

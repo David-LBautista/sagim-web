@@ -1,0 +1,195 @@
+.metricas-page {
+  // ── Page header ──────────────────────────────────────────────────────────
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: var(--sagim-spacing-lg, 24px);
+  }
+
+  .page-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .header-select {
+    width: 140px;
+  }
+
+  // ── Loading bar ───────────────────────────────────────────────────────────
+  .loading-bar {
+    margin-bottom: var(--sagim-spacing-md, 16px);
+    border-radius: 4px;
+  }
+
+  // ── Empty state ───────────────────────────────────────────────────────────
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 64px 24px;
+    color: var(--sagim-text-mid, #7a7a7a);
+    text-align: center;
+
+    mat-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      opacity: 0.3;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  // ── KPI grid ──────────────────────────────────────────────────────────────
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--sagim-spacing-md, 16px);
+    margin-bottom: var(--sagim-spacing-lg, 24px);
+
+    @media (max-width: 1200px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .kpi-exec-card {
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    mat-card-header {
+      padding: 10px 16px 0;
+
+      mat-icon[mat-card-avatar] {
+        width: 28px;
+        height: 28px;
+        font-size: 28px;
+        color: var(--sagim-secondary, #1f6fae);
+        opacity: 0.6;
+      }
+    }
+
+    mat-card-content {
+      text-align: center;
+      padding: 6px 16px 14px;
+    }
+  }
+
+  .kpi-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--sagim-text-dark, #3a3a3a);
+    line-height: 1;
+    margin-bottom: 4px;
+
+    &--trend-up {
+      color: var(--sagim-success, #6fae3b);
+    }
+    &--trend-down {
+      color: var(--sagim-danger, #d64545);
+    }
+    &--trend-neutral {
+      color: var(--sagim-text-dark, #3a3a3a);
+    }
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--sagim-text-mid, #7a7a7a);
+    margin-bottom: 6px;
+  }
+
+  .kpi-meta {
+    font-size: 11px;
+    color: var(--sagim-text-mid, #7a7a7a);
+    margin-top: 2px;
+  }
+
+  .kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+
+    &--up {
+      background: rgba(111, 174, 59, 0.12);
+      color: #4a7d1e;
+    }
+    &--down {
+      background: rgba(214, 69, 69, 0.1);
+      color: var(--sagim-danger, #d64545);
+    }
+    &--neutral {
+      background: rgba(122, 122, 122, 0.1);
+      color: var(--sagim-text-mid, #7a7a7a);
+    }
+  }
+
+  // ── Chart cards ───────────────────────────────────────────────────────────
+  .chart-card {
+    border-radius: var(--sagim-radius-sm, 10px) !important;
+    margin-bottom: var(--sagim-spacing-lg, 24px);
+
+    mat-card-header [mat-card-avatar] {
+      background: rgba(31, 111, 174, 0.1);
+      color: var(--sagim-secondary, #1f6fae);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      width: 38px;
+      height: 38px;
+    }
+
+    mat-card-title {
+      font-size: 0.95rem !important;
+      font-weight: 600;
+      color: var(--sagim-text-dark, #3a3a3a);
+    }
+
+    mat-card-subtitle {
+      font-size: 0.78rem !important;
+      color: var(--sagim-text-mid, #7a7a7a);
+    }
+  }
+
+  // ── Charts grid ───────────────────────────────────────────────────────────
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--sagim-spacing-lg, 24px);
+    margin-bottom: var(--sagim-spacing-lg, 24px);
+
+    .chart-card {
+      margin-bottom: 0;
+    }
+  }
+}

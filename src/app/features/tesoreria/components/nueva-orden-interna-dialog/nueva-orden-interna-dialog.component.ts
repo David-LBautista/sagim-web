@@ -29,11 +29,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
 
 import { OrdenesInternasService } from '../../services/ordenes-internas.service';
 import { CajaService } from '../../services/caja.service';
 import { TesoreriaService } from '../../services/tesoreria.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
+import { CatalogosService } from '../../../../shared/services/catalogos.service';
 import { NotificationType } from '../../../../shared/models/notification.model';
 import { OrdenInterna } from '../../models/ordenes-internas.model';
 import { CiudadanoSearchResult } from '../../models/caja.model';
@@ -61,6 +63,7 @@ export interface NuevaOrdenInternaDialogData {
     MatDividerModule,
     MatTooltipModule,
     MatRadioModule,
+    MatSelectModule,
   ],
   templateUrl: './nueva-orden-interna-dialog.component.html',
   styleUrls: ['./nueva-orden-interna-dialog.component.scss'],
@@ -73,11 +76,13 @@ export class NuevaOrdenInternaDialogComponent implements OnInit, OnDestroy {
   private cajaService = inject(CajaService);
   private tesoreriaService = inject(TesoreriaService);
   private notification = inject(NotificationService);
+  private catalogosService = inject(CatalogosService);
   private destroy$ = new Subject<void>();
 
   // ── Estado ───────────────────────────────────────────────────────────────
   submitting = signal(false);
   modoContribuyente = signal<'registrado' | 'manual'>('registrado');
+  areasResponsables = signal<string[]>([]);
 
   // Ciudadano
   buscandoCiudadano = signal(false);
@@ -100,9 +105,35 @@ export class NuevaOrdenInternaDialogComponent implements OnInit, OnDestroy {
       [Validators.required, Validators.min(1)],
     ],
     folioDocumento: ['', Validators.maxLength(60)],
+    areaResponsable: [
+      { value: this.dialogData.areaResponsable ?? '', disabled: true },
+      Validators.required,
+    ],
   });
 
   ngOnInit(): void {
+    // Cargar áreas responsables desde el catálogo
+    this.catalogosService
+      .getAreasResponsables()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (areas) => {
+          this.areasResponsables.set(areas);
+          // Re-patchear para que mat-select encuentre la opción ya cargada
+          this.form
+            .get('areaResponsable')!
+            .setValue(this.dialogData.areaResponsable ?? '');
+        },
+        error: () => {
+          if (this.dialogData.areaResponsable) {
+            this.areasResponsables.set([this.dialogData.areaResponsable]);
+            this.form
+              .get('areaResponsable')!
+              .setValue(this.dialogData.areaResponsable);
+          }
+        },
+      });
+
     // Autocomplete de ciudadanos
     this.ciudadanoBusquedaCtrl.valueChanges
       .pipe(
@@ -189,6 +220,9 @@ export class NuevaOrdenInternaDialogComponent implements OnInit, OnDestroy {
   onServicioSeleccionado(s: ServicioCobrable): void {
     this.servicioSeleccionado.set(s);
     this.form.get('descripcion')!.setValue(s.nombre);
+    if (s.areaResponsable) {
+      this.form.get('areaResponsable')!.setValue(s.areaResponsable);
+    }
     if (s.montoVariable) {
       this.form.get('monto')!.enable();
       this.form.get('monto')!.setValue(null);
@@ -205,6 +239,9 @@ export class NuevaOrdenInternaDialogComponent implements OnInit, OnDestroy {
     this.form.get('descripcion')!.setValue('');
     this.form.get('monto')!.setValue(null);
     this.form.get('monto')!.disable();
+    this.form
+      .get('areaResponsable')!
+      .setValue(this.dialogData.areaResponsable ?? '');
   }
 
   // ── Submit ────────────────────────────────────────────────────────────────
@@ -246,7 +283,7 @@ export class NuevaOrdenInternaDialogComponent implements OnInit, OnDestroy {
         }),
         monto: monto!,
         descripcion: descripcion!.trim(),
-        areaResponsable: this.dialogData.areaResponsable,
+        areaResponsable: this.form.getRawValue().areaResponsable!,
       })
       .pipe(
         takeUntil(this.destroy$),

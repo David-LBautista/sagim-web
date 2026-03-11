@@ -1,0 +1,231 @@
+<div class="metricas-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="sagim-title-xl">Métricas de Citas</h1>
+      <p class="sagim-subtitle-light">
+        Análisis estadístico — {{ mesLabel() }} {{ anioSeleccionado() }}
+      </p>
+    </div>
+    <div class="page-header__actions">
+      <mat-form-field appearance="outline" class="header-select">
+        <mat-label>Mes</mat-label>
+        <mat-select
+          [value]="mesSeleccionado()"
+          (selectionChange)="onMesChange($event.value)"
+        >
+          @for (m of meses; track m.value) {
+            <mat-option [value]="m.value">{{ m.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="header-select">
+        <mat-label>Año</mat-label>
+        <mat-select
+          [value]="anioSeleccionado()"
+          (selectionChange)="onAnioChange($event.value)"
+        >
+          @for (a of anios; track a) {
+            <mat-option [value]="a">{{ a }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-icon-button matTooltip="Actualizar" (click)="cargar()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" class="loading-bar" />
+  }
+
+  @if (!cargando() && !metricas()) {
+    <div class="empty-state">
+      <mat-icon>bar_chart</mat-icon>
+      <p>Sin datos para {{ mesLabel() }} {{ anioSeleccionado() }}</p>
+    </div>
+  }
+
+  <!-- KPI Grid -->
+  <div class="kpi-grid">
+    <!-- Total -->
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>event</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value">{{ metricas()?.totalAgendadas ?? 0 }}</div>
+        <div class="kpi-label">Total de Citas</div>
+        <div class="kpi-meta">{{ mesLabel() }} {{ anioSeleccionado() }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Atendidas -->
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>check_circle</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value kpi-value--trend-up">
+          {{ metricas()?.totalAtendidas ?? 0 }}
+        </div>
+        <div class="kpi-label">Atendidas</div>
+        @if (metricas()?.totalAgendadas) {
+          <div class="kpi-trend kpi-trend--up">
+            <mat-icon>trending_up</mat-icon>
+            <span>{{ tasaAsistencia() }}% asistencia</span>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- No se presentaron -->
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>person_off</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value kpi-value--trend-down">
+          {{ metricas()?.totalNoSePresentaron ?? 0 }}
+        </div>
+        <div class="kpi-label">No se Presentaron</div>
+        @if (metricas()?.totalAgendadas) {
+          <div class="kpi-trend kpi-trend--down">
+            <mat-icon>trending_down</mat-icon>
+            <span>{{ tasaNoPresencia() }}% ausencia</span>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Canceladas -->
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>cancel</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value kpi-value--trend-down">
+          {{ metricas()?.totalCanceladas ?? 0 }}
+        </div>
+        <div class="kpi-label">Canceladas</div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Pendientes -->
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>pending</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value kpi-value--trend-neutral">
+          {{
+            (metricas()?.totalAgendadas ?? 0) -
+              (metricas()?.totalAtendidas ?? 0) -
+              (metricas()?.totalNoSePresentaron ?? 0) -
+              (metricas()?.totalCanceladas ?? 0)
+          }}
+        </div>
+        <div class="kpi-label">Pendientes</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Origen de Citas -->
+  <mat-card appearance="outlined" class="chart-card origen-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>source</mat-icon>
+      <mat-card-title>Origen de Citas</mat-card-title>
+      <mat-card-subtitle
+        >Canal por el que se generaron las citas</mat-card-subtitle
+      >
+    </mat-card-header>
+    <mat-card-content>
+      <apx-chart
+        [series]="origenDonutSeries"
+        [chart]="origenDonutConfig"
+        [labels]="origenDonutLabels"
+        [colors]="origenDonutColors"
+        [dataLabels]="origenDonutDataLabels"
+        [legend]="origenDonutLegend"
+        [tooltip]="origenDonutTooltip"
+      />
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Charts grid: Área + Trámites -->
+  <div class="charts-grid">
+    <!-- Citas por Área -->
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>business</mat-icon>
+        <mat-card-title>Citas por Área</mat-card-title>
+        <mat-card-subtitle>Distribución por dependencia</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <apx-chart
+          [series]="areaBarSeries"
+          [chart]="areaBarConfig"
+          [xaxis]="areaBarXaxis"
+          [yaxis]="areaBarYaxis"
+          [plotOptions]="areaBarPlotOptions"
+          [dataLabels]="areaBarDataLabels"
+          [grid]="areaBarGrid"
+          [colors]="areaBarColors"
+          [tooltip]="areaBarTooltip"
+        />
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Trámites más solicitados -->
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>assignment</mat-icon>
+        <mat-card-title>Trámites más Solicitados</mat-card-title>
+        <mat-card-subtitle>Top servicios del período</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <apx-chart
+          [series]="tramitesBarSeries"
+          [chart]="tramitesBarConfig"
+          [xaxis]="tramitesBarXaxis"
+          [yaxis]="tramitesBarYaxis"
+          [plotOptions]="tramitesBarPlotOptions"
+          [dataLabels]="tramitesBarDataLabels"
+          [grid]="tramitesBarGrid"
+          [colors]="tramitesBarColors"
+          [tooltip]="tramitesBarTooltip"
+        />
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Distribución por día del mes -->
+  <mat-card appearance="outlined" class="chart-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>calendar_month</mat-icon>
+      <mat-card-title>Distribución por Día del Mes</mat-card-title>
+      <mat-card-subtitle
+        >Volumen diario de citas — {{ mesLabel() }}
+        {{ anioSeleccionado() }}</mat-card-subtitle
+      >
+    </mat-card-header>
+    <mat-card-content>
+      <apx-chart
+        [series]="porDiaSeries"
+        [chart]="porDiaConfig"
+        [xaxis]="porDiaXaxis"
+        [yaxis]="porDiaYaxis"
+        [stroke]="porDiaStroke"
+        [fill]="porDiaFill"
+        [dataLabels]="porDiaDataLabels"
+        [grid]="porDiaGrid"
+        [markers]="porDiaMarkers"
+        [colors]="porDiaColors"
+        [tooltip]="porDiaTooltip"
+      />
+    </mat-card-content>
+  </mat-card>
+</div>

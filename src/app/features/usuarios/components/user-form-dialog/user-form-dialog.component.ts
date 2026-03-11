@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SagimDialogComponent } from '../../../../shared/components/sagim-dialog/sagim-dialog.component';
 import { Usuario, UsuarioRol } from '../../models/usuario.model';
 import { UsuariosService } from '../../services/usuarios.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
@@ -38,6 +39,7 @@ import { AuthService } from '../../../auth/services/auth.service';
     MatSelectModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
+    SagimDialogComponent,
   ],
   templateUrl: './user-form-dialog.component.html',
   styleUrls: ['./user-form-dialog.component.scss'],

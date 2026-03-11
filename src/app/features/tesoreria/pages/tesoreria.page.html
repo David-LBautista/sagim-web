@@ -27,22 +27,40 @@
         </mat-select>
       </mat-form-field>
 
-      <button
-        mat-raised-button
-        class="btn-pdf"
-        (click)="onExportarPdf()"
-        [disabled]="generandoPdf() || cargando() || !reporte()"
-        matTooltip="Exportar reporte mensual en PDF"
-      >
-        @if (generandoPdf()) {
-          <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
-        }
-        @if (!generandoPdf()) {
-          <mat-icon>picture_as_pdf</mat-icon>
-        }
-        {{ generandoPdf() ? 'Generando...' : 'Exportar PDF' }}
-      </button>
+      <app-action-button
+        label="Exportar PDF"
+        icon="picture_as_pdf"
+        color="accent"
+        [loading]="generandoPdf()"
+        [disabled]="cargando() || !reporte()"
+        (clicked)="onExportarPdf()"
+      />
     </div>
+  </div>
+
+  <!-- ── ALERTAS ──────────────────────────────────────────────────────── -->
+  <div class="alertas-banner">
+    @if (loadingAlertas()) {
+      <div class="alerta-item alerta-info">
+        <mat-icon class="alerta-icon">hourglass_empty</mat-icon>
+        <span class="alerta-mensaje">Verificando estado del sistema…</span>
+      </div>
+    } @else if (alertas().length === 0) {
+      <div class="alerta-item alerta-ok">
+        <mat-icon class="alerta-icon">check_circle</mat-icon>
+        <span class="alerta-mensaje">Todo está en orden. No hay alertas activas.</span>
+      </div>
+    } @else {
+      @for (a of alertas(); track a.tipo) {
+        <div class="alerta-item" [class]="alertaClass(a.severidad)">
+          <mat-icon class="alerta-icon">{{ alertaIcon(a.tipo) }}</mat-icon>
+          <span class="alerta-mensaje">{{ a.mensaje }}</span>
+          @if (a.tipo === 'ORDENES_POR_EXPIRAR') {
+            <button mat-stroked-button class="alerta-btn" (click)="irAOrdenes()">Ver órdenes</button>
+          }
+        </div>
+      }
+    }
   </div>
 
   <!-- ── CARGANDO ─────────────────────────────────────────────────────── -->
@@ -79,32 +97,120 @@
       />
     </div>
 
-    <!-- Servicios top -->
-    @if (topServicios().length > 0) {
-      <mat-card class="servicios-card">
+    <!-- Charts row: servicios + canal -->
+    <div class="charts-row">
+      <!-- Bar: Ingresos por servicio -->
+      <mat-card appearance="outlined" class="chart-card chart-servicios">
         <mat-card-header>
-          <mat-icon mat-card-avatar class="card-avatar-icon">bar_chart</mat-icon>
+          <mat-icon mat-card-avatar>bar_chart</mat-icon>
           <mat-card-title>Ingresos por servicio</mat-card-title>
           <mat-card-subtitle>{{ mesLabel() }} {{ anioSeleccionado() }}</mat-card-subtitle>
         </mat-card-header>
-        <mat-divider></mat-divider>
         <mat-card-content>
-          <div class="servicios-list">
-            @for (s of topServicios(); track s.nombre) {
-              <div class="servicio-row-item">
-                <div class="servicio-name-wrap">
-                  <span class="servicio-nombre">{{ s.nombre }}</span>
-                  <span class="servicio-cant">{{ s.cantidad }} operaciones</span>
-                </div>
-                <span class="servicio-total">{{ s.total | currency:'MXN':'symbol-narrow':'1.2-2' }}</span>
-              </div>
-              <mat-divider></mat-divider>
-            }
+          @if (topServicios().length > 0) {
+            <apx-chart
+              [series]="ingresosChartSeries()"
+              [chart]="ingresosChartConfig"
+              [plotOptions]="ingresosChartPlotOptions"
+              [dataLabels]="ingresosChartDataLabels"
+              [tooltip]="ingresosChartTooltip"
+              [grid]="ingresosChartGrid"
+              [colors]="ingresosChartColors"
+              [xaxis]="ingresosChartXAxis()"
+              [yaxis]="ingresosChartYAxis"
+            ></apx-chart>
+          } @else {
+            <div class="chart-empty">
+              <mat-icon>bar_chart</mat-icon>
+              <p>Sin datos de servicios para este período</p>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Donut: Por canal -->
+      <mat-card appearance="outlined" class="chart-card chart-canal">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>donut_large</mat-icon>
+          <mat-card-title>Desglose por canal</mat-card-title>
+          <mat-card-subtitle>{{ mesLabel() }} {{ anioSeleccionado() }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <apx-chart
+            [series]="canalChartSeries()"
+            [chart]="canalChartConfig"
+            [labels]="canalChartLabels"
+            [colors]="canalChartColors"
+            [dataLabels]="canalChartDataLabels"
+            [tooltip]="canalChartTooltip"
+            [legend]="canalChartLegend"
+          ></apx-chart>
+          <div class="canal-totales">
+            <div class="canal-item">
+              <span class="canal-dot" style="background:#1F6FAE"></span>
+              <span class="canal-label">Caja</span>
+              <span class="canal-valor">{{ kpiCaja() }}</span>
+            </div>
+            <div class="canal-item">
+              <span class="canal-dot" style="background:#6FAE3B"></span>
+              <span class="canal-label">En línea</span>
+              <span class="canal-valor">{{ kpiEnLinea() }}</span>
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
-    }
+    </div>
   }
+
+  <!-- ── ACTIVIDAD DEL DÍA ─────────────────────────────────────────────── -->
+  <mat-card appearance="outlined" class="chart-card actividad-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>receipt_long</mat-icon>
+      <mat-card-title>Actividad reciente del día</mat-card-title>
+      <mat-card-subtitle>Hoy — {{ fechaDiariaLabel() }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @if (loadingDiario()) {
+        <div class="chart-loading-sm">
+          <mat-spinner diameter="28"></mat-spinner>
+        </div>
+      } @else if (ultimosMovimientos().length > 0) {
+        <table class="actividad-table">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Folio</th>
+              <th>Servicio</th>
+              <th>Ciudadano</th>
+              <th class="text-right">Monto</th>
+              <th>Canal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (m of ultimosMovimientos(); track m._id) {
+              <tr>
+                <td class="td-hora">{{ m.hora }}</td>
+                <td class="td-folio">{{ m.folio }}</td>
+                <td>{{ m.servicio }}</td>
+                <td class="td-ciudadano">{{ m.ciudadano ?? m.nombreContribuyente ?? '—' }}</td>
+                <td class="td-monto text-right">{{ m.monto | currency:'MXN':'symbol-narrow':'1.2-2' }}</td>
+                <td>
+                  <span class="canal-badge" [class]="m.canal === 'CAJA' ? 'canal-caja' : 'canal-linea'">
+                    {{ m.canal === 'CAJA' ? 'Caja' : 'En línea' }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <div class="chart-empty">
+          <mat-icon>receipt_long</mat-icon>
+          <p>Sin movimientos registrados hoy</p>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
 
   <!-- ── SIN DATOS ────────────────────────────────────────────────────── -->
   @if (!cargando() && !reporte()) {

@@ -1,0 +1,156 @@
+.step-conf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0 8px;
+  text-align: center;
+}
+
+// ── Ícono de éxito ────────────────────────────────────────────────────────
+.step-conf__icono {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--sagim-success, #6fae3b);
+  }
+}
+
+.step-conf__titulo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--sagim-primary, #0f2a44);
+  margin: 0 0 8px;
+}
+
+.step-conf__mensaje {
+  font-size: 0.95rem;
+  color: var(--sagim-text-mid, #7a7a7a);
+  margin: 0 0 24px;
+  max-width: 380px;
+}
+
+// ── Folio destacado ───────────────────────────────────────────────────────
+.step-conf__folio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 20px 32px;
+  background: var(--sagim-primary, #0f2a44);
+  border-radius: 12px;
+  color: #fff;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 380px;
+
+  &-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.75;
+  }
+
+  &-numero {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #ffd54f;
+  }
+
+  &-hint {
+    font-size: 0.72rem;
+    opacity: 0.65;
+    max-width: 260px;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+}
+
+// ── Detalle ───────────────────────────────────────────────────────────────
+.step-conf__detalle {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.detalle-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  mat-icon {
+    color: var(--sagim-secondary, #1f6fae);
+    font-size: 1.15rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--sagim-text-mid, #7a7a7a);
+    font-weight: 600;
+  }
+
+  &__valor {
+    font-size: 0.9rem;
+    color: var(--sagim-text-dark, #3a3a3a);
+    font-weight: 500;
+  }
+
+  &--instrucciones {
+    background: #fffde7;
+
+    mat-icon {
+      color: var(--sagim-warning, #f0a12a);
+    }
+    .detalle-row__label {
+      color: #a0841a;
+    }
+  }
+}
+
+// ── Acciones ─────────────────────────────────────────────────────────────
+.step-conf__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+
+  button,
+  a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}

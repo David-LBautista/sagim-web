@@ -210,7 +210,14 @@
 
       <mat-form-field appearance="outline" class="area-field">
         <mat-label>Área responsable</mat-label>
-        <input matInput [value]="dialogData.areaResponsable" readonly />
+        <mat-select formControlName="areaResponsable">
+          @for (area of areasResponsables(); track area) {
+            <mat-option [value]="area">{{ area }}</mat-option>
+          }
+        </mat-select>
+        @if (areasResponsables().length === 0) {
+          <mat-hint>Cargando áreas...</mat-hint>
+        }
       </mat-form-field>
     </div>
 

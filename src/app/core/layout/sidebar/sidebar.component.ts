@@ -53,7 +53,7 @@ export class SidebarComponent implements OnInit {
   private menuSections: MenuSection[] = [
     {
       header: 'Administración del Sistema',
-      modules: ['USUARIOS', 'MUNICIPIOS'],
+      modules: ['USUARIOS', 'MUNICIPIOS', 'AUDITORIA'],
     },
     {
       header: 'Áreas Municipales',
@@ -120,11 +120,12 @@ export class SidebarComponent implements OnInit {
               icon: moduloConfig.icon,
               label: moduloConfig.label,
               children: [
-                {
-                  label: 'Dashboard',
-                  route: '/secretaria-ayuntamiento/dashboard',
-                  icon: 'dashboard',
-                },
+                // TODO: dashboard en construcción
+                // {
+                //   label: 'Dashboard',
+                //   route: '/secretaria-ayuntamiento/dashboard',
+                //   icon: 'dashboard',
+                // },
                 {
                   label: 'Órdenes de Pago',
                   route: '/secretaria-ayuntamiento/ordenes-pago',
@@ -137,17 +138,55 @@ export class SidebarComponent implements OnInit {
               icon: moduloConfig.icon,
               label: moduloConfig.label,
               children: [
-                {
-                  label: 'Dashboard',
-                  route: '/registro-civil/dashboard',
-                  icon: 'dashboard',
-                },
+                // TODO: dashboard en construcción
+                // {
+                //   label: 'Dashboard',
+                //   route: '/registro-civil/dashboard',
+                //   icon: 'dashboard',
+                // },
                 {
                   label: 'Órdenes de Pago',
                   route: '/registro-civil/ordenes-pago',
                   icon: 'receipt_long',
                 },
               ],
+            });
+          } else if (moduloKey === 'CITAS') {
+            const userRol = this.authService.getRol();
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              children: [
+                {
+                  label: 'Agenda de Hoy',
+                  route: '/citas/hoy',
+                  icon: 'today',
+                },
+                {
+                  label: 'Calendario',
+                  route: '/citas/calendario',
+                  icon: 'calendar_month',
+                },
+                {
+                  label: 'Historial',
+                  route: '/citas/lista',
+                  icon: 'event_note',
+                },
+                {
+                  label: 'Métricas',
+                  route: '/citas/metricas',
+                  icon: 'bar_chart',
+                },
+                {
+                  label: 'Configuración',
+                  route: '/citas/configuracion',
+                  icon: 'settings',
+                  roles: ['SUPER_ADMIN', 'ADMIN_MUNICIPIO'],
+                },
+              ].filter(
+                (child) =>
+                  !child.roles || (userRol && child.roles.includes(userRol)),
+              ),
             });
           } else if (moduloKey === 'TESORERIA') {
             const userRol = this.authService.getRol();
@@ -181,6 +220,23 @@ export class SidebarComponent implements OnInit {
                   !child.roles || (userRol && child.roles.includes(userRol)),
               ),
             });
+          } else if (moduloKey === 'AUDITORIA') {
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              children: [
+                {
+                  label: 'Dashboard',
+                  route: '/auditoria/dashboard',
+                  icon: 'dashboard',
+                },
+                {
+                  label: 'Bitácora',
+                  route: '/auditoria/logs',
+                  icon: 'list_alt',
+                },
+              ],
+            });
           } else if (moduloKey === 'DIF') {
             items.push({
               icon: moduloConfig.icon,
@@ -211,7 +267,6 @@ export class SidebarComponent implements OnInit {
             });
           }
         });
-
       }
     });
 

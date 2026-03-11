@@ -40,16 +40,3 @@
   padding-left: 4px;
 }
 
-mat-dialog-actions {
-  padding: var(--sagim-spacing-md) var(--sagim-spacing-lg);
-  gap: var(--sagim-spacing-sm);
-
-  button {
-    min-width: 100px;
-
-    mat-spinner {
-      display: inline-block;
-      margin: 0;
-    }
-  }
-}

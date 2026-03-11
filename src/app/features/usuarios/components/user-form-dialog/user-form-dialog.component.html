@@ -1,4 +1,11 @@
-<mat-dialog-content>
+<app-sagim-dialog
+  [title]="isEditMode ? 'Editar Usuario' : 'Nuevo Usuario'"
+  [submitLabel]="isEditMode ? 'Actualizar' : 'Crear'"
+  [isSubmitting]="isSubmitting"
+  [submitDisabled]="userForm.invalid"
+  (submitClick)="onSubmit()"
+  (cancelClick)="onCancel()"
+>
   <form [formGroup]="userForm" class="user-form">
     <!-- Información Personal -->
     <div class="form-section">
@@ -143,22 +150,4 @@
       </div>
     </div>
   </form>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
-    Cancelar
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="onSubmit()"
-    [disabled]="userForm.invalid || isSubmitting"
-  >
-    @if (isSubmitting) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      {{ isEditMode ? "Actualizar" : "Crear" }}
-    }
-  </button>
-</mat-dialog-actions>
+</app-sagim-dialog>

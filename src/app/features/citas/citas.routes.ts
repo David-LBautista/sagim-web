@@ -7,13 +7,41 @@ export const CITAS_ROUTES: Routes = [
     canActivate: [moduloGuard('CITAS')],
     children: [
       {
-        path: 'dashboard',
+        path: 'hoy',
         loadComponent: () =>
-          import('./pages/citas.page').then((m) => m.CitasPage),
+          import('./pages/agenda-hoy/agenda-hoy.page').then(
+            (m) => m.AgendaHoyPage,
+          ),
+      },
+      {
+        path: 'lista',
+        loadComponent: () =>
+          import('./pages/lista/lista-citas.page').then(
+            (m) => m.ListaCitasPage,
+          ),
+      },
+      {
+        path: 'metricas',
+        loadComponent: () =>
+          import('./pages/metricas/metricas.page').then((m) => m.MetricasPage),
+      },
+      {
+        path: 'configuracion',
+        loadComponent: () =>
+          import('./pages/configuracion/configuracion.page').then(
+            (m) => m.ConfiguracionPage,
+          ),
+      },
+      {
+        path: 'calendario',
+        loadComponent: () =>
+          import('./pages/calendario/calendario.page').then(
+            (m) => m.CalendarioPage,
+          ),
       },
       {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'hoy',
         pathMatch: 'full',
       },
     ],

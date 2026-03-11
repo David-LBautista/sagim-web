@@ -1,15 +1,19 @@
-<h2 mat-dialog-title>
-  {{ esEdicion ? "Editar ciudadano" : "Nuevo ciudadano" }}
-</h2>
-
-<mat-dialog-content>
+<app-sagim-dialog
+  [title]="esEdicion ? 'Editar Ciudadano' : 'Registrar Ciudadano'"
+  [submitLabel]="esEdicion ? 'Guardar cambios' : 'Registrar ciudadano'"
+  [isSubmitting]="guardando"
+  [submitDisabled]="form.invalid || (!esEdicion && (curpStatus === 'idle' || curpStatus === 'searching' || curpStatus === 'found'))"
+  (submitClick)="onGuardar()"
+  (cancelClick)="onCancelar()"
+>
   <form [formGroup]="form" class="ciudadano-form">
-    <!-- Sección: Información personal -->
-    <p class="form-section-title">Información personal</p>
 
-    <div class="form-grid two-col">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>CURP</mat-label>
+    <!-- ═══ CURP ═══ -->
+    <div class="form-section">
+      <p class="form-section-title">Búsqueda por CURP</p>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
+        <mat-label>CURP *</mat-label>
         <input
           matInput
           formControlName="curp"
@@ -18,187 +22,161 @@
           style="text-transform: uppercase"
         />
         @if (esEdicion) {
-          <mat-icon
-            matSuffix
-            matTooltip="La CURP no puede modificarse"
-            class="lock-icon"
-            >lock</mat-icon
-          >
+          <mat-icon matSuffix matTooltip="La CURP no puede modificarse" class="lock-icon">lock</mat-icon>
         }
-        @if (
-          form.get("curp")?.hasError("required") && form.get("curp")?.touched
-        ) {
+        @if (curpStatus === 'searching') {
+          <mat-spinner matSuffix diameter="18"></mat-spinner>
+        }
+        @if (curpStatus === 'not-found') {
+          <mat-icon matSuffix style="color: var(--sagim-success)" matTooltip="CURP disponible para registro">check_circle</mat-icon>
+        }
+        @if (curpStatus === 'found') {
+          <mat-icon matSuffix style="color: var(--sagim-danger)">block</mat-icon>
+        }
+        @if (form.get('curp')?.hasError('required') && form.get('curp')?.touched) {
           <mat-error>La CURP es requerida</mat-error>
-        } @else if (
-          form.get("curp")?.hasError("minlength") ||
-          form.get("curp")?.hasError("maxlength")
-        ) {
+        } @else if (form.get('curp')?.hasError('minlength') || form.get('curp')?.hasError('maxlength')) {
           <mat-error>La CURP debe tener 18 caracteres</mat-error>
-        } @else if (form.get("curp")?.hasError("pattern")) {
+        } @else if (form.get('curp')?.hasError('pattern')) {
           <mat-error>CURP inválida (solo mayúsculas y números)</mat-error>
-        } @else if (form.get("curp")?.hasError("duplicado")) {
-          <mat-error>La CURP ya está registrada en este municipio</mat-error>
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Fecha de nacimiento</mat-label>
-        <input matInput type="date" formControlName="fechaNacimiento" />
-        @if (
-          form.get("fechaNacimiento")?.hasError("required") &&
-          form.get("fechaNacimiento")?.touched
-        ) {
-          <mat-error>La fecha de nacimiento es requerida</mat-error>
-        }
-      </mat-form-field>
+      @if (curpStatus === 'found') {
+        <div class="curp-status curp-status--error">
+          <mat-icon>warning</mat-icon>
+          <span>Esta CURP ya está registrada: <strong>{{ registeredName }}</strong></span>
+        </div>
+      }
+      @if (curpStatus === 'not-found' && !esEdicion) {
+        <div class="curp-status curp-status--info">
+          <mat-icon>info</mat-icon>
+          CURP disponible — completa los datos para registrar al ciudadano
+        </div>
+      }
     </div>
 
-    <div class="form-grid three-col">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Nombre(s)</mat-label>
-        <input matInput formControlName="nombre" />
-        @if (
-          form.get("nombre")?.hasError("required") &&
-          form.get("nombre")?.touched
-        ) {
-          <mat-error>El nombre es requerido</mat-error>
-        }
-      </mat-form-field>
+    <!-- ═══ RESTO DEL FORMULARIO ═══ -->
+    @if (showFields) {
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Apellido paterno</mat-label>
-        <input matInput formControlName="apellidoPaterno" />
-        @if (
-          form.get("apellidoPaterno")?.hasError("required") &&
-          form.get("apellidoPaterno")?.touched
-        ) {
-          <mat-error>Requerido</mat-error>
-        }
-      </mat-form-field>
+      <!-- Información personal -->
+      <div class="form-section">
+        <p class="form-section-title">Información personal</p>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Apellido materno</mat-label>
-        <input matInput formControlName="apellidoMaterno" />
-        @if (
-          form.get("apellidoMaterno")?.hasError("required") &&
-          form.get("apellidoMaterno")?.touched
-        ) {
-          <mat-error>Requerido</mat-error>
-        }
-      </mat-form-field>
-    </div>
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre(s) *</mat-label>
+            <input matInput formControlName="nombre" />
+            @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
+              <mat-error>El nombre es requerido</mat-error>
+            }
+          </mat-form-field>
 
-    <div class="form-grid two-col">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Teléfono</mat-label>
-        <mat-icon matPrefix>phone</mat-icon>
-        <input matInput formControlName="telefono" type="tel" maxlength="10" />
-      </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Apellido materno *</mat-label>
+            <input matInput formControlName="apellidoMaterno" />
+            @if (form.get('apellidoMaterno')?.hasError('required') && form.get('apellidoMaterno')?.touched) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+        </div>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Correo electrónico</mat-label>
-        <mat-icon matPrefix>email</mat-icon>
-        <input matInput formControlName="email" type="email" />
-        @if (
-          form.get("email")?.hasError("email") && form.get("email")?.touched
-        ) {
-          <mat-error>Correo inválido</mat-error>
-        }
-      </mat-form-field>
-    </div>
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Apellido paterno *</mat-label>
+            <input matInput formControlName="apellidoPaterno" />
+            @if (form.get('apellidoPaterno')?.hasError('required') && form.get('apellidoPaterno')?.touched) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
 
-    <!-- Sección: Dirección -->
-    <p class="form-section-title">Dirección</p>
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de nacimiento *</mat-label>
+            <input matInput type="date" formControlName="fechaNacimiento" />
+            @if (form.get('fechaNacimiento')?.hasError('required') && form.get('fechaNacimiento')?.touched) {
+              <mat-error>Requerida</mat-error>
+            }
+          </mat-form-field>
+        </div>
 
-    <div class="form-grid three-col">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Localidad</mat-label>
-        <input matInput formControlName="localidad" />
-        @if (
-          form.get("localidad")?.hasError("required") &&
-          form.get("localidad")?.touched
-        ) {
-          <mat-error>Requerida</mat-error>
-        }
-      </mat-form-field>
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Teléfono</mat-label>
+            <mat-icon matPrefix>phone</mat-icon>
+            <input matInput formControlName="telefono" type="tel" maxlength="10" />
+          </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Colonia</mat-label>
-        <input matInput formControlName="colonia" />
-        @if (
-          form.get("colonia")?.hasError("required") &&
-          form.get("colonia")?.touched
-        ) {
-          <mat-error>Requerida</mat-error>
-        }
-      </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Correo electrónico</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
+            <input matInput formControlName="email" type="email" />
+            @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+              <mat-error>Correo inválido</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Código postal</mat-label>
-        <input matInput formControlName="codigoPostal" maxlength="5" />
-      </mat-form-field>
-    </div>
+      <!-- Dirección -->
+      <div class="form-section">
+        <p class="form-section-title">Dirección</p>
 
-    <div class="form-grid two-col">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Calle</mat-label>
-        <input matInput formControlName="calle" />
-        @if (
-          form.get("calle")?.hasError("required") && form.get("calle")?.touched
-        ) {
-          <mat-error>Requerida</mat-error>
-        }
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Localidad *</mat-label>
+          <mat-select formControlName="localidad">
+            @if (isLoadingLocalidades) {
+              <mat-option disabled>Cargando...</mat-option>
+            } @else {
+              @for (loc of localidades; track loc._id) {
+                <mat-option [value]="loc.nombre">{{ loc.nombre }}</mat-option>
+              }
+            }
+          </mat-select>
+          @if (form.get('localidad')?.hasError('required') && form.get('localidad')?.touched) {
+            <mat-error>Requerida</mat-error>
+          }
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Número</mat-label>
-        <input matInput formControlName="numero" />
-        @if (
-          form.get("numero")?.hasError("required") &&
-          form.get("numero")?.touched
-        ) {
-          <mat-error>Requerido</mat-error>
-        }
-      </mat-form-field>
-    </div>
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Colonia *</mat-label>
+            <input matInput formControlName="colonia" />
+            @if (form.get('colonia')?.hasError('required') && form.get('colonia')?.touched) {
+              <mat-error>Requerida</mat-error>
+            }
+          </mat-form-field>
 
-    <mat-form-field
-      appearance="outline"
-      subscriptSizing="dynamic"
-      class="full-width"
-    >
-      <mat-label>Referencias</mat-label>
-      <input
-        matInput
-        formControlName="referencias"
-        placeholder="Frente a la plaza..."
-      />
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
+          <mat-form-field appearance="outline">
+            <mat-label>Calle *</mat-label>
+            <input matInput formControlName="calle" />
+            @if (form.get('calle')?.hasError('required') && form.get('calle')?.touched) {
+              <mat-error>Requerida</mat-error>
+            }
+          </mat-form-field>
+        </div>
 
-<mat-dialog-actions align="end">
-  <button
-    mat-stroked-button
-    type="button"
-    (click)="onCancelar()"
-    [disabled]="guardando"
-  >
-    Cancelar
-  </button>
-  <button
-    mat-flat-button
-    color="primary"
-    type="button"
-    (click)="onGuardar()"
-    [disabled]="guardando"
-  >
-    @if (guardando) {
-      <mat-spinner
-        diameter="18"
-        style="display: inline-block; margin-right: 6px"
-      ></mat-spinner>
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Número *</mat-label>
+            <input matInput formControlName="numero" />
+            @if (form.get('numero')?.hasError('required') && form.get('numero')?.touched) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Código postal</mat-label>
+            <input matInput formControlName="codigoPostal" maxlength="5" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Referencias</mat-label>
+          <input matInput formControlName="referencias" placeholder="Frente a la plaza..." />
+        </mat-form-field>
+      </div>
+
     }
-    {{ esEdicion ? "Guardar cambios" : "Registrar ciudadano" }}
-  </button>
-</mat-dialog-actions>
+
+  </form>
+</app-sagim-dialog>

@@ -71,6 +71,17 @@ export interface GrupoVulnerableCatalogo extends CatalogoConClave {}
 export interface TipoApoyoCatalogo extends CatalogoConClave {}
 
 /**
+ * Catálogo de categorías de servicios cobrables
+ */
+export interface CategoriaServicioCatalogo {
+  _id: string;
+  nombre: string;
+  areaResponsable: string;
+  orden: number;
+  activo: boolean;
+}
+
+/**
  * Catálogo de localidades por municipio
  */
 export interface LocalidadCatalogo {

@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import dayjs from 'dayjs';
 import { FormsModule } from '@angular/forms';
@@ -11,32 +18,71 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
+import {
+  MatPaginatorModule,
+  MatPaginator,
+  PageEvent,
+} from '@angular/material/paginator';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  Subject,
+  debounceTime,
+  distinctUntilChanged,
+  takeUntil,
+  catchError,
+  forkJoin,
+  map,
+  of,
+  timeout,
+} from 'rxjs';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import type {
+  ApexAxisChartSeries,
+  ApexChart,
+  ApexXAxis,
+  ApexPlotOptions,
+  ApexDataLabels,
+  ApexGrid,
+} from 'ng-apexcharts';
 import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { FolioTagComponent } from '../../../../shared/components/folio-tag/folio-tag.component';
+import { KpiCardComponent } from '../../../../shared/components/kpi-card/kpi-card.component';
 import { BeneficiariosService } from '../../services/beneficiarios.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import type {
   Beneficiario,
+  BeneficiarioDetalle,
+  BeneficiariosEstadisticas,
   MunicipioRef,
+  ProgramaDIF,
 } from '../../models/beneficiarios.model';
 import { BeneficiarioFormDialogComponent } from '../../components/beneficiario-form-dialog/beneficiario-form-dialog.component';
+import { ImportarBeneficiariosDialogComponent } from '../../components/importar-beneficiarios-dialog/importar-beneficiarios-dialog.component';
 import { GenerarReporteDialogComponent } from '../../components/generar-reporte-dialog/generar-reporte-dialog.component';
 
 interface BeneficiarioListItem {
+  _id: string;
   folio: string;
   nombreCompleto: string;
   curp: string;
+  gruposVulnerables: string[];
   localidad: string;
-  municipio: string;
   fechaRegistro: string;
   estatus: 'ACTIVO' | 'INACTIVO';
 }
+
+const GRUPOS_LABELS: Record<string, string> = {
+  ADULTO_MAYOR: 'Adulto Mayor',
+  DISCAPACIDAD: 'Discapacidad',
+  MUJER: 'Mujer',
+  MENOR: 'Menor',
+  INDIGENA: 'Indígena',
+  MIGRANTE: 'Migrante',
+};
 
 @Component({
   selector: 'app-beneficiarios',
@@ -51,13 +97,16 @@ interface BeneficiarioListItem {
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
+    MatSlideToggleModule,
     MatTooltipModule,
     MatTableModule,
-    StatusBadgeComponent,
+    MatPaginatorModule,
+    MatChipsModule,
+    MatProgressSpinnerModule,
     ActionButtonComponent,
     FolioTagComponent,
+    KpiCardComponent,
+    NgApexchartsModule,
   ],
   templateUrl: './beneficiarios.page.html',
   styleUrls: ['./beneficiarios.page.scss'],
@@ -68,21 +117,97 @@ export class BeneficiariosPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private beneficiariosService = inject(BeneficiariosService);
   private notificationService = inject(NotificationService);
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
 
-  globalSearch = '';
-  showFilters = false;
+  // ---- loading / state ----
+  loading = signal(false);
+  loadingStats = signal(false);
+  exportando = signal(false);
 
-  municipios = [
-    { value: '', label: 'Todos' },
-    { value: 'xalapa', label: 'Xalapa' },
+  // ---- estadísticas ----
+  estadisticas = signal<BeneficiariosEstadisticas | null>(null);
+
+  // ---- grupos chart ----
+  gruposChartSeries: ApexAxisChartSeries = [
+    { name: 'Beneficiarios', data: [] },
+  ];
+  gruposChartConfig: ApexChart = {
+    type: 'bar',
+    height: 210,
+    toolbar: { show: false },
+    fontFamily: 'Poppins, sans-serif',
+    foreColor: '#7A7A7A',
+  };
+  gruposChartPlotOptions: ApexPlotOptions = {
+    bar: {
+      horizontal: true,
+      borderRadius: 4,
+      barHeight: '60%',
+      distributed: true,
+    },
+  };
+  gruposChartXaxis: ApexXAxis = {
+    categories: [],
+    labels: { style: { fontSize: '11px' } },
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+  };
+  gruposChartDataLabels: ApexDataLabels = {
+    enabled: true,
+    style: { fontSize: '11px', colors: ['#fff'] },
+  };
+  gruposChartColors: string[] = [
+    '#1F6FAE',
+    '#0F2A44',
+    '#6FAE3B',
+    '#F0A12A',
+    '#D64545',
+    '#7A7A7A',
+  ];
+  gruposChartGrid: ApexGrid = {
+    borderColor: 'rgba(0,0,0,0.06)',
+    xaxis: { lines: { show: false } },
+  };
+
+  // ---- drawer ----
+  drawerOpen = signal(false);
+  beneficiarioDetalle = signal<BeneficiarioDetalle | null>(null);
+  loadingDetalle = signal(false);
+
+  // ---- tabla ----
+  dataSource = new MatTableDataSource<BeneficiarioListItem>([]);
+  total = 0;
+  page = 1;
+  limit = 20;
+  totalPages = 0;
+
+  readonly displayedColumns = [
+    'folio',
+    'nombreCompleto',
+    'curp',
+    'gruposVulnerables',
+    'localidad',
+    'fechaRegistro',
+    'acciones',
   ];
 
-  programas = [
+  // ---- filtros ----
+  globalSearch = '';
+  soloActivos = true;
+
+  programas: ProgramaDIF[] = [];
+
+  gruposVulnerablesOptions = [
     { value: '', label: 'Todos' },
-    { value: 'adulto-mayor', label: 'Adulto Mayor' },
+    { value: 'ADULTO_MAYOR', label: 'Adulto Mayor' },
+    { value: 'DISCAPACIDAD', label: 'Discapacidad' },
+    { value: 'MUJER', label: 'Mujer' },
+    { value: 'MENOR', label: 'Menor' },
+    { value: 'INDIGENA', label: 'Indígena' },
+    { value: 'MIGRANTE', label: 'Migrante' },
   ];
 
   sexos = [
@@ -92,43 +217,21 @@ export class BeneficiariosPage implements OnInit, OnDestroy {
     { value: 'OTRO', label: 'Otro' },
   ];
 
-  estatusOptions = [
-    { value: '', label: 'Todos' },
-    { value: 'ACTIVO', label: 'Activo' },
-    { value: 'INACTIVO', label: 'Inactivo' },
-  ];
-
   filtrosForm: FormGroup = this.fb.group({
+    grupoVulnerable: [''],
     programa: [''],
-    fechaInicio: [null],
-    fechaFin: [null],
     sexo: [''],
     edadMin: [null],
     edadMax: [null],
-    estatus: [''],
   });
 
-  readonly displayedColumns = [
-    'folio',
-    'nombreCompleto',
-    'curp',
-    'localidad',
-    'municipio',
-    'fechaRegistro',
-    'estatus',
-    'acciones',
-  ];
-
-  dataSource = new MatTableDataSource<BeneficiarioListItem>([]);
-  total = 0;
-  page = 1;
-  limit = 20;
-  totalPages = 0;
+  // ============================================================
 
   ngOnInit(): void {
+    this.loadStats();
+    this.loadProgramas();
     this.loadBeneficiarios();
 
-    // Debounce global search
     this.searchSubject
       .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(() => {
@@ -142,34 +245,99 @@ export class BeneficiariosPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  onNuevoBeneficiario(): void {
-    const dialogRef = this.dialog.open(BeneficiarioFormDialogComponent, {
-      width: '900px',
-      maxWidth: '95vw',
-      disableClose: true,
-    });
+  // ---- data loading ----
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadBeneficiarios();
-      }
+  private loadStats(): void {
+    this.loadingStats.set(true);
+
+    this.beneficiariosService
+      .getEstadisticas()
+      .pipe(
+        timeout(8000),
+        catchError(() =>
+          // Endpoint not available — derive from two fast list calls
+          forkJoin({
+            all: this.beneficiariosService.getBeneficiarios({
+              page: 1,
+              limit: 1,
+            }),
+            activos: this.beneficiariosService.getBeneficiarios({
+              page: 1,
+              limit: 1,
+              activo: true,
+            }),
+          }).pipe(
+            map(({ all, activos }) => ({
+              total: all.total,
+              activos: activos.total,
+              registradosEsteMes: 0,
+              porGrupoVulnerable: {} as Record<string, number>,
+            })),
+            catchError(() => of(null)),
+          ),
+        ),
+      )
+      .subscribe({
+        next: (stats) => {
+          this.estadisticas.set(stats);
+          this.buildGruposChart();
+          this.loadingStats.set(false);
+        },
+        error: () => this.loadingStats.set(false),
+      });
+  }
+
+  private buildGruposChart(): void {
+    const grupos = this.estadisticas()?.porGrupoVulnerable;
+    if (!grupos) return;
+    const entries = Object.entries(grupos).sort((a, b) => b[1] - a[1]);
+    this.gruposChartXaxis = {
+      ...this.gruposChartXaxis,
+      categories: entries.map(([k]) => this.getGrupoLabel(k)),
+    };
+    this.gruposChartSeries = [
+      { name: 'Beneficiarios', data: entries.map(([, v]) => v) },
+    ];
+  }
+
+  private loadProgramas(): void {
+    this.beneficiariosService.getProgramas().subscribe({
+      next: (programas) => (this.programas = programas),
+      error: () => {},
     });
   }
 
-  onGenerarReporte(): void {
-    this.dialog.open(GenerarReporteDialogComponent, {
-      width: '480px',
-      maxWidth: '95vw',
-      data: { tipo: 'beneficiarios' },
-    });
+  loadBeneficiarios(): void {
+    this.loading.set(true);
+    this.beneficiariosService
+      .getBeneficiarios(this.buildQueryParams())
+      .subscribe({
+        next: (response) => {
+          this.dataSource.data = response.data.map((item) =>
+            this.mapBeneficiario(item),
+          );
+          this.total = response.total;
+          this.page = response.page;
+          this.limit = response.limit;
+          this.totalPages = response.totalPages;
+          this.loading.set(false);
+        },
+        error: () => {
+          this.notificationService.error('Error al cargar beneficiarios');
+          this.loading.set(false);
+        },
+      });
   }
 
-  toggleFilters(): void {
-    this.showFilters = !this.showFilters;
-  }
+  // ---- filtros ----
 
   onSearchChange(): void {
     this.searchSubject.next(this.globalSearch);
+  }
+
+  onFiltroChange(): void {
+    this.page = 1;
+    this.loadBeneficiarios();
   }
 
   aplicarFiltros(): void {
@@ -179,84 +347,200 @@ export class BeneficiariosPage implements OnInit, OnDestroy {
 
   limpiarFiltros(): void {
     this.filtrosForm.reset({
+      grupoVulnerable: '',
       programa: '',
-      fechaInicio: null,
-      fechaFin: null,
       sexo: '',
       edadMin: null,
       edadMax: null,
-      estatus: '',
     });
     this.globalSearch = '';
+    this.soloActivos = true;
     this.page = 1;
     this.loadBeneficiarios();
   }
 
-  loadBeneficiarios(): void {
-    this.beneficiariosService
-      .getBeneficiarios(this.buildQueryParams())
-      .subscribe({
-        next: (response) => {
-          this.dataSource.data = response.data.map((item: Beneficiario) =>
-            this.mapBeneficiario(item),
-          );
-          this.total = response.total;
-          this.page = response.page;
-          this.limit = response.limit;
-          this.totalPages = response.totalPages;
-        },
-        error: (error) => {
-          console.error('Error al cargar beneficiarios:', error);
-          this.notificationService.error('Error al cargar beneficiarios');
+  onPageChange(event: PageEvent): void {
+    this.page = event.pageIndex + 1;
+    this.limit = event.pageSize;
+    this.loadBeneficiarios();
+  }
+
+  // ---- acciones header ----
+
+  onNuevoBeneficiario(): void {
+    const dialogRef = this.dialog.open(BeneficiarioFormDialogComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      disableClose: true,
+      data: {},
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.page = 1;
+        if (this.paginator) this.paginator.pageIndex = 0;
+        this.loadBeneficiarios();
+        this.loadStats();
+      }
+    });
+  }
+
+  generarReporte(): void {
+    this.dialog.open(GenerarReporteDialogComponent, {
+      width: '480px',
+      maxWidth: '95vw',
+      disableClose: false,
+      data: { tipo: 'beneficiarios' },
+    });
+  }
+
+  importar(): void {
+    const dialogRef = this.dialog.open(ImportarBeneficiariosDialogComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      disableClose: true,
+    });
+    dialogRef.afterClosed().subscribe((huboImportacion) => {
+      if (huboImportacion) {
+        this.page = 1;
+        if (this.paginator) this.paginator.pageIndex = 0;
+        this.loadBeneficiarios();
+        this.loadStats();
+      }
+    });
+  }
+
+  exportar(): void {
+    this.exportando.set(true);
+    this.beneficiariosService.exportar(this.buildQueryParams()).subscribe({
+      next: (blob) => {
+        const fecha = dayjs().format('YYYY-MM-DD');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `beneficiarios-dif-${fecha}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.exportando.set(false);
+      },
+      error: () => {
+        this.notificationService.error('Error al exportar beneficiarios');
+        this.exportando.set(false);
+      },
+    });
+  }
+
+  // ---- acciones fila ----
+
+  verDetalle(item: BeneficiarioListItem): void {
+    this.drawerOpen.set(true);
+    this.beneficiarioDetalle.set(null);
+    this.loadingDetalle.set(true);
+    this.beneficiariosService.getBeneficiarioByCurp(item.curp, 1, 3).subscribe({
+      next: (data) => {
+        this.beneficiarioDetalle.set(data);
+        this.loadingDetalle.set(false);
+      },
+      error: () => {
+        this.notificationService.error('Error al cargar detalle');
+        this.loadingDetalle.set(false);
+      },
+    });
+  }
+
+  cerrarDetalle(): void {
+    this.drawerOpen.set(false);
+    this.beneficiarioDetalle.set(null);
+  }
+
+  editarBeneficiario(item: BeneficiarioListItem): void {
+    const detalle = this.beneficiarioDetalle();
+    const cached =
+      detalle?.curp === item.curp ? (detalle as unknown as Beneficiario) : null;
+
+    const openDialog = (beneficiario: Beneficiario) => {
+      const dialogRef = this.dialog.open(BeneficiarioFormDialogComponent, {
+        width: '700px',
+        maxWidth: '95vw',
+        disableClose: true,
+        data: { beneficiario },
+      });
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.loadBeneficiarios();
+          if (this.drawerOpen()) this.verDetalle(item);
+        }
+      });
+    };
+
+    if (cached) {
+      openDialog(cached);
+    } else {
+      this.beneficiariosService.getBeneficiarioById(item._id).subscribe({
+        next: (b) => openDialog(b),
+        error: () => {
+          this.notificationService.error('No se pudo cargar el beneficiario');
         },
       });
+    }
   }
 
-  get resumenActivos(): number {
-    return this.dataSource.data.filter((b) => b.estatus === 'ACTIVO').length;
+  desactivar(item: BeneficiarioListItem): void {
+    if (
+      !confirm(
+        `¿Desactivar a ${item.nombreCompleto}? El historial de apoyos quedará intacto.`,
+      )
+    )
+      return;
+    this.beneficiariosService.desactivar(item._id).subscribe({
+      next: () => {
+        this.notificationService.success('Beneficiario desactivado');
+        this.loadBeneficiarios();
+        this.loadStats();
+        if (
+          this.drawerOpen() &&
+          this.beneficiarioDetalle()?.curp === item.curp
+        ) {
+          this.cerrarDetalle();
+        }
+      },
+      error: () => this.notificationService.error('Error al desactivar'),
+    });
   }
 
-  get resumenInactivos(): number {
-    return this.dataSource.data.filter((b) => b.estatus === 'INACTIVO').length;
+  verTodosApoyos(curp: string): void {
+    this.router.navigate(['/dif/beneficiarios', curp]);
   }
 
-  getEstatusVariant(
-    status: BeneficiarioListItem['estatus'],
-  ): 'success' | 'danger' {
+  // ---- helpers ----
+
+  getEstatusVariant(status: 'ACTIVO' | 'INACTIVO'): 'success' | 'danger' {
     return status === 'ACTIVO' ? 'success' : 'danger';
   }
 
-  onVerBeneficiario(item: BeneficiarioListItem): void {
-    this.router.navigate(['/dif/beneficiarios', item.curp]);
+  getGrupoLabel(clave: string): string {
+    return GRUPOS_LABELS[clave] ?? clave;
   }
 
-  onEditarBeneficiario(item: BeneficiarioListItem): void {
-    console.log('Editar beneficiario:', item);
+  getApoyosMostrar(): any[] {
+    return this.beneficiarioDetalle()?.historialApoyos?.data?.slice(0, 3) ?? [];
   }
 
-  private formatDate(dateString: string): string {
-    return dayjs(dateString).tz('America/Mexico_City').format('DD/MM/YYYY');
+  formatFechaApoyo(dateString: string): string {
+    return dayjs(dateString).format('MMM YYYY');
   }
 
-  private mapBeneficiario(item: Beneficiario): BeneficiarioListItem {
-    const estatus = this.resolveEstatus(item);
-
-    return {
-      folio: item.folio ?? this.buildFolio(item._id),
-      nombreCompleto: this.buildNombreCompleto(item),
-      curp: item.curp,
-      localidad: item.localidad ?? '-',
-      municipio:
-        typeof item.municipioId === 'object'
-          ? (item.municipioId as MunicipioRef).nombre
-          : (item.municipioId ?? '-'),
-      fechaRegistro: this.formatDate(item.fechaRegistro ?? item.createdAt),
-      estatus,
-    };
+  formatFechaNacimiento(dateString: string): string {
+    return dayjs(dateString).format('DD/MM/YYYY');
   }
 
-  private buildFolio(id: string): string {
-    return `BEN-${id.slice(-8).toUpperCase()}`;
+  calcEdad(fechaNacimiento: string): number {
+    return dayjs().diff(dayjs(fechaNacimiento), 'year');
+  }
+
+  getSexoLabel(sexo: string): string {
+    if (sexo === 'M') return 'Masculino';
+    if (sexo === 'F') return 'Femenino';
+    return sexo ?? '—';
   }
 
   private buildQueryParams() {
@@ -266,30 +550,34 @@ export class BeneficiariosPage implements OnInit, OnDestroy {
       limit: this.limit,
     };
     if (this.globalSearch?.trim()) params['search'] = this.globalSearch.trim();
-    if (f.sexo) params['sexo'] = f.sexo;
+    if (f.grupoVulnerable) params['grupoVulnerable'] = f.grupoVulnerable;
     if (f.programa) params['programaId'] = f.programa;
-    if (f.fechaInicio) params['fechaInicio'] = this.toDateString(f.fechaInicio);
-    if (f.fechaFin) params['fechaFin'] = this.toDateString(f.fechaFin);
+    if (f.sexo) params['sexo'] = f.sexo;
     if (f.edadMin != null && f.edadMin !== '') params['edadMin'] = f.edadMin;
     if (f.edadMax != null && f.edadMax !== '') params['edadMax'] = f.edadMax;
-    if (f.estatus === 'INACTIVO') params['activo'] = false;
-    else if (f.estatus === 'ACTIVO') params['activo'] = true;
+    if (this.soloActivos) params['activo'] = true;
     return params;
   }
 
-  private toDateString(date: Date | string): string {
-    const d = new Date(date);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  private mapBeneficiario(item: Beneficiario): BeneficiarioListItem {
+    return {
+      _id: item._id,
+      folio: item.folio ?? `BEN-${item._id.slice(-8).toUpperCase()}`,
+      nombreCompleto: [item.nombre, item.apellidoPaterno, item.apellidoMaterno]
+        .filter(Boolean)
+        .join(' ')
+        .trim(),
+      curp: item.curp,
+      gruposVulnerables: item.grupoVulnerable ?? [],
+      localidad: item.localidad ?? '—',
+      fechaRegistro: dayjs(item.fechaRegistro ?? item.createdAt).format(
+        'DD/MM/YY',
+      ),
+      estatus: item.activo ? 'ACTIVO' : 'INACTIVO',
+    };
   }
 
-  private buildNombreCompleto(item: Beneficiario): string {
-    return [item.nombre, item.apellidoPaterno, item.apellidoMaterno]
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-  }
-
-  private resolveEstatus(item: Beneficiario): 'ACTIVO' | 'INACTIVO' {
-    return item.activo ? 'ACTIVO' : 'INACTIVO';
+  private buildFolio(id: string): string {
+    return `BEN-${id.slice(-8).toUpperCase()}`;
   }
 }

@@ -1,0 +1,268 @@
+<div class="logs-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="sagim-title-xl" style="margin-bottom: 4px">
+        Bitácora de Auditoría
+      </h1>
+      <p class="sagim-subtitle-light">Registro de acciones en el sistema</p>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <mat-card appearance="outlined" class="filtros-card">
+    <mat-card-content>
+      <div class="filtros-grid">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Módulo</mat-label>
+          <mat-select
+            [value]="filtroModulo()"
+            (valueChange)="filtroModulo.set($event)"
+          >
+            <mat-option value="">Todos</mat-option>
+            @for (m of modulos; track m.valor) {
+              <mat-option [value]="m.valor">{{ m.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Acción</mat-label>
+          <mat-select
+            [value]="filtroAccion()"
+            (valueChange)="filtroAccion.set($event)"
+          >
+            <mat-option value="">Todas</mat-option>
+            @for (a of acciones; track a.valor) {
+              <mat-option [value]="a.valor">{{ a.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>ID de usuario</mat-label>
+          <input
+            matInput
+            [value]="filtroUsuario()"
+            (input)="filtroUsuario.set($any($event.target).value)"
+            placeholder="ej. user-123"
+          />
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Entidad</mat-label>
+          <input
+            matInput
+            [value]="filtroEntidad()"
+            (input)="filtroEntidad.set($any($event.target).value)"
+            placeholder="ej. Pago"
+          />
+          <mat-icon matSuffix>category</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Desde</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerDesde"
+            [value]="filtroDesde()"
+            (dateChange)="filtroDesde.set($event.value)"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="pickerDesde" />
+          <mat-datepicker #pickerDesde />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Hasta</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerHasta"
+            [value]="filtroHasta()"
+            (dateChange)="filtroHasta.set($event.value)"
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="pickerHasta" />
+          <mat-datepicker #pickerHasta />
+        </mat-form-field>
+      </div>
+
+      <div class="filtros-actions">
+        <button mat-flat-button (click)="buscar()">
+          <mat-icon>search</mat-icon>
+          Buscar
+        </button>
+        @if (filtrosActivos() > 0) {
+          <button mat-stroked-button (click)="limpiarFiltros()">
+            <mat-icon>clear</mat-icon>
+            Limpiar ({{ filtrosActivos() }})
+          </button>
+        }
+        @if (!cargando()) {
+          <span class="result-count">
+            {{ totalRegistros() }} resultado{{
+              totalRegistros() !== 1 ? "s" : ""
+            }}
+          </span>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tabla -->
+  <mat-card appearance="outlined" class="table-card">
+    <mat-card-content>
+      @if (cargando()) {
+        <div class="loading-center">
+          <mat-spinner diameter="36" />
+        </div>
+      }
+
+      @if (!cargando() && logs().length === 0) {
+        <div class="table-empty">
+          <mat-icon>manage_search</mat-icon>
+          <p>No hay registros con los filtros seleccionados</p>
+        </div>
+      }
+
+      @if (!cargando() && logs().length > 0) {
+        <div class="table-wrapper">
+          <table class="logs-table">
+            <thead>
+              <tr>
+                <th>Fecha / Hora</th>
+                <th>Acción</th>
+                <th>Módulo</th>
+                <th>Entidad</th>
+                <th>Usuario</th>
+                <th>Descripción</th>
+                <th>IP</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (log of logs(); track log._id) {
+                <tr
+                  (click)="abrirDetalle(log)"
+                  class="log-row"
+                  [class.row-selected]="logSeleccionado()?._id === log._id"
+                >
+                  <td class="td-fecha">
+                    {{ formatFechaHora(log.createdAt) }}
+                  </td>
+                  <td>
+                    <span [class]="accionClass(log.accion)">{{
+                      accionLabel(log.accion)
+                    }}</span>
+                  </td>
+                  <td class="td-modulo">{{ moduloLabel(log.modulo) }}</td>
+                  <td class="td-entidad">{{ log.entidad }}</td>
+                  <td class="td-usuario">{{ nombreUsuario(log) }}</td>
+                  <td class="td-desc">{{ log.descripcion }}</td>
+                  <td class="td-ip">{{ log.ip }}</td>
+                  <td class="td-action">
+                    <button
+                      mat-icon-button
+                      matTooltip="Ver detalle"
+                      (click)="$event.stopPropagation(); abrirDetalle(log)"
+                    >
+                      <mat-icon>chevron_right</mat-icon>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <mat-paginator
+          class="logs-paginator"
+          [length]="totalRegistros()"
+          [pageSize]="limitActual"
+          [pageIndex]="paginaActual() - 1"
+          [pageSizeOptions]="[25, 50, 100]"
+          [showFirstLastButtons]="true"
+          (page)="onPageEvent($event)"
+          aria-label="Navegar páginas"
+        />
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ── DRAWER DETALLE ─────────────────────────────────────────────────── -->
+  @if (drawerAbierto()) {
+    <div class="detail-overlay" (click)="cerrarDetalle()"></div>
+    <div class="detail-drawer">
+      <div class="drawer-header">
+        <h2 class="drawer-title">Detalle de registro</h2>
+        <button mat-icon-button (click)="cerrarDetalle()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      @if (logSeleccionado(); as log) {
+        <div class="drawer-body">
+          <div class="detail-row">
+            <span class="detail-label">ID</span>
+            <span class="detail-value mono">{{ log._id }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Fecha / Hora</span>
+            <span class="detail-value">{{
+              formatFechaHora(log.createdAt)
+            }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Acción</span>
+            <span [class]="accionClass(log.accion)">{{
+              accionLabel(log.accion)
+            }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Módulo</span>
+            <span class="detail-value">{{ moduloLabel(log.modulo) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Entidad</span>
+            <span class="detail-value">{{ log.entidad }}</span>
+          </div>
+          @if (log.entidadId) {
+            <div class="detail-row">
+              <span class="detail-label">ID Entidad</span>
+              <span class="detail-value mono">{{ log.entidadId }}</span>
+            </div>
+          }
+          <div class="detail-row">
+            <span class="detail-label">Usuario</span>
+            <span class="detail-value">{{ nombreUsuario(log) }}</span>
+          </div>
+          @if (log.rol) {
+            <div class="detail-row">
+              <span class="detail-label">Rol</span>
+              <span class="detail-value">{{ log.rol }}</span>
+            </div>
+          }
+          @if (log.ip) {
+            <div class="detail-row">
+              <span class="detail-label">IP</span>
+              <span class="detail-value mono">{{ log.ip }}</span>
+            </div>
+          }
+
+          <mat-divider style="margin: 12px 0" />
+
+          <div class="detail-row">
+            <span class="detail-label">Descripción</span>
+            <span class="detail-value">{{ log.descripcion }}</span>
+          </div>
+
+          @if (cambiosFormateados()) {
+            <div class="cambios-section">
+              <span class="detail-label">Cambios</span>
+              <pre class="cambios-json">{{ cambiosFormateados() }}</pre>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

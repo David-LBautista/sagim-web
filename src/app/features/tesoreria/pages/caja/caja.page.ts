@@ -301,7 +301,6 @@ export class CajaPage implements OnInit, OnDestroy {
     }
 
     // Limpiar contribuyente al cambiar servicio
-    this.limpiarCiudadano();
     this.form.get('nombreLibre')!.setValue('');
   }
 
@@ -313,20 +312,29 @@ export class CajaPage implements OnInit, OnDestroy {
     this.servicioSeleccionado.set(null);
     this.form.get('monto')!.setValue(0);
     this.form.get('monto')!.disable();
-    this.limpiarCiudadano();
   }
 
   // ── Selección de ciudadano ───────────────────────────────────────────────
   onCiudadanoSeleccionado(ciudadano: CiudadanoSearchResult): void {
     this.ciudadanoSeleccionado.set(ciudadano);
-    this.ciudadanoBusquedaCtrl.setValue(ciudadano.nombreCompleto, {
+    const nombre = [
+      ciudadano.nombre,
+      ciudadano.apellidoPaterno,
+      ciudadano.apellidoMaterno,
+    ]
+      .filter(Boolean)
+      .join(' ');
+    this.ciudadanoBusquedaCtrl.setValue(nombre, {
       emitEvent: false,
     });
     this.ciudadanosFiltrados.set([]);
   }
 
   displayCiudadano(c: CiudadanoSearchResult | null): string {
-    return c?.nombreCompleto ?? '';
+    if (!c) return '';
+    return [c.nombre, c.apellidoPaterno, c.apellidoMaterno]
+      .filter(Boolean)
+      .join(' ');
   }
 
   limpiarCiudadano(): void {

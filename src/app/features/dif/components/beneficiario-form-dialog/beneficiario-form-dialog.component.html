@@ -1,113 +1,199 @@
-<h2 mat-dialog-title>Nuevo Beneficiario</h2>
-
-<mat-dialog-content>
+<app-sagim-dialog
+  [title]="dialogTitle"
+  submitLabel="Guardar"
+  [isSubmitting]="isSubmitting"
+  [submitDisabled]="form.invalid || (!isEdit && (padronStatus === 'idle' || padronStatus === 'searching' || padronStatus === 'already-registered'))"
+  (submitClick)="onSubmit()"
+  (cancelClick)="onCancel()"
+>
   <form [formGroup]="form" class="beneficiario-form">
-    <div class="row two-cols">
-      <mat-form-field appearance="outline">
-        <mat-label>Nombre</mat-label>
-        <input matInput formControlName="nombre" />
-      </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Apellido Paterno</mat-label>
-        <input matInput formControlName="apellidoPaterno" />
-      </mat-form-field>
-    </div>
+    <!-- ═══ CURP ═══ -->
+    <div class="form-section">
+      <p class="section-title">Datos personales</p>
 
-    <div class="row two-cols">
-      <mat-form-field appearance="outline">
-        <mat-label>Apellido Materno</mat-label>
-        <input matInput formControlName="apellidoMaterno" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>CURP</mat-label>
-        <input matInput formControlName="curp" maxlength="18" />
-      </mat-form-field>
-    </div>
-
-    <div class="row two-cols">
-      <mat-form-field appearance="outline">
-        <mat-label>Fecha de Nacimiento</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Sexo</mat-label>
-        <mat-select formControlName="sexo">
-          @for (sexo of sexoOptions; track sexo.value) {
-            <mat-option [value]="sexo.value">{{ sexo.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <div class="row two-cols">
-      <mat-form-field appearance="outline">
-        <mat-label>Teléfono</mat-label>
-        <input matInput formControlName="telefono" maxlength="10" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" type="email" />
-      </mat-form-field>
-    </div>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Domicilio</mat-label>
-      <input matInput formControlName="domicilio" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Localidad</mat-label>
-      <mat-select formControlName="localidad">
-        @if (isLoadingLocalidades) {
-          <mat-option disabled>Cargando localidades...</mat-option>
-        } @else {
-          @for (localidad of localidades; track localidad._id) {
-            <mat-option [value]="localidad.nombre">{{ localidad.nombre }}</mat-option>
-          }
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
+        <mat-label>Buscar por CURP o nombre *</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          formControlName="curp"
+          maxlength="18"
+          placeholder="Escribe el CURP o nombre del ciudadano..."
+          style="text-transform: uppercase"
+          [matAutocomplete]="autoCiudadano"
+        />
+        @if (padronStatus === 'searching' || isSearchingCiudadanos) {
+          <mat-spinner matSuffix diameter="18"></mat-spinner>
         }
-      </mat-select>
-      @if (isLoadingLocalidades) {
-        <mat-hint>Cargando localidades...</mat-hint>
+        @if (padronStatus === 'padron-found') {
+          <mat-icon matSuffix style="color: var(--sagim-success)"
+            matTooltip="Ciudadano encontrado en el padrón">check_circle</mat-icon>
+        }
+        @if (padronStatus === 'already-registered') {
+          <mat-icon matSuffix style="color: var(--sagim-danger)">block</mat-icon>
+        }
+        <mat-autocomplete
+          #autoCiudadano="matAutocomplete"
+          (optionSelected)="onSeleccionarCiudadano($event.option.value)"
+          [displayWith]="displayCurp"
+        >
+          @if (isSearchingCiudadanos) {
+            <mat-option disabled>Buscando...</mat-option>
+          }
+          @for (c of ciudadanosSugeridos; track c._id) {
+            <mat-option [value]="c">
+              <span class="ciudadano-option">
+                <strong>{{ c.nombre }} {{ c.apellidoPaterno }} {{ c.apellidoMaterno }}</strong>
+                <small>{{ c.curp }}</small>
+              </span>
+            </mat-option>
+          }
+          @if (
+            !isSearchingCiudadanos &&
+            ciudadanosSugeridos.length === 0 &&
+            form.get('curp')?.value?.length >= 2 &&
+            form.get('curp')?.value?.length < 18
+          ) {
+            <mat-option disabled>Sin resultados — escribe el CURP completo (18 caracteres)</mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <!-- Ya registrado como beneficiario -->
+      @if (padronStatus === 'already-registered') {
+        <div class="curp-status curp-status--error">
+          <mat-icon>warning</mat-icon>
+          <span>Este CURP ya está registrado como beneficiario: <strong>{{ registeredName }}</strong></span>
+        </div>
       }
-    </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Grupo Vulnerable</mat-label>
-      <mat-select formControlName="grupoVulnerable" multiple>
-        @for (grupo of gruposVulnerables; track grupo._id) {
-          <mat-option [value]="grupo.clave">{{ grupo.nombre }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+      <!-- Encontrado en padrón -->
+      @if (padronStatus === 'padron-found') {
+        <div class="curp-status curp-status--found">
+          <mat-icon>info</mat-icon>
+          Datos precargados desde el padrón municipal · los campos del ciudadano están bloqueados
+        </div>
+      }
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Observaciones</mat-label>
-      <textarea matInput formControlName="observaciones" rows="3"></textarea>
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
+      <!-- No encontrado en padrón -->
+      @if (padronStatus === 'not-found' && !isEdit) {
+        <div class="curp-status curp-status--info">
+          <mat-icon>info</mat-icon>
+          Ciudadano no encontrado — se registrará automáticamente en el padrón municipal
+        </div>
+      }
+    </div>
 
-<mat-dialog-actions align="end">
-  <button mat-button type="button" (click)="onCancel()" [disabled]="isSubmitting">
-    Cancelar
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    type="button"
-    (click)="onSubmit()"
-    [disabled]="form.invalid || isSubmitting"
-  >
-    @if (isSubmitting) {
-      <mat-spinner diameter="18"></mat-spinner>
-    } @else {
-      Guardar
+    <!-- ═══ RESTO DEL FORMULARIO — solo si aplica ═══ -->
+    @if (showFields) {
+
+      <div class="form-section">
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre *</mat-label>
+            <input matInput formControlName="nombre" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Apellido Paterno *</mat-label>
+            <input matInput formControlName="apellidoPaterno" />
+          </mat-form-field>
+        </div>
+
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Apellido Materno</mat-label>
+            <input matInput formControlName="apellidoMaterno" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de nacimiento</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="sexo-field">
+          <label class="field-label">Sexo</label>
+          <mat-button-toggle-group formControlName="sexo" aria-label="Sexo">
+            <mat-button-toggle value="M">Masculino</mat-button-toggle>
+            <mat-button-toggle value="F">Femenino</mat-button-toggle>
+            <mat-button-toggle value="OTRO">Otro</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+      </div>
+
+      <!-- ═══ CONTACTO ═══ -->
+      <div class="form-section">
+        <p class="section-title">Contacto</p>
+        <div class="row two-cols">
+          <mat-form-field appearance="outline">
+            <mat-label>Teléfono</mat-label>
+            <mat-icon matPrefix>phone</mat-icon>
+            <input matInput formControlName="telefono" maxlength="10" placeholder="10 dígitos" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
+            <input matInput formControlName="email" type="email" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- ═══ DOMICILIO ═══ -->
+      <div class="form-section">
+        <p class="section-title">Domicilio</p>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Localidad</mat-label>
+          <mat-select formControlName="localidad">
+            @if (isLoadingLocalidades) {
+              <mat-option disabled>Cargando...</mat-option>
+            } @else {
+              @for (loc of localidades; track loc._id) {
+                <mat-option [value]="loc.nombre">{{ loc.nombre }}</mat-option>
+              }
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Domicilio</mat-label>
+          <input matInput formControlName="domicilio" placeholder="Calle Hidalgo #4, Centro" />
+        </mat-form-field>
+      </div>
+
+      <!-- ═══ DIF ═══ -->
+      <div class="form-section">
+        <p class="section-title">DIF</p>
+
+        <div class="grupos-field">
+          <label class="field-label">
+            Grupos vulnerables *
+            @if (form.get('grupoVulnerable')?.touched && form.get('grupoVulnerable')?.errors?.['required']) {
+              <span class="grupos-error">— selecciona al menos uno</span>
+            }
+          </label>
+          <div class="grupos-chips">
+            @for (grupo of gruposOptions; track grupo.clave) {
+              <button
+                type="button"
+                class="grupo-chip"
+                [class.selected]="isGrupoSelected(grupo.clave)"
+                (click)="toggleGrupo(grupo.clave)"
+              >
+                {{ grupo.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width" style="margin-top: var(--sagim-spacing-md)">
+          <mat-label>Observaciones</mat-label>
+          <textarea matInput formControlName="observaciones" rows="3"
+            placeholder="Información adicional relevante para el expediente"></textarea>
+        </mat-form-field>
+      </div>
+
     }
-  </button>
-</mat-dialog-actions>
+
+  </form>
+</app-sagim-dialog>

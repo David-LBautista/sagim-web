@@ -21,6 +21,9 @@
       <mat-card-content>
         <div class="kpi-value">{{ loading ? '...' : recaudacionTotal }}</div>
         <div class="kpi-label">Recaudación Total</div>
+        @if (!loading && periodoLabel) {
+          <div class="kpi-meta">{{ periodoLabel }}</div>
+        }
         @if (!loading && recaudacionTrend.label) {
           <div class="kpi-trend kpi-trend--{{ recaudacionTrend.direction }}">
             <mat-icon>{{ recaudacionTrend.direction === 'up' ? 'trending_up' : recaudacionTrend.direction === 'down' ? 'trending_down' : 'trending_flat' }}</mat-icon>

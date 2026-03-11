@@ -1,0 +1,343 @@
+:host {
+  display: block;
+}
+
+.agenda-hoy-page {
+  // contenido gestionado por main-layout
+  display: contents;
+}
+
+// ─── Page header ──────────────────────────────────────────────────────────────
+.page-header {
+  margin-bottom: var(--sagim-spacing-md, 20px);
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 4px;
+  }
+
+  h1 {
+    margin: 0;
+  }
+  p {
+    margin: var(--sagim-spacing-xs, 4px) 0 0;
+  }
+}
+
+.area-select {
+  width: 220px;
+}
+
+.loading-bar {
+  margin-bottom: var(--sagim-spacing-md, 20px);
+  border-radius: var(--sagim-radius-sm, 4px);
+}
+
+// ─── KPI Grid ─────────────────────────────────────────────────────────────────
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--sagim-spacing-md, 16px);
+  margin-bottom: var(--sagim-spacing-lg, 24px);
+}
+
+@media (max-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// ─── KPI Card (igual que presidencia) ────────────────────────────────────────
+.kpi-exec-card {
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  mat-card-header {
+    padding: 10px 16px 0;
+
+    mat-icon[mat-card-avatar] {
+      width: 28px;
+      height: 28px;
+      font-size: 28px;
+      color: var(--sagim-secondary, #1f6fae);
+      opacity: 0.6;
+    }
+  }
+
+  mat-card-content {
+    text-align: center;
+    padding: 6px 16px 14px;
+  }
+}
+
+.kpi-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--sagim-text-dark, #3a3a3a);
+  line-height: 1;
+  margin-bottom: 4px;
+
+  &--success {
+    color: var(--sagim-success, #6fae3b);
+  }
+  &--warn {
+    color: var(--sagim-warning, #f0a12a);
+  }
+  &--danger {
+    color: var(--sagim-danger, #d64545);
+  }
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sagim-text-mid, #7a7a7a);
+  margin-bottom: 6px;
+}
+
+.kpi-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &--neutral {
+    background: rgba(122, 122, 122, 0.1);
+    color: var(--sagim-text-mid, #7a7a7a);
+  }
+}
+
+.kpi-meta {
+  font-size: 11px;
+  color: var(--sagim-text-mid, #7a7a7a);
+  margin-top: 2px;
+}
+
+// ─── Chart card (igual que presidencia) ──────────────────────────────────────
+.chart-card {
+  margin-bottom: var(--sagim-spacing-lg, 24px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: white;
+
+  mat-card-header {
+    padding: 16px 20px 0;
+    align-items: center;
+
+    mat-icon[mat-card-avatar] {
+      width: 28px;
+      height: 28px;
+      font-size: 28px;
+      color: var(--sagim-secondary, #1f6fae);
+      opacity: 0.7;
+    }
+
+    mat-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--sagim-text-dark, #3a3a3a);
+      margin: 0;
+    }
+
+    mat-card-subtitle {
+      font-size: 12px;
+      color: var(--sagim-text-mid, #7a7a7a);
+      margin: 0;
+    }
+  }
+
+  mat-card-content {
+    padding: 8px 0 4px;
+  }
+}
+
+// ─── Tabla de citas ───────────────────────────────────────────────────────────
+.card-table-content {
+  padding: 0 !important;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.citas-hoy-table {
+  width: 100%;
+
+  th {
+    background-color: #fafafa;
+    color: var(--sagim-text-dark, #3a3a3a);
+    font-weight: 600;
+    font-size: 12px;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: 10px 12px;
+    color: var(--sagim-text-dark, #3a3a3a);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  tr.mat-mdc-row:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+
+  .col-hora {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--sagim-primary, #0f2a44);
+    white-space: nowrap;
+    width: 64px;
+  }
+
+  .col-acciones {
+    text-align: right;
+    white-space: nowrap;
+    width: 60px;
+  }
+
+  .row-estado {
+    border-left: 3px solid transparent;
+
+    &--pendiente {
+      border-left-color: var(--sagim-warning, #f0a12a);
+    }
+    &--confirmada {
+      border-left-color: var(--sagim-secondary, #1f6fae);
+    }
+    &--atendida {
+      border-left-color: var(--sagim-success, #6fae3b);
+    }
+    &--no_se_presento {
+      border-left-color: #bbb;
+    }
+    &--cancelada {
+      border-left-color: var(--sagim-danger, #d64545);
+      opacity: 0.65;
+    }
+  }
+
+  .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    gap: 12px;
+    color: var(--sagim-text-mid, #7a7a7a);
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      opacity: 0.4;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+.ciudadano-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &__nombre {
+    font-weight: 600;
+  }
+
+  &__sub {
+    font-size: 11px;
+    color: var(--sagim-text-mid, #7a7a7a);
+  }
+}
+
+.tramite-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &__area {
+    font-size: 11px;
+    color: var(--sagim-text-mid, #7a7a7a);
+  }
+}
+
+.folio-badge {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--sagim-text-mid, #7a7a7a);
+  background: #f0f4f8;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+// ─── Estado chips ─────────────────────────────────────────────────────────────
+.estado-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.warn-chip {
+    background: rgba(240, 161, 42, 0.15);
+    color: #a06600;
+  }
+  &.info-chip {
+    background: rgba(31, 111, 174, 0.12);
+    color: #004085;
+  }
+  &.success-chip {
+    background: rgba(111, 174, 59, 0.15);
+    color: #3a6b10;
+  }
+  &.neutral-chip {
+    background: rgba(122, 122, 122, 0.12);
+    color: #555;
+  }
+  &.danger-chip {
+    background: rgba(214, 69, 69, 0.12);
+    color: #9b1c1c;
+  }
+}

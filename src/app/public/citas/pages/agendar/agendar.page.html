@@ -1,0 +1,91 @@
+<div class="agendar">
+  <div class="agendar__container">
+    <!-- Spinner de envío sobreimpuesto -->
+    @if (enviando()) {
+      <div class="agendar__overlay">
+        <mat-spinner diameter="48" />
+        <p>Confirmando tu cita…</p>
+      </div>
+    }
+
+    @if (errorEnvio()) {
+      <div class="agendar__error-global">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorEnvio() }}</span>
+        <button
+          mat-icon-button
+          (click)="errorEnvio.set(null)"
+          aria-label="Cerrar error"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+
+    <mat-stepper
+      #stepper
+      linear
+      [selectedIndex]="0"
+      class="agendar__stepper"
+      labelPosition="bottom"
+    >
+      <!-- ── PASO 1: Área y trámite ──────────────────────────────────────── -->
+      <mat-step
+        label="¿Qué necesitas?"
+        [completed]="!!areaSeleccionada()"
+        [editable]="!citaCreada()"
+      >
+        @if (slug()) {
+          <app-step-area
+            [slug]="slug()"
+            (seleccionada)="onAreaSeleccionada($event)"
+          />
+        }
+      </mat-step>
+
+      <!-- ── PASO 2: Fecha y horario ────────────────────────────────────── -->
+      <mat-step
+        label="Fecha y hora"
+        [completed]="!!fechaSeleccionada()"
+        [editable]="!citaCreada()"
+      >
+        @if (areaSeleccionada()) {
+          <app-step-calendario
+            [slug]="slug()"
+            [area]="areaSeleccionada()!.area"
+            (seleccionada)="onFechaHorarioSeleccionado($event)"
+            (atras)="stepper.previous()"
+          />
+        }
+      </mat-step>
+
+      <!-- ── PASO 3: Datos personales ───────────────────────────────────── -->
+      <mat-step
+        label="Tus datos"
+        [completed]="!!citaCreada()"
+        [editable]="!citaCreada()"
+      >
+        <app-step-datos
+          [slug]="slug()"
+          [area]="areaSeleccionada()?.area ?? null"
+          [tramite]="tramiteSeleccionado()"
+          [fecha]="fechaSeleccionada()"
+          [horario]="horarioSeleccionado()"
+          (confirmado)="onDatosConfirmados($event)"
+          (atras)="stepper.previous()"
+        />
+      </mat-step>
+
+      <!-- ── PASO 4: Confirmación ───────────────────────────────────────── -->
+      <mat-step label="Confirmación" [completed]="!!citaCreada()">
+        @if (citaCreada()) {
+          <app-step-confirmacion
+            [cita]="citaCreada()!"
+            [slug]="slug()"
+            (nuevaCita)="reiniciar()"
+          />
+        }
+      </mat-step>
+    </mat-stepper>
+  </div>
+</div>

@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { SagimDialogComponent } from '../../../../shared/components/sagim-dialog/sagim-dialog.component';
 import { TesoreriaService } from '../../services/tesoreria.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { ServicioCobrable } from '../../models/servicios.model';
@@ -39,6 +40,7 @@ export interface ServicioEditDialogData {
     MatSlideToggleModule,
     MatProgressSpinnerModule,
     MatDividerModule,
+    SagimDialogComponent,
   ],
   templateUrl: './servicio-edit-dialog.component.html',
   styleUrls: ['./servicio-edit-dialog.component.scss'],

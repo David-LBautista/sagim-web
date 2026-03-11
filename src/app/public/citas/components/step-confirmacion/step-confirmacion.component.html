@@ -1,0 +1,67 @@
+<div class="step-conf">
+  <div class="step-conf__icono">
+    <mat-icon>check_circle</mat-icon>
+  </div>
+
+  <h2 class="step-conf__titulo">¡Cita agendada!</h2>
+  <p class="step-conf__mensaje">{{ cita.mensaje }}</p>
+
+  <!-- Folio destacado -->
+  <div class="step-conf__folio">
+    <span class="step-conf__folio-label">Tu folio de cita</span>
+    <span class="step-conf__folio-numero">{{ cita.folio }}</span>
+    <span class="step-conf__folio-hint"
+      >Guarda este folio para consultar o cancelar tu cita</span
+    >
+  </div>
+
+  <!-- Detalle de la cita -->
+  <div class="step-conf__detalle">
+    <div class="detalle-row">
+      <mat-icon>business</mat-icon>
+      <div>
+        <span class="detalle-row__label">Área</span>
+        <span class="detalle-row__valor">{{ cita.area }}</span>
+      </div>
+    </div>
+    <div class="detalle-row">
+      <mat-icon>assignment</mat-icon>
+      <div>
+        <span class="detalle-row__label">Trámite</span>
+        <span class="detalle-row__valor">{{ cita.tramite }}</span>
+      </div>
+    </div>
+    <div class="detalle-row">
+      <mat-icon>event</mat-icon>
+      <div>
+        <span class="detalle-row__label">Fecha</span>
+        <span class="detalle-row__valor">{{ cita.fechaCita }}</span>
+      </div>
+    </div>
+    <div class="detalle-row">
+      <mat-icon>schedule</mat-icon>
+      <div>
+        <span class="detalle-row__label">Horario</span>
+        <span class="detalle-row__valor">{{ cita.horario }}</span>
+      </div>
+    </div>
+    <div class="detalle-row">
+      <mat-icon>person</mat-icon>
+      <div>
+        <span class="detalle-row__label">Nombre</span>
+        <span class="detalle-row__valor">{{
+          cita.ciudadano.nombreCompleto
+        }}</span>
+      </div>
+    </div>
+    @if (cita.instrucciones) {
+      <div class="detalle-row detalle-row--instrucciones">
+        <mat-icon>info</mat-icon>
+        <div>
+          <span class="detalle-row__label">Instrucciones</span>
+          <span class="detalle-row__valor">{{ cita.instrucciones }}</span>
+        </div>
+      </div>
+    }
+  </div>
+</div>

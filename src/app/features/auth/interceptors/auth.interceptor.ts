@@ -1,4 +1,9 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import {
+  HttpInterceptorFn,
+  HttpRequest,
+  HttpHandlerFn,
+  HttpEvent,
+} from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import {
@@ -8,12 +13,27 @@ import {
   BehaviorSubject,
   filter,
   take,
+  Observable,
 } from 'rxjs';
 import { Router } from '@angular/router';
+import { WebSocketService } from '../../../core/services/websocket.service';
 
 // Variable para controlar si ya se está refrescando el token
 let isRefreshing = false;
-let refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+let refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<
+  string | null
+>(null);
+
+function buildRetry(
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+  token: string | null,
+): Observable<HttpEvent<unknown>> {
+  const retryReq = req.clone({
+    setHeaders: { Authorization: `Bearer ${token}` },
+  });
+  return next(retryReq);
+}
 
 /**
  * Interceptor para agregar el token JWT a todas las peticiones HTTP
@@ -22,6 +42,7 @@ let refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const wsService = inject(WebSocketService);
 
   // No agregar token a las peticiones de login y refresh
   const isAuthEndpoint =
@@ -31,72 +52,53 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  // Obtener token de acceso
+  // Obtener token de acceso y clonar la petición
   const token = authService.getAccessToken();
-
-  // Clonar la petición y agregar el header de autorización
   if (token) {
     req = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
+      setHeaders: { Authorization: `Bearer ${token}` },
     });
   }
 
-  // Manejar la respuesta
   return next(req).pipe(
     catchError((error) => {
-      // Si es error 401 (No autorizado), intentar refrescar el token
-      if (error.status === 401 && !req.url.includes('/auth/refresh')) {
-        // Si ya se está refrescando, esperar a que termine
-        if (isRefreshing) {
-          return refreshTokenSubject.pipe(
-            filter((token) => token !== null),
-            take(1),
-            switchMap((token) => {
-              const retryReq = req.clone({
-                setHeaders: {
-                  Authorization: `Bearer ${token}`,
-                },
-              });
-              return next(retryReq);
-            }),
-          );
-        }
+      if (error.status !== 401 || req.url.includes('/auth/refresh')) {
+        return throwError(() => error);
+      }
 
-        // Iniciar el proceso de refresh
-        isRefreshing = true;
-        refreshTokenSubject.next(null);
-
-        return authService.refreshToken().pipe(
-          switchMap(() => {
-            // Reintentar la petición original con el nuevo token
-            const newToken = authService.getAccessToken();
-            isRefreshing = false;
-            refreshTokenSubject.next(newToken);
-
-            const retryReq = req.clone({
-              setHeaders: {
-                Authorization: `Bearer ${newToken}`,
-              },
-            });
-            return next(retryReq);
-          }),
-          catchError((refreshError) => {
-            // Si falla el refresh, cerrar sesión y detener el loop
-            isRefreshing = false;
-            refreshTokenSubject.next(null);
-
-            // Limpiar sesión localmente sin hacer petición al backend
-            authService.clearSession();
-            router.navigate(['/login']);
-
-            return throwError(() => refreshError);
-          }),
+      // Si ya se está refrescando, esperar a que termine
+      if (isRefreshing) {
+        return refreshTokenSubject.pipe(
+          filter((t): t is string => t !== null),
+          take(1),
+          switchMap((t) => buildRetry(req, next, t)),
         );
       }
 
-      return throwError(() => error);
+      // Iniciar el proceso de refresh
+      isRefreshing = true;
+      refreshTokenSubject.next(null);
+
+      return authService.refreshToken().pipe(
+        switchMap(handleRefreshSuccess),
+        catchError((refreshError) => {
+          isRefreshing = false;
+          refreshTokenSubject.next(null);
+          authService.clearSession();
+          router.navigate(['/login']);
+          return throwError(() => refreshError);
+        }),
+      );
+
+      function handleRefreshSuccess(): Observable<HttpEvent<unknown>> {
+        const newToken = authService.getAccessToken();
+        isRefreshing = false;
+        refreshTokenSubject.next(newToken);
+        if (newToken) {
+          wsService.updateToken(newToken);
+        }
+        return buildRetry(req, next, newToken);
+      }
     }),
   );
 };

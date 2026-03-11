@@ -1,11 +1,4 @@
-export type CategoriaServicio =
-  | 'Registro Civil'
-  | 'Predial'
-  | 'Agua y Saneamiento'
-  | 'Licencias y Permisos'
-  | 'Servicios Urbanos'
-  | 'Panteón'
-  | 'Constancias';
+export type CategoriaServicio = string;
 
 export interface ServicioCobrable {
   _id: string;

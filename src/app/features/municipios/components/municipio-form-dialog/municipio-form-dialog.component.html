@@ -1,8 +1,11 @@
-<h2 mat-dialog-title cdkFocusInitial tabindex="-1">
-  {{ isEditMode ? "Editar Municipio" : "Nuevo Municipio" }}
-</h2>
-
-<mat-dialog-content>
+<app-sagim-dialog
+  [title]="isEditMode ? 'Editar Municipio' : 'Nuevo Municipio'"
+  [submitLabel]="isEditMode ? 'Actualizar' : 'Guardar'"
+  [isSubmitting]="isSubmitting"
+  [submitDisabled]="municipioForm.invalid"
+  (submitClick)="onSubmit()"
+  (cancelClick)="onCancel()"
+>
   <form [formGroup]="municipioForm" class="municipio-form">
     <!-- Información General -->
     <div class="form-section">
@@ -268,28 +271,4 @@
       </div>
     </div>
   </form>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-  <button
-    mat-button
-    type="button"
-    (click)="onCancel()"
-    [disabled]="isSubmitting"
-  >
-    Cancelar
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    type="button"
-    (click)="onSubmit()"
-    [disabled]="municipioForm.invalid || isSubmitting"
-  >
-    @if (isSubmitting) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      {{ isEditMode ? "Actualizar" : "Guardar" }}
-    }
-  </button>
-</mat-dialog-actions>
+</app-sagim-dialog>
