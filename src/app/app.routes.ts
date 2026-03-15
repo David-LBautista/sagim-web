@@ -5,6 +5,9 @@ import { MainLayoutComponent } from './core/layout/main-layout/main-layout.compo
 import { PublicLayoutComponent } from './public/layout/public-layout.component';
 import { environment } from '../environments/environment';
 
+// Log inmediato al cargar el módulo — confirma qué versión está desplegada
+console.log('[SAGIM-ROUTES] loaded | hostname:', window.location.hostname, '| useSubdomain:', environment.useSubdomain);
+
 /** Detecta si el hostname actual es un subdominio de municipio */
 function detectPublicSubdomain(): boolean {
   if (!environment.useSubdomain) return false;
