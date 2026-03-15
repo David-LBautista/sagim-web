@@ -1,8 +1,6 @@
 import { Routes, CanMatchFn } from '@angular/router';
 import { authGuard } from './features/auth/guards/auth.guard';
 import { onboardingCompleteGuard } from './features/onboarding/guards/onboarding-complete.guard';
-import { MainLayoutComponent } from './core/layout/main-layout/main-layout.component';
-import { PublicLayoutComponent } from './public/layout/public-layout.component';
 import { environment } from '../environments/environment';
 
 // Log inmediato al cargar el módulo — confirma qué versión está desplegada
@@ -75,7 +73,10 @@ export const routes: Routes = [
   {
     path: '',
     canMatch: [isPublicSubdomain],
-    component: PublicLayoutComponent,
+    loadComponent: () =>
+      import('./public/layout/public-layout.component').then(
+        (m) => m.PublicLayoutComponent,
+      ),
     children: PUBLIC_PORTAL_CHILDREN,
   },
   {
@@ -87,7 +88,10 @@ export const routes: Routes = [
   {
     path: '',
     canMatch: [isAdminDomain],
-    component: MainLayoutComponent,
+    loadComponent: () =>
+      import('./core/layout/main-layout/main-layout.component').then(
+        (m) => m.MainLayoutComponent,
+      ),
     canActivate: [authGuard, onboardingCompleteGuard],
     children: [
       {
@@ -258,7 +262,10 @@ export const routes: Routes = [
   // ── Página de pago pública (sin autenticación) ──────────────────────────
   {
     path: 'pago/:token',
-    component: PublicLayoutComponent,
+    loadComponent: () =>
+      import('./public/layout/public-layout.component').then(
+        (m) => m.PublicLayoutComponent,
+      ),
     children: [
       {
         path: '',
@@ -270,7 +277,10 @@ export const routes: Routes = [
   // ── Portal público ciudadano (desarrollo — slug en la URL) ──────────────
   {
     path: 'public/:slug',
-    component: PublicLayoutComponent,
+    loadComponent: () =>
+      import('./public/layout/public-layout.component').then(
+        (m) => m.PublicLayoutComponent,
+      ),
     children: PUBLIC_PORTAL_CHILDREN,
   },
   // Fallback: en dominio admin, ir a login
