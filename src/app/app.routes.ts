@@ -11,7 +11,13 @@ function detectPublicSubdomain(): boolean {
   const parts = window.location.hostname.split('.');
   const subdomain = parts[0];
   const reserved = ['www', 'app', 'sagim', 'localhost'];
-  // laperla.sagim.com.mx → 4 partes, subdominio no reservado
+
+  console.log('hostname:', window.location.hostname);
+  console.log('parts:', parts);
+  console.log('subdomain:', subdomain);
+  console.log('useSubdomain:', environment.useSubdomain);
+  console.log('result:', parts.length >= 4 && !reserved.includes(subdomain));
+
   return parts.length >= 4 && !reserved.includes(subdomain);
 }
 
