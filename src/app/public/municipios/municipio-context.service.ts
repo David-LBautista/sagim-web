@@ -60,7 +60,7 @@ export class MunicipioContextService {
   );
 
   resolveSlug(routeSlug?: string): string {
-    if (environment.production) {
+    if (environment.useSubdomain) {
       return window.location.hostname.split('.')[0];
     }
     return routeSlug ?? '';

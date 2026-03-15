@@ -1,5 +1,6 @@
 import { Component, ElementRef, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet, Router, ActivatedRoute } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { PublicMunicipiosService } from '../municipios/public-municipios.service';
 import { MunicipioContextService } from '../municipios/municipio-context.service';
@@ -61,7 +62,10 @@ export class PublicLayoutComponent implements OnInit {
           // Si estábamos en la ruta de mantenimiento, redirigir al inicio
           const currentUrl = this.router.url;
           if (currentUrl.includes('/mantenimiento')) {
-            this.router.navigate([`/public/${slug}`]);
+            const homePath = environment.useSubdomain
+              ? ['/']
+              : [`/public/${slug}`];
+            this.router.navigate(homePath);
           }
         }
 

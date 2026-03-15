@@ -1,10 +1,68 @@
-import { Routes } from '@angular/router';
+import { Routes, CanMatchFn } from '@angular/router';
 import { authGuard } from './features/auth/guards/auth.guard';
 import { onboardingCompleteGuard } from './features/onboarding/guards/onboarding-complete.guard';
 import { MainLayoutComponent } from './core/layout/main-layout/main-layout.component';
 import { PublicLayoutComponent } from './public/layout/public-layout.component';
+import { environment } from '../environments/environment';
+
+/** Activa el portal público en la raíz solo cuando se accede via subdominio municipio */
+const isPublicSubdomain: CanMatchFn = () => {
+  if (!environment.useSubdomain) return false;
+  const parts = window.location.hostname.split('.');
+  const subdomain = parts[0];
+  const reserved = ['www', 'app', 'sagim', 'localhost'];
+  // laperla.sagim.com.mx → 4 partes, subdominio no reservado
+  return parts.length >= 4 && !reserved.includes(subdomain);
+};
+
+/** Rutas hijas compartidas del portal público */
+const PUBLIC_PORTAL_CHILDREN: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./public/home/home.page').then((m) => m.HomePage),
+  },
+  {
+    path: 'citas',
+    loadChildren: () =>
+      import('./public/citas/public-citas.routes').then(
+        (m) => m.PUBLIC_CITAS_ROUTES,
+      ),
+  },
+  {
+    path: 'reportes',
+    loadChildren: () =>
+      import('./public/reportes/public-reportes.routes').then(
+        (m) => m.PUBLIC_REPORTES_ROUTES,
+      ),
+  },
+  {
+    path: 'transparencia',
+    loadComponent: () =>
+      import('./public/transparencia/transparencia.page').then(
+        (m) => m.TransparenciaPage,
+      ),
+  },
+  {
+    path: 'avisos',
+    loadComponent: () =>
+      import('./public/avisos/avisos.page').then((m) => m.AvisosPage),
+  },
+  {
+    path: 'pagar',
+    loadComponent: () =>
+      import('./public/pago/buscar-pago.page').then((m) => m.BuscarPagoPage),
+  },
+];
 
 export const routes: Routes = [
+  // ── Portal público vía subdominio (producción) ─────────────────────────
+  {
+    path: '',
+    canMatch: [isPublicSubdomain],
+    component: PublicLayoutComponent,
+    children: PUBLIC_PORTAL_CHILDREN,
+  },
   {
     path: 'login',
     loadChildren: () =>
@@ -190,50 +248,11 @@ export const routes: Routes = [
       },
     ],
   },
-  // ── Portal público ciudadano (sin autenticación) ─────────────────────────
+  // ── Portal público ciudadano (desarrollo — slug en la URL) ──────────────
   {
     path: 'public/:slug',
     component: PublicLayoutComponent,
-    children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./public/home/home.page').then((m) => m.HomePage),
-      },
-      {
-        path: 'citas',
-        loadChildren: () =>
-          import('./public/citas/public-citas.routes').then(
-            (m) => m.PUBLIC_CITAS_ROUTES,
-          ),
-      },
-      {
-        path: 'reportes',
-        loadChildren: () =>
-          import('./public/reportes/public-reportes.routes').then(
-            (m) => m.PUBLIC_REPORTES_ROUTES,
-          ),
-      },
-      {
-        path: 'transparencia',
-        loadComponent: () =>
-          import('./public/transparencia/transparencia.page').then(
-            (m) => m.TransparenciaPage,
-          ),
-      },
-      {
-        path: 'avisos',
-        loadComponent: () =>
-          import('./public/avisos/avisos.page').then((m) => m.AvisosPage),
-      },
-      {
-        path: 'pagar',
-        loadComponent: () =>
-          import('./public/pago/buscar-pago.page').then(
-            (m) => m.BuscarPagoPage,
-          ),
-      },
-    ],
+    children: PUBLIC_PORTAL_CHILDREN,
   },
   {
     path: '',

@@ -3,6 +3,7 @@
  */
 export const environment = {
   production: false,
+  useSubdomain: false,
   apiUrl: 'https://api.sagim.com.mx',
   wsUrl: 'https://api.sagim.com.mx',
   frontendUrl: 'http://localhost:4200',
