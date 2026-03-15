@@ -21,6 +21,12 @@ export class PublicFooterComponent {
   readonly redes = computed(
     () => this.ctx.portalConfig()?.redesSociales ?? null,
   );
+  readonly periodoGobierno = computed(
+    () => this.ctx.portalConfig()?.general?.periodoGobierno,
+  );
+  readonly presidenteMunicipal = computed(
+    () => this.ctx.portalConfig()?.general?.presidenteMunicipal,
+  );
 
   linkRouterPath(url: string): string | null {
     if (!url || url.startsWith('http')) return null;

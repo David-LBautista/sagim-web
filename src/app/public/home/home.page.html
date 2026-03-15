@@ -154,38 +154,52 @@
   @if (ultimos().length) {
     <section class="home__section home__section--resueltos">
       <div class="home__section-inner">
-        <h2 class="home__section-titulo">Últimos reportes resueltos</h2>
+        <h2 class="home__section-titulo">Tu voz transforma tu comunidad</h2>
         <p class="home__section-sub">
           Problemas recientes atendidos por el municipio
         </p>
-        <div class="home__resueltos-wrap">
-          <div class="home__dots home__dots--tr"></div>
-          <ul class="home__resueltos">
-            @for (r of ultimos(); track r.folio) {
-              <li class="home__resuelto">
-                <div class="home__resuelto-icon">
-                  <mat-icon>check_circle</mat-icon>
-                </div>
-                <div class="home__resuelto-body">
-                  <span class="home__resuelto-categoria">{{
-                    r.categoriaNombre
-                  }}</span>
-                  <span class="home__resuelto-meta">
-                    {{ r.areaResponsable }} · Resuelto el
-                    {{ r.fechaResolucion | date: "dd/MM/yyyy" }}
-                  </span>
-                </div>
-                <span class="home__resuelto-folio">{{ r.folio }}</span>
-              </li>
-            }
-          </ul>
-          <div class="home__resueltos-footer">
-            <a
-              [routerLink]="basePath() + '/metricas'"
-              class="home__ver-mas"
-            >
-              Ver todas las métricas <mat-icon>arrow_forward</mat-icon>
-            </a>
+        <div class="home__resueltos-layout">
+          <!-- Lista -->
+          <div class="home__resueltos-col">
+            <div class="home__resueltos-wrap">
+              <div class="home__dots home__dots--tr"></div>
+              <ul class="home__resueltos">
+                @for (r of ultimos(); track r.folio) {
+                  <li class="home__resuelto">
+                    <div class="home__resuelto-icon">
+                      <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <div class="home__resuelto-body">
+                      <span class="home__resuelto-categoria">{{
+                        r.categoriaNombre
+                      }}</span>
+                      <span class="home__resuelto-meta">
+                        {{ r.areaResponsable }} · Resuelto el
+                        {{ r.fechaResolucion | date: "dd/MM/yyyy" }}
+                      </span>
+                    </div>
+                    <span class="home__resuelto-folio">{{ r.folio }}</span>
+                  </li>
+                }
+              </ul>
+              <div class="home__resueltos-footer">
+                <a
+                  [routerLink]="basePath() + '/reportes'"
+                  class="home__ver-mas"
+                >
+                  Levantar un reporte <mat-icon>arrow_forward</mat-icon>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mapa -->
+          <div class="home__resueltos-mapa">
+            <app-mapa-reportes-publicos
+              [reportes]="mapaReportes()"
+              [centerLat]="coordenadas().lat"
+              [centerLng]="coordenadas().lng"
+            />
           </div>
         </div>
       </div>
@@ -200,21 +214,18 @@
           <div class="home__dots home__dots--bl"></div>
           <div class="home__kpis">
             <div class="home__kpi">
-              <span class="home__kpi-valor">{{ metricas()!.totalMes }}</span>
+              <span class="home__kpi-valor">{{ animatedTotal() }}</span>
               <span class="home__kpi-label">Reportes este mes</span>
             </div>
-            <div class="home__kpi">
-              <span class="home__kpi-valor home__kpi-valor--success">
-                {{ metricas()!.tasaResolucion | number: "1.0-0" }}%
-              </span>
+            <div class="home__kpi home__kpi--bar">
+              <span class="home__kpi-valor home__kpi-valor--success">{{ animatedTasa() }}%</span>
+              <div class="home__kpi-track">
+                <div class="home__kpi-fill" [style.width.%]="metricas()!.tasaResolucion"></div>
+              </div>
               <span class="home__kpi-label">Tasa de resolución</span>
             </div>
             <div class="home__kpi">
-              <span class="home__kpi-valor">{{
-                metricas()!.tiempoPromedioResolucion != null
-                  ? metricas()!.tiempoPromedioResolucion
-                  : "—"
-              }}</span>
+              <span class="home__kpi-valor">{{ animatedTiempo() != null ? animatedTiempo() : (metricas()!.tiempoPromedioResolucion != null ? metricas()!.tiempoPromedioResolucion : '—') }}</span>
               <span class="home__kpi-label">Días promedio de atención</span>
             </div>
           </div>
@@ -351,7 +362,6 @@
               target="_blank"
               rel="noopener"
             >
-              <mat-icon>open_in_new</mat-icon>
               {{ a.urlTexto || "Abrir enlace" }}
             </a>
           }

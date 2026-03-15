@@ -7,6 +7,7 @@ import {
   CrearReportePublicoDto,
   InfoReportesPublica,
   MetricasReportesPublicas,
+  ReporteMapa,
   ReportePublico,
   RespuestaReporteCreado,
 } from '../models/reportes-publicas.models';
@@ -34,6 +35,14 @@ export class PublicReportesService {
       fd.append('descripcion', dto.descripcion);
       if (dto.ubicacion?.descripcion)
         fd.append('ubicacion[descripcion]', dto.ubicacion.descripcion);
+      if (dto.ubicacion?.colonia)
+        fd.append('ubicacion[colonia]', dto.ubicacion.colonia);
+      if (dto.ubicacion?.referencia)
+        fd.append('ubicacion[referencia]', dto.ubicacion.referencia);
+      if (dto.ubicacion?.latitud != null)
+        fd.append('ubicacion[latitud]', String(dto.ubicacion.latitud));
+      if (dto.ubicacion?.longitud != null)
+        fd.append('ubicacion[longitud]', String(dto.ubicacion.longitud));
       if (dto.nombre) fd.append('nombre', dto.nombre);
       if (dto.telefono) fd.append('telefono', dto.telefono);
       if (dto.correo) fd.append('correo', dto.correo);
@@ -60,5 +69,9 @@ export class PublicReportesService {
     return this.http.get<MetricasReportesPublicas>(`${this.base}/metricas`, {
       params,
     });
+  }
+
+  getMapaReportes(): Observable<ReporteMapa[]> {
+    return this.http.get<ReporteMapa[]>(`${this.base}/mapa`);
   }
 }

@@ -686,6 +686,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+    align-items: flex-start;
   }
 
   &__badge {
@@ -738,25 +739,21 @@
   &__link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.88rem;
+    justify-content: center;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: 600;
-    color: var(--sagim-secondary, #1f6fae);
+    letter-spacing: 0.3px;
     text-decoration: none;
-    border: 1px solid currentColor;
-    border-radius: 20px;
-    padding: 8px 20px;
-    width: fit-content;
+    background-color: #1f6fae;
+    color: #fff;
     transition: background 0.15s;
+    margin-top: 4px;
 
     &:hover {
-      background: rgba(31, 111, 174, 0.07);
-    }
-
-    mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
+      background-color: #185d92;
     }
   }
 }
@@ -921,13 +918,13 @@
   color: var(--sagim-text-dark, #3a3a3a);
   cursor: pointer;
   transition:
-    box-shadow 0.2s,
-    transform 0.15s,
+    box-shadow 0.25s ease,
+    transform 0.2s ease,
     border-color 0.2s;
 
   &:hover {
-    box-shadow: 0 6px 24px rgba(15, 42, 68, 0.12);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(15, 42, 68, 0.15);
+    transform: translateY(-4px);
   }
 
   &--secondary .home__card-icon-wrap {
@@ -1027,6 +1024,49 @@
 }
 
 // ── Últimos resueltos ─────────────────────────────────────────────────────
+.home__resueltos-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+
+  @media (min-width: 960px) {
+    grid-template-columns: 9fr 11fr;
+    align-items: stretch;
+    gap: 48px;
+  }
+}
+
+.home__resueltos-col {
+  display: flex;
+  flex-direction: column;
+}
+
+// Allow wrap to stretch so the map can match list height
+.home__resueltos-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.home__resueltos-mapa {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  // Mobile: fixed comfortable height
+  --mrp-height: 300px;
+
+  @media (min-width: 960px) {
+    // Desktop: stretch to match list height
+    --mrp-height: 100%;
+    min-height: 360px;
+  }
+
+  app-mapa-reportes-publicos {
+    flex: 1;
+  }
+}
+
 .home__resueltos {
   list-style: none;
   margin: 0;
@@ -1129,6 +1169,26 @@
   &:last-child {
     border-right: none;
   }
+
+  &--bar {
+    gap: 8px;
+  }
+}
+
+.home__kpi-track {
+  width: 80%;
+  height: 6px;
+  background: #e8f0d8;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.home__kpi-fill {
+  height: 100%;
+  background: var(--sagim-success, #6fae3b);
+  border-radius: 3px;
+  width: 0;
+  transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .home__kpi-valor {

@@ -17,8 +17,10 @@ export interface CategoriaReportePublica {
 // ── DTO para crear un reporte público ─────────────────────────────────────
 export interface UbicacionReportePublico {
   descripcion?: string;
-  lat?: number;
-  lng?: number;
+  colonia?: string;
+  referencia?: string;
+  latitud?: number;
+  longitud?: number;
 }
 
 export interface CrearReportePublicoDto {
@@ -74,7 +76,24 @@ export interface ReporteResueltoPuntos {
   folio: string;
   categoriaNombre: string;
   fechaResolucion: string;
-  areaResponsable: string;
+  areaResponsable?: string;
+  ubicacion?: string;
+  colonia?: string;
+  lat?: number;
+  lng?: number;
+}
+
+// ── Punto de mapa (GET /mapa) ─────────────────────────────────────────────
+export interface ReporteMapa {
+  folio: string;
+  categoria: string;
+  categoriaNombre: string;
+  descripcion: string;
+  lat: number;
+  lng: number;
+  direccion?: string;
+  colonia?: string;
+  fechaResolucion: string;
 }
 
 export interface MetricasReportesPublicas {

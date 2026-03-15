@@ -17,6 +17,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
+import {
+  UbicacionMapaComponent,
+  LatLng,
+} from '../../components/ubicacion-mapa/ubicacion-mapa.component';
 import { PublicReportesService } from '../../services/public-reportes.service';
 import { MunicipioContextService } from '../../../municipios/municipio-context.service';
 import {
@@ -43,6 +47,7 @@ type Vista = 'formulario' | 'confirmacion';
     MatProgressSpinnerModule,
     MatDividerModule,
     ActionButtonComponent,
+    UbicacionMapaComponent,
   ],
   templateUrl: './nuevo-reporte-publico.page.html',
   styleUrl: './nuevo-reporte-publico.page.scss',
@@ -56,6 +61,13 @@ export class NuevoReportePublicoPage implements OnInit {
 
   readonly slug = this.municipioContext.slug;
   readonly basePath = this.municipioContext.basePath;
+  readonly coordenadasMunicipio = this.municipioContext.coordenadasMunicipio;
+
+  coordenadasSeleccionadas = signal<LatLng | null>(null);
+
+  onUbicacionSeleccionada(coords: LatLng | null): void {
+    this.coordenadasSeleccionadas.set(coords);
+  }
 
   vista = signal<Vista>('formulario');
   cargando = signal(false);
@@ -130,11 +142,6 @@ export class NuevoReportePublicoPage implements OnInit {
     this.enviando.set(true);
 
     const v = this.form.value;
-    const partes: string[] = [];
-    if (v.calle) partes.push(v.calle.trim());
-    if (v.colonia) partes.push(`Col. ${v.colonia.trim()}`);
-    if (v.referencia) partes.push(`Referencia: ${v.referencia.trim()}`);
-    const ubicacionDesc = partes.length ? partes.join(', ') : undefined;
 
     this.reportesService
       .crearReporte(
@@ -142,7 +149,11 @@ export class NuevoReportePublicoPage implements OnInit {
           categoria: v.categoria,
           descripcion: v.descripcion,
           ubicacion: {
-            descripcion: ubicacionDesc,
+            descripcion: v.calle?.trim() || undefined,
+            colonia: v.colonia?.trim() || undefined,
+            referencia: v.referencia?.trim() || undefined,
+            latitud: this.coordenadasSeleccionadas()?.lat,
+            longitud: this.coordenadasSeleccionadas()?.lng,
           },
           nombre: v.nombre || undefined,
           telefono: v.telefono || undefined,

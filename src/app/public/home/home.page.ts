@@ -17,8 +17,10 @@ import { MunicipioContextService } from '../municipios/municipio-context.service
 import { PublicReportesService } from '../reportes/services/public-reportes.service';
 import {
   MetricasReportesPublicas,
+  ReporteMapa,
   ReporteResueltoPuntos,
 } from '../reportes/models/reportes-publicas.models';
+import { MapaReportesPublicosComponent } from '../reportes/components/mapa-reportes-publicos/mapa-reportes-publicos.component';
 import type { PortalAviso } from '../municipios/portal-publico.models';
 
 interface AccesoRapidoCard {
@@ -38,6 +40,7 @@ interface AccesoRapidoCard {
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MapaReportesPublicosComponent,
   ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
@@ -49,6 +52,7 @@ export class HomePage implements OnInit {
 
   readonly slug = this.municipioContext.slug;
   readonly basePath = this.municipioContext.basePath;
+  readonly coordenadas = this.municipioContext.coordenadasMunicipio;
   readonly municipio = this.municipioContext.municipio;
   readonly subtitulo = this.municipioContext.subtitulo;
   readonly mensajeBienvenida = this.municipioContext.mensajeBienvenida;
@@ -61,6 +65,43 @@ export class HomePage implements OnInit {
   metricas = signal<MetricasReportesPublicas | null>(null);
   ultimos = signal<ReporteResueltoPuntos[]>([]);
   avisoSeleccionado = signal<PortalAviso | null>(null);
+
+  readonly mapaReportes = computed(() =>
+    this.ultimos()
+      .filter((r) => r.lat != null && r.lng != null)
+      .map((r) => ({
+        folio: r.folio,
+        categoria: '',
+        categoriaNombre: r.categoriaNombre,
+        descripcion: '',
+        lat: r.lat!,
+        lng: r.lng!,
+        direccion: r.ubicacion,
+        colonia: r.colonia,
+        fechaResolucion: r.fechaResolucion,
+      })),
+  );
+
+  // Contadores animados
+  animatedTotal = signal(0);
+  animatedTasa = signal(0);
+  animatedTiempo = signal<number | null>(null);
+
+  private animateCounter(
+    to: number,
+    duration: number,
+    setter: (v: number) => void,
+  ): void {
+    const start = performance.now();
+    const step = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setter(Math.round(to * eased));
+      if (t < 1) requestAnimationFrame(step);
+      else setter(to);
+    };
+    requestAnimationFrame(step);
+  }
 
   abrirAviso(aviso: PortalAviso): void {
     this.avisoSeleccionado.set(aviso);
@@ -135,6 +176,17 @@ export class HomePage implements OnInit {
         next: (m) => {
           this.metricas.set(m);
           this.ultimos.set(m.ultimos5Resueltos ?? []);
+          this.animateCounter(m.totalMes, 1200, (v) =>
+            this.animatedTotal.set(v),
+          );
+          this.animateCounter(Math.round(m.tasaResolucion), 1500, (v) =>
+            this.animatedTasa.set(v),
+          );
+          if (m.tiempoPromedioResolucion != null) {
+            this.animateCounter(m.tiempoPromedioResolucion, 1000, (v) =>
+              this.animatedTiempo.set(v),
+            );
+          }
         },
         error: () => {
           /* metricas opcionales, sin bloquear */

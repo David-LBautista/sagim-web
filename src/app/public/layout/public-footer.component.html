@@ -15,6 +15,12 @@
         <p class="pf__brand-nombre">
           H. Ayuntamiento de {{ municipio()?.nombre }}
         </p>
+        @if (presidenteMunicipal()) {
+          <p class="pf__brand-presidente">{{ presidenteMunicipal() }}</p>
+        }
+        @if (periodoGobierno()) {
+          <p class="pf__brand-periodo">Administración {{ periodoGobierno() }}</p>
+        }
 
         <div class="pf__brand-datos">
           @if (footer()?.direccion) {

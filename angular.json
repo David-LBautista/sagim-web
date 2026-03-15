@@ -32,7 +32,10 @@
                 "output": "/assets"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": [
+              "node_modules/leaflet/dist/leaflet.css",
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {
@@ -91,7 +94,10 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": [
+              "node_modules/leaflet/dist/leaflet.css",
+              "src/styles.scss"
+            ]
           }
         }
       }

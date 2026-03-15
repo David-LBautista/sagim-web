@@ -8,6 +8,8 @@ export interface PortalGeneral {
   mostrarTransparencia: boolean;
   enMantenimiento: boolean;
   mensajeMantenimiento?: string;
+  periodoGobierno?: string;
+  presidenteMunicipal?: string;
 }
 
 export interface PortalApariencia {
@@ -69,6 +71,8 @@ export interface PortalAviso {
 export interface PortalPublicoData {
   nombre: string;
   logoUrl?: string;
+  latitud?: number;
+  longitud?: number;
   general: PortalGeneral;
   apariencia: PortalApariencia;
   redesSociales: PortalRedesSociales;

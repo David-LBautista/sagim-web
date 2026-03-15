@@ -68,6 +68,12 @@ export class MunicipioContextService {
     environment.useSubdomain ? '' : `/public/${this._slug()}`,
   );
 
+  /** Coordenadas del centro del municipio para inicializar mapas. */
+  readonly coordenadasMunicipio = computed(() => ({
+    lat: this._portalConfig()?.latitud ?? 19.4326,
+    lng: this._portalConfig()?.longitud ?? -99.1332,
+  }));
+
   resolveSlug(routeSlug?: string): string {
     if (environment.useSubdomain) {
       return window.location.hostname.split('.')[0];

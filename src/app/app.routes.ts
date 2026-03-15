@@ -273,18 +273,6 @@ export const routes: Routes = [
     component: PublicLayoutComponent,
     children: PUBLIC_PORTAL_CHILDREN,
   },
-  // Fallback: en subdominio, cualquier ruta desconocida vuelve al portal
-  {
-    path: '',
-    canMatch: [isPublicSubdomain],
-    redirectTo: '/',
-    pathMatch: 'full',
-  },
-  {
-    path: '**',
-    canMatch: [isPublicSubdomain],
-    redirectTo: '/',
-  },
   // Fallback: en dominio admin, ir a login
   {
     path: '',

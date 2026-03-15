@@ -106,7 +106,14 @@
             </p>
             <mat-divider class="section-divider" />
 
-            <div class="form-grid">
+            <!-- Mapa interactivo -->
+            <app-ubicacion-mapa
+              [centerLat]="coordenadasMunicipio().lat"
+              [centerLng]="coordenadasMunicipio().lng"
+              (ubicacionSeleccionada)="onUbicacionSeleccionada($event)"
+            />
+
+            <div class="form-grid" style="margin-top: 12px">
               <mat-form-field appearance="outline">
                 <mat-label>Calle / Avenida</mat-label>
                 <input

@@ -244,6 +244,7 @@ export enum ApiEndpoints {
   PUBLIC_REPORTES_CREAR = '/api/v1/public/reportes',
   PUBLIC_REPORTES_CONSULTAR = '/api/v1/public/reportes/consultar',
   PUBLIC_REPORTES_METRICAS = '/api/v1/public/reportes/metricas',
+  PUBLIC_REPORTES_MAPA = '/api/v1/public/reportes/mapa',
 
   // ========================================
   // TRANSPARENCIA — INTERNO (autenticado)
