@@ -53,6 +53,7 @@ export class ConsultarPage implements OnInit {
   private municipioContext = inject(MunicipioContextService);
 
   readonly slug = this.municipioContext.slug;
+  readonly basePath = this.municipioContext.basePath;
   vista = signal<Vista>('formulario');
   cargando = signal(false);
   cancelando = signal(false);

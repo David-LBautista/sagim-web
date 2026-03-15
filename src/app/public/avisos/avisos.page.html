@@ -56,7 +56,7 @@
     }
 
     <!-- Volver -->
-    <a class="avisos-page__back" [routerLink]="['/public', slug()]">
+    <a class="avisos-page__back" [routerLink]="basePath() || '/'">
       <mat-icon>arrow_back</mat-icon> Volver al inicio
     </a>
   </div>

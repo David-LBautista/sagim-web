@@ -14,6 +14,7 @@ export class PublicFooterComponent {
   private ctx = inject(MunicipioContextService);
 
   readonly slug = this.ctx.slug;
+  readonly basePath = this.ctx.basePath;
   readonly municipio = this.ctx.municipio;
 
   readonly footer = computed(() => this.ctx.portalConfig()?.footer ?? null);
@@ -21,9 +22,9 @@ export class PublicFooterComponent {
     () => this.ctx.portalConfig()?.redesSociales ?? null,
   );
 
-  linkRouterPath(url: string): string[] | null {
+  linkRouterPath(url: string): string | null {
     if (!url || url.startsWith('http')) return null;
-    const clean = url.startsWith('/') ? url.slice(1) : url;
-    return ['/public', this.slug(), clean];
+    const clean = url.startsWith('/') ? url : `/${url}`;
+    return `${this.basePath()}${clean}`;
   }
 }

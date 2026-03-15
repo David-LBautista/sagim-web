@@ -271,7 +271,7 @@
 
       <mat-divider class="nuevo-reporte__footer-divider" />
       <div class="nuevo-reporte__footer-link">
-        <a [routerLink]="['/public', slug(), 'reportes', 'consultar']">
+        <a [routerLink]="basePath() + '/reportes/consultar'">
           <mat-icon>search</mat-icon>
           ¿Ya tienes un reporte? Consulta su estado aquí
         </a>

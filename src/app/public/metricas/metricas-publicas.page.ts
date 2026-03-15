@@ -28,7 +28,7 @@ export class MetricasPublicasPage implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   readonly slug = this.municipioContext.slug;
-  readonly municipio = this.municipioContext.municipio;
+  readonly basePath = this.municipioContext.basePath;
 
   metricas = signal<MetricasReportesPublicas | null>(null);
   cargando = signal(true);

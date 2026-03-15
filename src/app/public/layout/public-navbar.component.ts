@@ -28,6 +28,7 @@ export class PublicNavbarComponent {
   private ctx = inject(MunicipioContextService);
 
   readonly slug = this.ctx.slug;
+  readonly basePath = this.ctx.basePath;
   readonly municipio = this.ctx.municipio;
 
   logoError = signal(false);
@@ -59,10 +60,10 @@ export class PublicNavbarComponent {
     });
   }
 
-  routerLinkFor(link: NavLink): unknown[] {
+  routerLinkFor(link: NavLink): string {
     return link.path
-      ? ['/public', this.slug(), link.path]
-      : ['/public', this.slug()];
+      ? `${this.basePath()}/${link.path}`
+      : this.basePath() || '/';
   }
 
   toggleMenu() {

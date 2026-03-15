@@ -124,7 +124,7 @@
 
     <!-- ── Volver ─────────────────────────────────────────────────────── -->
     <div class="metricas-pub__volver">
-      <a mat-stroked-button [routerLink]="['/public', slug()]">
+      <a mat-stroked-button [routerLink]="basePath() || '/'">
         <mat-icon>arrow_back</mat-icon>
         Volver al inicio
       </a>

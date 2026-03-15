@@ -55,6 +55,7 @@ export class NuevoReportePublicoPage implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   readonly slug = this.municipioContext.slug;
+  readonly basePath = this.municipioContext.basePath;
 
   vista = signal<Vista>('formulario');
   cargando = signal(false);
@@ -168,7 +169,7 @@ export class NuevoReportePublicoPage implements OnInit {
   }
 
   irAConsultar() {
-    this.router.navigate(['/public', this.slug(), 'reportes', 'consultar']);
+    this.router.navigateByUrl(`${this.basePath()}/reportes/consultar`);
   }
 
   nuevoReporte() {

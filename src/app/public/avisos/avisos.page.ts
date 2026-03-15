@@ -16,6 +16,7 @@ export class AvisosPage {
   private ctx = inject(MunicipioContextService);
 
   readonly slug = this.ctx.slug;
+  readonly basePath = this.ctx.basePath;
   readonly municipio = this.ctx.municipio;
   readonly avisos = this.ctx.avisos;
 

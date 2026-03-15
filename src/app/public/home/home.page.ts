@@ -48,6 +48,7 @@ export class HomePage implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   readonly slug = this.municipioContext.slug;
+  readonly basePath = this.municipioContext.basePath;
   readonly municipio = this.municipioContext.municipio;
   readonly subtitulo = this.municipioContext.subtitulo;
   readonly mensajeBienvenida = this.municipioContext.mensajeBienvenida;

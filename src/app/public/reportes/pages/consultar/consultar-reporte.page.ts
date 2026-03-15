@@ -56,6 +56,7 @@ export class ConsultarReportePage implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   readonly slug = this.municipioContext.slug;
+  readonly basePath = this.municipioContext.basePath;
   readonly estadoLabels = ESTADO_LABELS;
 
   vista = signal<Vista>('formulario');
@@ -119,7 +120,7 @@ export class ConsultarReportePage implements OnInit {
   }
 
   nuevoReporte() {
-    this.router.navigate(['/public', this.slug(), 'reportes']);
+    this.router.navigateByUrl(`${this.basePath()}/reportes`);
   }
 
   getEstadoLabel(estado: string): string {

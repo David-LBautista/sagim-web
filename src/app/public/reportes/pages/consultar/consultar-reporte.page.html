@@ -64,7 +64,7 @@
         <mat-divider class="consultar-reporte__divider" />
 
         <div class="consultar-reporte__footer-link">
-          <a [routerLink]="['/public', slug(), 'reportes']">
+          <a [routerLink]="basePath() + '/reportes'">
             <mat-icon>add_circle_outline</mat-icon>
             Enviar un nuevo reporte
           </a>

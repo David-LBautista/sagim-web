@@ -71,7 +71,7 @@
         <mat-divider class="consultar__divider" />
 
         <div class="consultar__nueva-link">
-          <a [routerLink]="['/public', slug(), 'citas']">
+          <a [routerLink]="basePath() + '/citas'">
             <mat-icon>add_circle_outline</mat-icon>
             Agendar una nueva cita
           </a>
@@ -219,7 +219,7 @@
           <a
             mat-raised-button
             color="primary"
-            [routerLink]="['/public', slug(), 'citas']"
+            [routerLink]="basePath() + '/citas'"
           >
             <mat-icon>add_circle</mat-icon>
             Agendar otra cita

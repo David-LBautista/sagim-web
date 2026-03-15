@@ -59,6 +59,15 @@ export class MunicipioContextService {
     () => (this._portalConfig()?.avisos?.length ?? 0) > 0,
   );
 
+  /**
+   * Base path para construir links de navegación del portal público.
+   * En producción (subdominio) las rutas están en la raíz ('').
+   * En dev la ruta incluye el slug ('/public/:slug').
+   */
+  readonly basePath = computed(() =>
+    environment.useSubdomain ? '' : `/public/${this._slug()}`,
+  );
+
   resolveSlug(routeSlug?: string): string {
     if (environment.useSubdomain) {
       return window.location.hostname.split('.')[0];

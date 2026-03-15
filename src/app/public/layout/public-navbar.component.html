@@ -3,7 +3,7 @@
     <!-- ── Brand ─────────────────────────────────────────────────────── -->
     <a
       class="pub-navbar__brand"
-      [routerLink]="['/public', slug()]"
+      [routerLink]="basePath() || '/'"
       (click)="closeMenu()"
     >
       @if (!logoError()) {
