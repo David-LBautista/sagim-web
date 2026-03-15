@@ -49,9 +49,7 @@ export class TransparenciaPage implements OnInit {
   detalles = signal<Map<string, TransparenciaDetallePublico>>(new Map());
 
   ngOnInit(): void {
-    const slug = this.slug();
-    if (!slug) return;
-    const url = `${environment.apiUrl}${ApiEndpoints.PUBLIC_TRANSPARENCIA.replace(':slug', slug)}`;
+    const url = `${environment.apiUrl}${ApiEndpoints.PUBLIC_TRANSPARENCIA}`;
     this.http.get<TransparenciaPublicaResponse>(url).subscribe({
       next: (data) => {
         this.comunes.set(data.obligacionesComunes);
@@ -96,12 +94,7 @@ export class TransparenciaPage implements OnInit {
 
   private cargarDetalle(clave: string): void {
     if (this.detalles().has(clave) || this.cargandoDetalle().has(clave)) return;
-    const slug = this.slug();
-    if (!slug) return;
-    const url = `${environment.apiUrl}${ApiEndpoints.PUBLIC_TRANSPARENCIA_SECCION.replace(
-      ':slug',
-      slug,
-    ).replace(':clave', clave)}`;
+    const url = `${environment.apiUrl}${ApiEndpoints.PUBLIC_TRANSPARENCIA_SECCION.replace(':clave', clave)}`;
 
     const loading = new Set(this.cargandoDetalle());
     loading.add(clave);

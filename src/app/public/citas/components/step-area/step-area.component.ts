@@ -55,7 +55,7 @@ export class StepAreaComponent implements OnInit {
 
   ngOnInit() {
     this.citasService
-      .getAreas(this.slug)
+      .getAreas()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (areas) => {

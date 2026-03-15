@@ -85,7 +85,7 @@ export class NuevoReportePublicoPage implements OnInit {
 
     this.cargando.set(true);
     this.reportesService
-      .getInfo(this.slug())
+      .getInfo()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (info) => this.info.set(info),
@@ -93,7 +93,7 @@ export class NuevoReportePublicoPage implements OnInit {
       });
 
     this.reportesService
-      .getCategorias(this.slug())
+      .getCategorias()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cats) => {
@@ -137,7 +137,6 @@ export class NuevoReportePublicoPage implements OnInit {
 
     this.reportesService
       .crearReporte(
-        this.slug(),
         {
           categoria: v.categoria,
           descripcion: v.descripcion,

@@ -127,7 +127,7 @@ export class StepCalendarioComponent
     const fin = this.toDateStr(this.maxFecha);
 
     this.citasService
-      .getDisponibilidad(this.slug, this.area, inicio, fin)
+      .getDisponibilidad(this.area, inicio, fin)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (dias) => {
@@ -154,7 +154,7 @@ export class StepCalendarioComponent
     const finStr = this.toDateStr(fin);
 
     this.citasService
-      .getDisponibilidad(this.slug, this.area, inicio, finStr)
+      .getDisponibilidad(this.area, inicio, finStr)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (dias) => {

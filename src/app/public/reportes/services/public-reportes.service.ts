@@ -14,23 +14,17 @@ import {
 @Injectable({ providedIn: 'root' })
 export class PublicReportesService {
   private http = inject(HttpClient);
+  private readonly base = `${environment.apiUrl}/api/v1/public/reportes`;
 
-  private base(slug: string): string {
-    return `${environment.apiUrl}/api/v1/public/${slug}/reportes`;
+  getInfo(): Observable<InfoReportesPublica> {
+    return this.http.get<InfoReportesPublica>(`${this.base}/info`);
   }
 
-  getInfo(slug: string): Observable<InfoReportesPublica> {
-    return this.http.get<InfoReportesPublica>(`${this.base(slug)}/info`);
-  }
-
-  getCategorias(slug: string): Observable<CategoriaReportePublica[]> {
-    return this.http.get<CategoriaReportePublica[]>(
-      `${this.base(slug)}/categorias`,
-    );
+  getCategorias(): Observable<CategoriaReportePublica[]> {
+    return this.http.get<CategoriaReportePublica[]>(`${this.base}/categorias`);
   }
 
   crearReporte(
-    slug: string,
     dto: CrearReportePublicoDto,
     evidencias?: File[],
   ): Observable<RespuestaReporteCreado> {
@@ -46,33 +40,25 @@ export class PublicReportesService {
       if (dto.recibirNotificaciones != null)
         fd.append('recibirNotificaciones', String(dto.recibirNotificaciones));
       evidencias.forEach((f) => fd.append('evidencias', f, f.name));
-      return this.http.post<RespuestaReporteCreado>(this.base(slug), fd);
+      return this.http.post<RespuestaReporteCreado>(this.base, fd);
     }
-    return this.http.post<RespuestaReporteCreado>(this.base(slug), dto);
+    return this.http.post<RespuestaReporteCreado>(this.base, dto);
   }
 
-  consultarReporte(
-    slug: string,
-    folio: string,
-    token: string,
-  ): Observable<ReportePublico> {
+  consultarReporte(folio: string, token: string): Observable<ReportePublico> {
     const params = new HttpParams().set('folio', folio).set('token', token);
-    return this.http.get<ReportePublico>(`${this.base(slug)}/consultar`, {
-      params,
-    });
+    return this.http.get<ReportePublico>(`${this.base}/consultar`, { params });
   }
 
   getMetricas(
-    slug: string,
     mes?: number,
     anio?: number,
   ): Observable<MetricasReportesPublicas> {
     let params = new HttpParams();
     if (mes != null) params = params.set('mes', mes);
     if (anio != null) params = params.set('anio', anio);
-    return this.http.get<MetricasReportesPublicas>(
-      `${this.base(slug)}/metricas`,
-      { params },
-    );
+    return this.http.get<MetricasReportesPublicas>(`${this.base}/metricas`, {
+      params,
+    });
   }
 }

@@ -107,7 +107,7 @@ export class StepDatosComponent implements OnInit {
         switchMap((curp: string) => {
           this.cargandoCurp.set(true);
           return this.citasService
-            .getCiudadanoPorCurp(this.slug, curp.toUpperCase())
+            .getCiudadanoPorCurp(curp.toUpperCase())
             .pipe(takeUntilDestroyed(this.destroyRef));
         }),
         takeUntilDestroyed(this.destroyRef),

@@ -41,7 +41,7 @@ export class PublicLayoutComponent implements OnInit {
       return;
     }
 
-    this.municipiosService.getPortal(slug).subscribe({
+    this.municipiosService.getPortal().subscribe({
       next: (data) => {
         this.municipioContext.init(slug, data);
 

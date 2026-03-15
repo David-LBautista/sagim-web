@@ -128,7 +128,7 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.reportesService
-      .getMetricas(this.slug())
+      .getMetricas()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (m) => {

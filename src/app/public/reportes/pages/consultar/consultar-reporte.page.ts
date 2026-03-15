@@ -91,7 +91,7 @@ export class ConsultarReportePage implements OnInit {
 
     const { folio, token } = this.form.value;
     this.reportesService
-      .consultarReporte(this.slug(), folio, token)
+      .consultarReporte(folio, token)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (r) => {

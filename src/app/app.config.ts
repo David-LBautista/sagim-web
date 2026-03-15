@@ -14,6 +14,7 @@ import localeEsMx from '@angular/common/locales/es-MX';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './features/auth/interceptors/auth.interceptor';
+import { publicSlugInterceptor } from './features/auth/interceptors/public-slug.interceptor';
 import { MatPaginatorIntlEspanol } from './shared/config/mat-paginator-intl-es';
 
 registerLocaleData(localeEsMx);
@@ -23,7 +24,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(
+      withInterceptors([publicSlugInterceptor, authInterceptor]),
+    ),
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
     { provide: MatPaginatorIntl, useClass: MatPaginatorIntlEspanol },

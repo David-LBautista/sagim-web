@@ -76,6 +76,7 @@ export interface MunicipioPublico {
   logoUrl?: string;
   bannerUrl?: string;
   slug: string;
+  claveInegi?: string;
 }
 
 // ── Ciudadano precargado desde CURP ───────────────────────────────────────

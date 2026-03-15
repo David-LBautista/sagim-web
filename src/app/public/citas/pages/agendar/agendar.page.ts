@@ -112,7 +112,7 @@ export class AgendarPage {
     this.errorEnvio.set(null);
 
     this.citasService
-      .crearCita(this.slug(), {
+      .crearCita({
         area: area.area,
         tramite,
         fechaCita: fecha,

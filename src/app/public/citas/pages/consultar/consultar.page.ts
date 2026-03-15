@@ -111,7 +111,7 @@ export class ConsultarPage implements OnInit {
     this.error.set(null);
 
     this.citasService
-      .consultarCita(this.slug(), folio, auth)
+      .consultarCita(folio, auth)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cita) => {
@@ -144,7 +144,7 @@ export class ConsultarPage implements OnInit {
     this.errorCancelacion.set(null);
 
     this.citasService
-      .cancelarCita(this.slug(), folio, auth, motivo)
+      .cancelarCita(folio, auth, motivo)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

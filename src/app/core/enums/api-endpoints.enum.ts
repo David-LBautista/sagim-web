@@ -200,7 +200,7 @@ export enum ApiEndpoints {
   // ========================================
   // PORTAL PÚBLICO — CONFIGURACIÓN COMPLETA
   // ========================================
-  PUBLIC_PORTAL = '/api/v1/public/:slug/portal',
+  PUBLIC_PORTAL = '/api/v1/public/portal',
 
   // ========================================
   // PANEL INTERNO — CONFIGURACIÓN PORTAL (Admin)
@@ -222,28 +222,28 @@ export enum ApiEndpoints {
   PORTAL_AVISOS_IMAGEN = '/api/v1/portal/configuracion/avisos/:id/imagen',
 
   // ========================================
-  // PORTAL PÚBLICO — MUNICIPIO INFO (legacy)
+  // PORTAL PÚBLICO — MUNICIPIO INFO
   // ========================================
-  PUBLIC_MUNICIPIO_INFO = '/api/v1/public/:slug/info',
+  PUBLIC_MUNICIPIO_INFO = '/api/v1/public/info',
 
   // ========================================
   // PORTAL PÚBLICO — CITAS CIUDADANO
   // ========================================
-  PUBLIC_CITAS_AREAS = '/api/v1/public/:slug/citas/areas',
-  PUBLIC_CITAS_DISPONIBILIDAD = '/api/v1/public/:slug/citas/disponibilidad',
-  PUBLIC_CITAS_CREAR = '/api/v1/public/:slug/citas',
-  PUBLIC_CITAS_CONSULTAR = '/api/v1/public/:slug/citas/consultar',
-  PUBLIC_CITAS_CANCELAR = '/api/v1/public/:slug/citas/cancelar',
-  PUBLIC_CITAS_CIUDADANO_CURP = '/api/v1/public/:slug/citas/ciudadano/:curp',
+  PUBLIC_CITAS_AREAS = '/api/v1/public/citas/areas',
+  PUBLIC_CITAS_DISPONIBILIDAD = '/api/v1/public/citas/disponibilidad',
+  PUBLIC_CITAS_CREAR = '/api/v1/public/citas',
+  PUBLIC_CITAS_CONSULTAR = '/api/v1/public/citas/consultar',
+  PUBLIC_CITAS_CANCELAR = '/api/v1/public/citas/cancelar',
+  PUBLIC_CITAS_CIUDADANO_CURP = '/api/v1/public/citas/ciudadano/:curp',
 
   // ========================================
   // PORTAL PÚBLICO — REPORTES CIUDADANO
   // ========================================
-  PUBLIC_REPORTES_INFO = '/api/v1/public/:slug/reportes/info',
-  PUBLIC_REPORTES_CATEGORIAS = '/api/v1/public/:slug/reportes/categorias',
-  PUBLIC_REPORTES_CREAR = '/api/v1/public/:slug/reportes',
-  PUBLIC_REPORTES_CONSULTAR = '/api/v1/public/:slug/reportes/consultar',
-  PUBLIC_REPORTES_METRICAS = '/api/v1/public/:slug/reportes/metricas',
+  PUBLIC_REPORTES_INFO = '/api/v1/public/reportes/info',
+  PUBLIC_REPORTES_CATEGORIAS = '/api/v1/public/reportes/categorias',
+  PUBLIC_REPORTES_CREAR = '/api/v1/public/reportes',
+  PUBLIC_REPORTES_CONSULTAR = '/api/v1/public/reportes/consultar',
+  PUBLIC_REPORTES_METRICAS = '/api/v1/public/reportes/metricas',
 
   // ========================================
   // TRANSPARENCIA — INTERNO (autenticado)
@@ -259,8 +259,8 @@ export enum ApiEndpoints {
   // ========================================
   // TRANSPARENCIA — PÚBLICO (sin auth)
   // ========================================
-  PUBLIC_TRANSPARENCIA = '/api/v1/public/:slug/transparencia',
-  PUBLIC_TRANSPARENCIA_SECCION = '/api/v1/public/:slug/transparencia/:clave',
+  PUBLIC_TRANSPARENCIA = '/api/v1/public/transparencia',
+  PUBLIC_TRANSPARENCIA_SECCION = '/api/v1/public/transparencia/:clave',
 
   // ========================================
   // PANEL INTERNO — CITAS (autenticado)

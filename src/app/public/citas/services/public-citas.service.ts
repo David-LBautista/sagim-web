@@ -15,17 +15,13 @@ import {
 @Injectable({ providedIn: 'root' })
 export class PublicCitasService {
   private http = inject(HttpClient);
+  private readonly base = `${environment.apiUrl}/api/v1/public/citas`;
 
-  private base(slug: string): string {
-    return `${environment.apiUrl}/api/v1/public/${slug}/citas`;
-  }
-
-  getAreas(slug: string): Observable<AreaCitas[]> {
-    return this.http.get<AreaCitas[]>(`${this.base(slug)}/areas`);
+  getAreas(): Observable<AreaCitas[]> {
+    return this.http.get<AreaCitas[]>(`${this.base}/areas`);
   }
 
   getDisponibilidad(
-    slug: string,
     area: string,
     fechaInicio: string,
     fechaFin: string,
@@ -34,22 +30,17 @@ export class PublicCitasService {
       .set('area', area)
       .set('fechaInicio', fechaInicio)
       .set('fechaFin', fechaFin);
-    return this.http.get<DisponibilidadDia[]>(
-      `${this.base(slug)}/disponibilidad`,
-      { params },
-    );
+    return this.http.get<DisponibilidadDia[]>(`${this.base}/disponibilidad`, {
+      params,
+    });
   }
 
-  crearCita(
-    slug: string,
-    dto: CrearCitaPublicaDto,
-  ): Observable<RespuestaCitaCreada> {
-    return this.http.post<RespuestaCitaCreada>(this.base(slug), dto);
+  crearCita(dto: CrearCitaPublicaDto): Observable<RespuestaCitaCreada> {
+    return this.http.post<RespuestaCitaCreada>(this.base, dto);
   }
 
   /** Consulta por token (viene del email) o por CURP (formulario manual) */
   consultarCita(
-    slug: string,
     folio: string,
     auth: { token: string } | { curp: string },
   ): Observable<ConsultaCita> {
@@ -59,14 +50,11 @@ export class PublicCitasService {
     } else {
       params = params.set('curp', auth.curp);
     }
-    return this.http.get<ConsultaCita>(`${this.base(slug)}/consultar`, {
-      params,
-    });
+    return this.http.get<ConsultaCita>(`${this.base}/consultar`, { params });
   }
 
   /** Cancela con token (viene del email) o con CURP (formulario manual) */
   cancelarCita(
-    slug: string,
     folio: string,
     auth: { token: string } | { curp: string },
     motivo?: string,
@@ -78,17 +66,11 @@ export class PublicCitasService {
       body['curp'] = auth.curp;
     }
     if (motivo) body['motivo'] = motivo;
-    return this.http.patch<{ mensaje: string }>(
-      `${this.base(slug)}/cancelar`,
-      body,
-    );
+    return this.http.patch<{ mensaje: string }>(`${this.base}/cancelar`, body);
   }
 
-  getCiudadanoPorCurp(slug: string, curp: string): Observable<CiudadanoCurp> {
-    const url = `${environment.apiUrl}${ApiEndpoints.PUBLIC_CITAS_CIUDADANO_CURP.replace(
-      ':slug',
-      slug,
-    ).replace(':curp', curp)}`;
+  getCiudadanoPorCurp(curp: string): Observable<CiudadanoCurp> {
+    const url = `${environment.apiUrl}${ApiEndpoints.PUBLIC_CITAS_CIUDADANO_CURP.replace(':curp', curp)}`;
     return this.http.get<CiudadanoCurp>(url);
   }
 }
