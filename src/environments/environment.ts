@@ -3,8 +3,8 @@
  */
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000',
-  wsUrl: 'http://localhost:3000',
+  apiUrl: 'https://api.sagim.com.mx',
+  wsUrl: 'https://api.sagim.com.mx',
   frontendUrl: 'http://localhost:4200',
   appName: 'SAGIM',
   appVersion: '1.0.0',

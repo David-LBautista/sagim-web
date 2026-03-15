@@ -3,8 +3,8 @@
  */
 export const environment = {
   production: true,
-  wsUrl: 'https://api.sagim.gob.mx',
-  apiUrl: 'https://api.sagim.gob.mx', // Cambiar por la URL de producción
+  wsUrl: 'https://api.sagim.com.mx',
+  apiUrl: 'https://api.sagim.com.mx',
   frontendUrl: 'https://pago.sagim.gob.mx', // Portal de pagos en línea
   appName: 'SAGIM',
   appVersion: '1.0.0',
