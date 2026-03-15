@@ -1,0 +1,69 @@
+<header class="pub-navbar">
+  <div class="pub-navbar__inner">
+    <!-- ── Brand ─────────────────────────────────────────────────────── -->
+    <a
+      class="pub-navbar__brand"
+      [routerLink]="['/public', slug()]"
+      (click)="closeMenu()"
+    >
+      @if (!logoError()) {
+        <img
+          class="pub-navbar__logo"
+          [src]="logoSrc()"
+          alt="Logo municipio"
+          (error)="logoError.set(true)"
+        />
+      } @else {
+        <mat-icon class="pub-navbar__logo-fallback">account_balance</mat-icon>
+      }
+      <div class="pub-navbar__brand-text">
+        <span class="pub-navbar__municipio">
+          H. Ayuntamiento de {{ municipio()?.nombre ?? "Portal Ciudadano" }}
+        </span>
+        <span class="pub-navbar__subtitulo">Portal Ciudadano · SAGIM</span>
+      </div>
+    </a>
+
+    <!-- ── Desktop nav ────────────────────────────────────────────────── -->
+    <nav class="pub-navbar__links" aria-label="Navegación principal">
+      @for (link of navLinks(); track link.path) {
+        <a
+          class="pub-navbar__link"
+          [routerLink]="routerLinkFor(link)"
+          [routerLinkActiveOptions]="{ exact: link.exact }"
+          routerLinkActive="pub-navbar__link--active"
+        >
+          {{ link.label }}
+        </a>
+      }
+    </nav>
+
+    <!-- ── Hamburger ─────────────────────────────────────────────────── -->
+    <button
+      class="pub-navbar__hamburger"
+      mat-icon-button
+      (click)="toggleMenu()"
+      [attr.aria-label]="menuOpen() ? 'Cerrar menú' : 'Abrir menú'"
+      [attr.aria-expanded]="menuOpen()"
+    >
+      <mat-icon>{{ menuOpen() ? "close" : "menu" }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- ── Mobile menu ──────────────────────────────────────────────────── -->
+  @if (menuOpen()) {
+    <nav class="pub-navbar__mobile" aria-label="Menú móvil">
+      @for (link of navLinks(); track link.path) {
+        <a
+          class="pub-navbar__mobile-link"
+          [routerLink]="routerLinkFor(link)"
+          [routerLinkActiveOptions]="{ exact: link.exact }"
+          routerLinkActive="pub-navbar__mobile-link--active"
+          (click)="closeMenu()"
+        >
+          {{ link.label }}
+        </a>
+      }
+    </nav>
+  }
+</header>

@@ -97,26 +97,16 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button
-    mat-button
-    type="button"
-    (click)="onCancelar()"
+  <app-action-button
+    label="Cancelar"
+    color="secondary"
     [disabled]="loading()"
-  >
-    Cancelar
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    type="button"
-    (click)="onGuardar()"
-    [disabled]="loading()"
-  >
-    @if (loading()) {
-      <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
-      Guardando...
-    } @else {
-      Agregar operador
-    }
-  </button>
+    (clicked)="onCancelar()"
+  />
+  <app-action-button
+    label="Agregar operador"
+    icon="person_add"
+    [loading]="loading()"
+    (clicked)="onGuardar()"
+  />
 </mat-dialog-actions>

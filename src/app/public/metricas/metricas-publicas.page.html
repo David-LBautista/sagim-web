@@ -1,0 +1,133 @@
+<div class="metricas-pub">
+  <!-- ── Hero ────────────────────────────────────────────────────────── -->
+  <div class="metricas-pub__hero">
+    <div class="metricas-pub__hero-inner">
+      <div class="metricas-pub__hero-icon">
+        <mat-icon>bar_chart</mat-icon>
+      </div>
+      <div>
+        <h1 class="metricas-pub__hero-titulo">Métricas Públicas</h1>
+        <p class="metricas-pub__hero-sub">
+          Desempeño del municipio en atención de reportes ciudadanos
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="metricas-pub__container">
+    <!-- ── Loading ────────────────────────────────────────────────────── -->
+    @if (cargando()) {
+      <div class="metricas-pub__loading">
+        <mat-spinner diameter="40" />
+        <span>Cargando métricas…</span>
+      </div>
+    }
+
+    <!-- ── Error ──────────────────────────────────────────────────────── -->
+    @if (error()) {
+      <div class="metricas-pub__error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error() }}</span>
+      </div>
+    }
+
+    @if (metricas() && !cargando()) {
+      <!-- ── KPIs ──────────────────────────────────────────────────── -->
+      <div class="metricas-pub__kpis">
+        <div class="metricas-pub__kpi">
+          <mat-icon class="kpi-icon kpi-icon--blue">assignment</mat-icon>
+          <span class="kpi-valor">{{ metricas()!.totalMes }}</span>
+          <span class="kpi-label">Reportes este mes</span>
+        </div>
+        <div class="metricas-pub__kpi">
+          <mat-icon class="kpi-icon kpi-icon--green">check_circle</mat-icon>
+          <span class="kpi-valor kpi-valor--green">
+            {{ metricas()!.tasaResolucion | number: "1.0-1" }}%
+          </span>
+          <span class="kpi-label">Tasa de resolución</span>
+        </div>
+        <div class="metricas-pub__kpi">
+          <mat-icon class="kpi-icon kpi-icon--orange">schedule</mat-icon>
+          <span class="kpi-valor">{{
+            metricas()!.tiempoPromedioResolucion
+          }}</span>
+          <span class="kpi-label">Días promedio de atención</span>
+        </div>
+      </div>
+
+      <!-- ── Por categoría ────────────────────────────────────────── -->
+      @if (metricas()!.porCategoria.length) {
+        <div class="metricas-pub__card">
+          <div class="metricas-pub__card-header">
+            <mat-icon>category</mat-icon>
+            <h2 class="metricas-pub__card-titulo">Reportes por categoría</h2>
+          </div>
+
+          <div class="metricas-pub__categorias">
+            @for (cat of metricas()!.porCategoria; track cat.categoria) {
+              <div class="metricas-pub__cat-row">
+                <div class="metricas-pub__cat-labels">
+                  <span class="metricas-pub__cat-nombre">{{
+                    cat.categoriaNombre
+                  }}</span>
+                  <span class="metricas-pub__cat-meta">
+                    {{ cat.resueltos }} / {{ cat.total }} resueltos
+                  </span>
+                </div>
+                <div class="metricas-pub__cat-bar-wrap">
+                  <div
+                    class="metricas-pub__cat-bar"
+                    [style.width.%]="barWidth(cat.resueltos, cat.total)"
+                  ></div>
+                </div>
+                <span class="metricas-pub__cat-pct">
+                  {{ barWidth(cat.resueltos, cat.total) }}%
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ── Últimos 5 resueltos ───────────────────────────────────── -->
+      @if (metricas()!.ultimos5Resueltos.length) {
+        <div class="metricas-pub__card">
+          <div class="metricas-pub__card-header">
+            <mat-icon>verified</mat-icon>
+            <h2 class="metricas-pub__card-titulo">
+              Últimos reportes resueltos
+            </h2>
+          </div>
+
+          <ul class="metricas-pub__lista">
+            @for (r of metricas()!.ultimos5Resueltos; track r.folio) {
+              <li class="metricas-pub__lista-item">
+                <div class="metricas-pub__check">
+                  <mat-icon>check_circle</mat-icon>
+                </div>
+                <div class="metricas-pub__item-body">
+                  <span class="metricas-pub__item-cat">{{
+                    r.categoriaNombre
+                  }}</span>
+                  <span class="metricas-pub__item-meta">
+                    {{ r.areaResponsable }} · Resuelto el
+                    {{ r.fechaResolucion | date: "dd/MM/yyyy" }}
+                  </span>
+                </div>
+                <span class="metricas-pub__item-folio">{{ r.folio }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    }
+
+    <!-- ── Volver ─────────────────────────────────────────────────────── -->
+    <div class="metricas-pub__volver">
+      <a mat-stroked-button [routerLink]="['/public', slug()]">
+        <mat-icon>arrow_back</mat-icon>
+        Volver al inicio
+      </a>
+    </div>
+  </div>
+</div>

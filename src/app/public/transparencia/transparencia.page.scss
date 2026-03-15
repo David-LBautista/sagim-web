@@ -1,0 +1,546 @@
+.transparencia {
+  min-height: calc(100vh - 128px);
+}
+
+// ── Hero ─────────────────────────────────────────────────────────────────
+.transparencia__hero {
+  background: #fff;
+  color: var(--sagim-primary, #0f2a44);
+  padding: 32px 24px;
+  border-bottom: 1px solid #e8ecf0;
+}
+
+.transparencia__hero-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.transparencia__hero-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(15, 42, 68, 0.08);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 1.8rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--sagim-primary, #0f2a44);
+  }
+}
+
+.transparencia__hero-titulo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  display: inline-block;
+  position: relative;
+
+  &::after {
+    content: "";
+    display: block;
+    margin-top: 6px;
+    width: 48px;
+    height: 3px;
+    background: var(--sagim-warning, #f0a12a);
+    border-radius: 2px;
+  }
+}
+
+.transparencia__hero-sub {
+  font-size: 0.88rem;
+  color: var(--sagim-text-mid, #7a7a7a);
+  margin: 0;
+}
+
+// ── Container ─────────────────────────────────────────────────────────────
+.transparencia__container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ── Aviso ─────────────────────────────────────────────────────────────────
+.transparencia__aviso {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(31, 111, 174, 0.07);
+  border: 1px solid rgba(31, 111, 174, 0.25);
+  border-radius: 12px;
+  color: var(--sagim-primary, #0f2a44);
+
+  mat-icon {
+    font-size: 1.3rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    color: var(--sagim-secondary, #1f6fae);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.87rem;
+    color: var(--sagim-text-mid, #7a7a7a);
+  }
+}
+
+// ── Secciones grid ────────────────────────────────────────────────────────
+.transparencia__secciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.transparencia__seccion {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.transparencia__seccion-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.transparencia__seccion-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(15, 42, 68, 0.06);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 1.3rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    color: var(--sagim-secondary, #1f6fae);
+  }
+}
+
+.transparencia__seccion-titulo {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--sagim-primary, #0f2a44);
+  margin: 0 0 3px;
+}
+
+.transparencia__seccion-desc {
+  font-size: 0.8rem;
+  color: var(--sagim-text-mid, #7a7a7a);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.transparencia__badge {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 2px 8px;
+  background: rgba(240, 161, 42, 0.12);
+  border: 1px solid rgba(240, 161, 42, 0.4);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #a66c00;
+  white-space: nowrap;
+}
+
+// ── Items list ────────────────────────────────────────────────────────────
+// (legacy — kept for safety, overridden below by accordion styles)
+
+// ── Loading ───────────────────────────────────────────────────────────────
+.transparencia__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 40px 0;
+  color: var(--sagim-text-mid, #7a7a7a);
+  font-size: 0.87rem;
+}
+
+// ── Aviso / error ─────────────────────────────────────────────────────────
+.transparencia__aviso--error {
+  background: rgba(214, 69, 69, 0.06);
+  border-color: rgba(214, 69, 69, 0.25);
+  color: #b03030;
+
+  mat-icon {
+    color: var(--sagim-danger, #d64545);
+  }
+}
+
+// ── Grupos (Comunes / Municipales) ────────────────────────────────────────
+.transparencia__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.transparencia__grupo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sagim-primary, #0f2a44);
+  margin: 0 0 12px;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    opacity: 0.7;
+  }
+}
+
+// ── Acordeones ────────────────────────────────────────────────────────────
+.transparencia__acordeones {
+  border: 1px solid #e0e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+
+  .acord + .acord {
+    border-top: 1px solid #e0e8f0;
+  }
+}
+
+.acord {
+  background: #fff;
+  transition: background 0.15s;
+
+  &--open {
+    background: #fbfcfe;
+  }
+}
+
+.acord__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #f4f7fb;
+  }
+}
+
+.acord__chevron {
+  font-size: 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--sagim-secondary, #1f6fae);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.acord__header-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.acord__titulo {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--sagim-text-dark, #3a3a3a);
+}
+
+.acord__desc {
+  font-size: 0.78rem;
+  color: var(--sagim-text-mid, #7a7a7a);
+  font-weight: 400;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.acord__articulo {
+  font-size: 0.78rem;
+  color: var(--sagim-text-mid, #7a7a7a);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+// ── Cuerpo del acordeón ───────────────────────────────────────────────────
+.acord__body {
+  padding: 0 18px 18px 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.acord__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    color: var(--sagim-text-mid, #7a7a7a);
+
+    mat-icon {
+      font-size: 0.95rem;
+      width: 0.95rem;
+      height: 0.95rem;
+    }
+  }
+}
+
+// ── Documentos dentro del acordeón ───────────────────────────────────────
+.acord__docs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f6f8fc;
+
+  &:hover {
+    background: #eef3fb;
+  }
+}
+
+.doc-item__icon {
+  font-size: 1.3rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  flex-shrink: 0;
+
+  &--pdf {
+    color: #e53935;
+  }
+  &--excel {
+    color: #1d6f42;
+  }
+  &--link {
+    color: var(--sagim-secondary, #1f6fae);
+  }
+  &--texto {
+    color: var(--sagim-text-mid, #7a7a7a);
+  }
+}
+
+.doc-item__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.doc-item__nombre {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--sagim-text-dark, #3a3a3a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-item__periodo {
+  font-size: 0.75rem;
+  color: var(--sagim-text-mid, #7a7a7a);
+}
+
+.doc-item__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: var(--sagim-primary, #0f2a44);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+
+  mat-icon {
+    font-size: 0.9rem;
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  &:hover {
+    background: var(--sagim-secondary, #1f6fae);
+  }
+}
+
+.doc-item__badge {
+  font-size: 0.72rem;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  &--texto {
+    background: #f0f3f7;
+    color: var(--sagim-text-mid, #7a7a7a);
+  }
+}
+
+// ── Volver ────────────────────────────────────────────────────────────────
+.transparencia__volver {
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+}
+
+// ── Contador de documentos en header del acordeón ─────────────────────────
+.acord__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: rgba(31, 111, 174, 0.12);
+  color: var(--sagim-secondary, #1f6fae);
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+// ── Cargando detalle ──────────────────────────────────────────────────────
+.acord__cargando {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  color: var(--sagim-text-mid, #7a7a7a);
+  font-size: 0.83rem;
+}
+
+// ── Sin documentos ────────────────────────────────────────────────────────
+.acord__sin-docs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  color: var(--sagim-text-mid, #7a7a7a);
+  font-size: 0.83rem;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    opacity: 0.6;
+  }
+}
+
+// ── Subsecciones (acordeones hijo) ────────────────────────────────────────
+.acord-hijos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.acord-hijo {
+  border: 1px solid #dde6f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8fafd;
+
+  &--open {
+    background: #f2f6fc;
+    border-color: rgba(31, 111, 174, 0.3);
+  }
+}
+
+.acord-hijo__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(31, 111, 174, 0.06);
+  }
+
+  .acord__chevron {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.acord-hijo__titulo {
+  flex: 1;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--sagim-primary, #0f2a44);
+}
+
+.acord-hijo__count {
+  font-size: 0.73rem;
+  color: var(--sagim-text-mid, #7a7a7a);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+// ── Documentos dentro de subseccion (indented) ────────────────────────────
+.acord__docs--sub {
+  padding: 6px 14px 12px;
+}

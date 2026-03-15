@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { ApiEndpoints } from '../../core/enums/api-endpoints.enum';
 import type {
   OrdenPagoPublica,
+  OrdenFolioResponse,
   PaymentIntentResponse,
   PagoResponse,
   ReciboResponse,
@@ -14,6 +15,16 @@ import type {
 export class PagoService {
   private http = inject(HttpClient);
   private base = environment.apiUrl;
+
+  getOrdenByFolio(folio: string): Observable<OrdenFolioResponse> {
+    const url =
+      this.base +
+      ApiEndpoints.PAGOS_ORDEN_BY_FOLIO.replace(
+        ':folio',
+        encodeURIComponent(folio.toUpperCase().trim()),
+      );
+    return this.http.get<OrdenFolioResponse>(url);
+  }
 
   getOrdenByToken(token: string): Observable<OrdenPagoPublica> {
     const url =

@@ -1,0 +1,169 @@
+// ── Wrapper ───────────────────────────────────────────────────────────────
+.pub-navbar {
+  background: var(--sagim-primary, #0f2a44);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.45);
+}
+
+// ── Inner row ─────────────────────────────────────────────────────────────
+.pub-navbar__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  padding: 0 24px;
+  height: 76px;
+}
+
+// ── Brand ─────────────────────────────────────────────────────────────────
+.pub-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: #fff;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  &:hover .pub-navbar__municipio {
+    text-decoration: underline;
+  }
+}
+
+.pub-navbar__logo {
+  height: 46px;
+  width: auto;
+}
+
+.pub-navbar__logo-fallback {
+  font-size: 2.4rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pub-navbar__brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pub-navbar__municipio {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.pub-navbar__subtitulo {
+  font-size: 0.72rem;
+  opacity: 0.65;
+  letter-spacing: 0.03em;
+}
+
+// ── Spacer ────────────────────────────────────────────────────────────────
+.pub-navbar__links {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-left: auto;
+}
+
+// ── Desktop links ─────────────────────────────────────────────────────────
+.pub-navbar__link {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 3px solid transparent;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    color: #fff;
+    border-bottom-color: rgba(240, 161, 42, 0.45);
+  }
+
+  &--active {
+    color: #fff;
+    font-weight: 600;
+    border-bottom-color: #f0a12a; // warning — high contrast on dark bg
+  }
+}
+
+// ── Hamburger (hidden on desktop) ─────────────────────────────────────────
+.pub-navbar__hamburger {
+  display: none;
+  color: #fff !important;
+  margin-left: auto;
+}
+
+// ── Mobile menu ───────────────────────────────────────────────────────────
+.pub-navbar__mobile {
+  display: none;
+  flex-direction: column;
+  padding: 8px 16px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pub-navbar__mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition:
+    background 0.15s,
+    color 0.15s;
+
+  mat-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+
+  &--active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-weight: 700;
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .pub-navbar__links {
+    display: none;
+  }
+
+  .pub-navbar__hamburger {
+    display: flex;
+  }
+
+  .pub-navbar__mobile {
+    display: flex;
+  }
+
+  .pub-navbar__inner {
+    height: 56px;
+    padding: 0 16px;
+  }
+}

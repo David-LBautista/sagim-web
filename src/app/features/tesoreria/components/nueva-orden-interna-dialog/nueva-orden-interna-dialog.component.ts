@@ -15,11 +15,7 @@ import {
   of,
   finalize,
 } from 'rxjs';
-import {
-  MatDialogRef,
-  MatDialogModule,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,6 +36,7 @@ import { NotificationType } from '../../../../shared/models/notification.model';
 import { OrdenInterna } from '../../models/ordenes-internas.model';
 import { CiudadanoSearchResult } from '../../models/caja.model';
 import { ServicioCobrable } from '../../models/servicios.model';
+import { SagimDialogComponent } from '../../../../shared/components/sagim-dialog/sagim-dialog.component';
 
 export interface NuevaOrdenInternaDialogData {
   areaResponsable: string;
@@ -53,7 +50,6 @@ export interface NuevaOrdenInternaDialogData {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -64,6 +60,7 @@ export interface NuevaOrdenInternaDialogData {
     MatTooltipModule,
     MatRadioModule,
     MatSelectModule,
+    SagimDialogComponent,
   ],
   templateUrl: './nueva-orden-interna-dialog.component.html',
   styleUrls: ['./nueva-orden-interna-dialog.component.scss'],

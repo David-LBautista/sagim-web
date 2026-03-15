@@ -1,0 +1,314 @@
+$primary: var(--sagim-primary, #0f2a44);
+$secondary: var(--sagim-secondary, #1f6fae);
+$accent: #1f6fae;
+$text-mid: #7a7a7a;
+$text-light: #3a3a3a;
+$bg: #ffffff;
+
+:host {
+  display: block;
+}
+
+.pf {
+  background: $bg;
+  color: #0f2a44;
+  font-size: 0.875rem;
+  border-top: 2px solid #e0e8f0;
+
+  // ── Body ───────────────────────────────────────────────────────────────
+  &__body {
+    border-bottom: 1px solid #e0e8f0;
+    padding: 52px 0 44px;
+  }
+
+  &__body-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    gap: 52px;
+    align-items: flex-start;
+  }
+
+  // ── Brand column ───────────────────────────────────────────────────────
+  &__brand {
+    width: 272px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__brand-top {
+    display: flex;
+    align-items: center;
+  }
+
+  &__brand-logo {
+    width: auto;
+    height: 64px;
+    max-width: 64px;
+    flex-shrink: 0;
+    object-fit: contain;
+    filter: none;
+
+    &--fallback {
+      filter: none;
+      opacity: 0.8;
+      height: 48px;
+    }
+  }
+
+  &__brand-nombre {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0;
+    color: #0f2a44;
+    line-height: 1.4;
+  }
+
+  &__brand-datos {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__brand-dato {
+    margin: 0;
+    font-size: 0.8rem;
+    color: $text-mid;
+    line-height: 1.5;
+  }
+
+  // ── Redes ──────────────────────────────────────────────────────────────
+  &__redes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__red {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #f0f4f8;
+    border: 1px solid #d0dce8;
+    color: #0f2a44;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+
+    &:hover {
+      background: #dce8f5;
+      border-color: #1f6fae;
+      color: #1f6fae;
+    }
+
+    &--web {
+      width: auto;
+      border-radius: 16px;
+      padding: 0 12px;
+      gap: 4px;
+      font-size: 0.75rem;
+    }
+  }
+
+  // ── Link columns ───────────────────────────────────────────────────────
+  &__cols {
+    flex: 1;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  &__col {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__col-titulo {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #0f2a44;
+    margin: 0 0 4px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid $accent;
+  }
+
+  &__col-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__col-link {
+    color: $text-mid;
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: block;
+    cursor: pointer;
+    transition:
+      color 0.15s,
+      padding-left 0.15s;
+
+    &:hover {
+      color: #1f6fae;
+      padding-left: 4px;
+    }
+  }
+
+  // ── Emergencias (barra inferior) ───────────────────────────────────────
+  &__emergencia {
+    background: linear-gradient(
+      90deg,
+      var(--sagim-primary, #0f2a44) 0%,
+      color-mix(in srgb, var(--sagim-primary, #0f2a44) 70%, #000) 100%
+    );
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &__emergencia-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: flex-end;
+  }
+
+  &__emergencia-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    padding: 14px 28px;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+
+    &:first-child {
+      border-left: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    &:last-child {
+      padding-right: 0;
+      border-right: none;
+    }
+  }
+
+  &__emergencia-numero {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+  }
+
+  &__emergencia-servicio {
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+    font-style: italic;
+  }
+
+  // ── Legal bar ──────────────────────────────────────────────────────────
+  &__legal {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 14px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.73rem;
+    color: $text-mid;
+    border-top: 1px solid #e0e8f0;
+  }
+
+  &__legal-sagim {
+    strong {
+      color: #0f2a44;
+      letter-spacing: 0.03em;
+    }
+  }
+
+  // ── Shared ─────────────────────────────────────────────────────────────
+  &__link {
+    color: $text-mid;
+    text-decoration: none;
+    cursor: pointer;
+    &:hover {
+      color: #1f6fae;
+      text-decoration: underline;
+    }
+  }
+}
+
+// ── Responsive ─────────────────────────────────────────────────────────────
+@media (max-width: 900px) {
+  .pf {
+    &__body-inner {
+      flex-direction: column;
+      gap: 36px;
+      padding: 0 24px;
+    }
+
+    &__brand {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .pf {
+    &__body-inner {
+      padding: 0 20px;
+    }
+
+    &__cols {
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    &__emergencia-inner {
+      padding: 0;
+      flex-direction: column;
+    }
+
+    &__emergencia-item {
+      padding: 12px 20px;
+      align-items: flex-start;
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    &__legal {
+      padding: 14px 20px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+  }
+}

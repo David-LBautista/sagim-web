@@ -1,0 +1,156 @@
+<app-sagim-dialog
+  title="Nuevo Reporte"
+  submitLabel="Crear reporte"
+  [isSubmitting]="guardando()"
+  [submitDisabled]="form.invalid || guardando()"
+  (submitClick)="onSubmit()"
+  (cancelClick)="onCancel()"
+>
+  <form [formGroup]="form" class="nuevo-reporte-form">
+    <!-- Información del reporte -->
+    <div class="form-section">
+      <p class="section-label">Información del reporte</p>
+      <mat-divider class="section-divider"></mat-divider>
+      <div class="form-grid">
+        <mat-form-field appearance="outline" class="span-full">
+          <mat-label>Categoría *</mat-label>
+          <mat-select formControlName="categoria">
+            @for (cat of categorias; track cat) {
+              <mat-option [value]="cat">{{ categoriaLabels[cat] }}</mat-option>
+            }
+          </mat-select>
+          @if (
+            form.controls.categoria.invalid && form.controls.categoria.touched
+          ) {
+            <mat-error>Selecciona una categoría</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="span-full">
+          <mat-label>Descripción *</mat-label>
+          <textarea
+            matInput
+            formControlName="descripcion"
+            rows="3"
+            placeholder="Describe el problema con el mayor detalle posible"
+          ></textarea>
+          @if (
+            form.controls.descripcion.invalid &&
+            form.controls.descripcion.touched
+          ) {
+            <mat-error>Mínimo 10 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prioridad</mat-label>
+          <mat-select formControlName="prioridad">
+            <mat-option value="">Normal (predeterminado)</mat-option>
+            @for (p of prioridades; track p) {
+              <mat-option [value]="p">{{ prioridadLabels[p] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Origen</mat-label>
+          <mat-select formControlName="origen">
+            <mat-option value="">Interno</mat-option>
+            @for (o of origenes; track o.value) {
+              <mat-option [value]="o.value">{{ o.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Ubicación -->
+    <div class="form-section">
+      <p class="section-label">Ubicación</p>
+      <mat-divider class="section-divider"></mat-divider>
+      <div class="form-grid">
+        <mat-form-field appearance="outline" class="span-full">
+          <mat-label>Descripción de la ubicación *</mat-label>
+          <input
+            matInput
+            formControlName="ubicacionDescripcion"
+            placeholder="Calle, número, entre calles..."
+          />
+          @if (
+            form.controls.ubicacionDescripcion.invalid &&
+            form.controls.ubicacionDescripcion.touched
+          ) {
+            <mat-error>La ubicación es requerida</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Colonia (opcional)</mat-label>
+          <input matInput formControlName="ubicacionColonia" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Referencia (opcional)</mat-label>
+          <input
+            matInput
+            formControlName="ubicacionReferencia"
+            placeholder="Frente al parque, atrás del mercado..."
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Datos del ciudadano -->
+    <div class="form-section">
+      <p class="section-label">
+        Datos del ciudadano
+        <span class="section-label--optional">(opcional)</span>
+      </p>
+      <mat-divider class="section-divider"></mat-divider>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="telefono" type="tel" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Evidencias -->
+    <div class="form-section">
+      <p class="section-label">
+        Evidencias
+        <span class="section-label--optional">(opcional, máx. 5)</span>
+      </p>
+      <mat-divider class="section-divider"></mat-divider>
+      <label class="file-drop">
+        <mat-icon>upload_file</mat-icon>
+        <span>Haz clic para seleccionar imágenes</span>
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          (change)="onFileChange($event)"
+          hidden
+        />
+      </label>
+      @if (archivosSeleccionados.length > 0) {
+        <div class="archivos-list">
+          @for (f of archivosSeleccionados; track f.name; let i = $index) {
+            <div class="archivo-item">
+              <mat-icon>image</mat-icon>
+              <span class="archivo-name">{{ f.name }}</span>
+              <button mat-icon-button type="button" (click)="removeFile(i)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </form>
+</app-sagim-dialog>

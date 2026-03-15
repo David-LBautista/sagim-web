@@ -24,7 +24,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+
 import { CitasService } from '../../services/citas.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import {
@@ -35,6 +35,7 @@ import {
   ConfiguracionCitasArea,
   CambiarEstadoDto,
 } from '../../models/citas.model';
+import { ActionButtonComponent } from '../../../../shared/components';
 
 @Component({
   selector: 'app-lista-citas',
@@ -57,6 +58,7 @@ import {
     MatNativeDateModule,
     MatCardModule,
     MatDialogModule,
+    ActionButtonComponent,
   ],
   templateUrl: './lista-citas.page.html',
   styleUrl: './lista-citas.page.scss',
@@ -110,45 +112,32 @@ export class ListaCitasPage implements OnInit {
     fechaFin: [null as Date | null],
   });
 
+  private _filtrosValores = signal<typeof this.filtros.value>(
+    this.filtros.value,
+  );
+
+  filtrosActivos = computed(() => {
+    const v = this._filtrosValores();
+    return [
+      v.curp,
+      v.tramite,
+      v.area,
+      v.estado,
+      v.origen,
+      v.fechaInicio,
+      v.fechaFin,
+    ].filter((x) => x !== null && x !== '' && x !== undefined).length;
+  });
+
   totalPages = computed(() => Math.ceil(this.total() / this.limit()));
 
   ngOnInit(): void {
     this.cargarConfigs();
     this.cargar();
 
-    // Re-buscar al cambiar filtros con debounce para CURP/trámite
-    this.filtros.controls.curp.valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => this.buscar());
-
-    this.filtros.controls.tramite.valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => this.buscar());
-
-    // Filtros de select: buscar inmediatamente
-    this.filtros.controls.area.valueChanges
+    this.filtros.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.buscar());
-    this.filtros.controls.estado.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.buscar());
-    this.filtros.controls.origen.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.buscar());
-    this.filtros.controls.fechaInicio.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.buscar());
-    this.filtros.controls.fechaFin.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.buscar());
+      .subscribe((v) => this._filtrosValores.set(v));
   }
 
   private cargarConfigs(): void {
@@ -202,6 +191,7 @@ export class ListaCitasPage implements OnInit {
 
   limpiarFiltros(): void {
     this.filtros.reset();
+    this.buscar();
   }
 
   toggleDetalle(id: string): void {

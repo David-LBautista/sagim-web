@@ -23,7 +23,7 @@
   // ── Loading bar ───────────────────────────────────────────────────────────
   .loading-bar {
     margin-bottom: var(--sagim-spacing-md, 16px);
-    border-radius: 4px;
+    border-radius: var(--sagim-radius-sm, 4px);
   }
 
   // ── Empty state ───────────────────────────────────────────────────────────

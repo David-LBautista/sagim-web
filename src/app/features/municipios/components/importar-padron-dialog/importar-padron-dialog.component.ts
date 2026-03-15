@@ -10,6 +10,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { CiudadanosService } from '../../services/ciudadanos.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import type {
@@ -99,6 +100,7 @@ const CAMPOS_PADRON_DEFAULTS: CampoPadron[] = [
     MatProgressSpinnerModule,
     MatStepperModule,
     MatTooltipModule,
+    ActionButtonComponent,
   ],
   templateUrl: './importar-padron-dialog.component.html',
   styleUrl: './importar-padron-dialog.component.scss',

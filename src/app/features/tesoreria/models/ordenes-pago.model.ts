@@ -93,6 +93,13 @@ export interface MunicipioPago {
   logoUrl?: string;
 }
 
+export interface ServicioPago {
+  _id: string;
+  nombre: string;
+  descripcion?: string;
+  areaResponsable?: string;
+}
+
 export interface OrdenPagoPublica {
   token: string;
   concepto?: string;
@@ -103,6 +110,18 @@ export interface OrdenPagoPublica {
   areaResponsable?: string;
   municipio?: MunicipioPago;
   ciudadanoNombre?: string;
+}
+
+export interface OrdenFolioResponse {
+  token: string;
+  folio: string;
+  concepto?: string;
+  descripcion: string;
+  monto: number;
+  areaResponsable?: string;
+  expiresAt?: string;
+  servicio?: ServicioPago;
+  municipio?: MunicipioPago;
 }
 
 export interface PaymentIntentResponse {

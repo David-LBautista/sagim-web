@@ -1,0 +1,318 @@
+<div class="detalle-reporte">
+  <!-- Back + title -->
+  <div class="page-header">
+    <button
+      mat-icon-button
+      class="btn-back"
+      (click)="volver()"
+      matTooltip="Regresar"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="sagim-title-xl">Detalle del reporte</h1>
+  </div>
+
+  @if (cargando()) {
+    <div class="loading-center">
+      <mat-progress-spinner
+        mode="indeterminate"
+        diameter="48"
+      ></mat-progress-spinner>
+    </div>
+  }
+
+  @if (!cargando() && reporte(); as r) {
+    <div class="detalle-layout">
+      <!-- ── Columna principal ───────────────────────────── -->
+      <div class="main-col">
+        <!-- Encabezado -->
+        <mat-card appearance="outlined" class="header-card">
+          <mat-card-content>
+            <div class="header-top">
+              <span class="folio-badge">{{ r.folio }}</span>
+              <span class="estado-chip" [ngClass]="estadoClass(r.estado)">
+                {{ estadoLabels[r.estado] }}
+              </span>
+              <span class="estado-chip" [ngClass]="prioridadClass(r.prioridad)">
+                <mat-icon class="chip-icon">flag</mat-icon>
+                {{ prioridadLabels[r.prioridad] }}
+              </span>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Categoría</span>
+                <span class="info-value">
+                  <mat-icon class="info-icon">{{
+                    categoriaIcons[r.categoria]
+                  }}</mat-icon>
+                  {{ categoriaLabels[r.categoria] }}
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Módulo</span>
+                <span class="info-value">{{ moduloLabels[r.modulo] }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Área responsable</span>
+                <span class="info-value">{{ r.areaResponsable }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Origen</span>
+                <span class="info-value">{{ origenLabels[r.origen] }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Fecha recibido</span>
+                <span class="info-value">{{
+                  r.createdAt | date: "dd/MM/yyyy HH:mm"
+                }}</span>
+              </div>
+              @if (r.fechaResolucion) {
+                <div class="info-item">
+                  <span class="info-label">Fecha resolución</span>
+                  <span class="info-value">{{
+                    r.fechaResolucion | date: "dd/MM/yyyy"
+                  }}</span>
+                </div>
+              }
+            </div>
+
+            <mat-divider class="divider"></mat-divider>
+
+            <h3 class="section-title">Descripción</h3>
+            <p class="descripcion">{{ r.descripcion }}</p>
+
+            <mat-divider class="divider"></mat-divider>
+
+            <h3 class="section-title">Ubicación</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Descripción</span>
+                <span class="info-value">{{ r.ubicacion.descripcion }}</span>
+              </div>
+              @if (r.ubicacion.colonia) {
+                <div class="info-item">
+                  <span class="info-label">Colonia</span>
+                  <span class="info-value">{{ r.ubicacion.colonia }}</span>
+                </div>
+              }
+              @if (r.ubicacion.referencia) {
+                <div class="info-item">
+                  <span class="info-label">Referencia</span>
+                  <span class="info-value">{{ r.ubicacion.referencia }}</span>
+                </div>
+              }
+            </div>
+
+            @if (r.ciudadano && r.ciudadano.nombre) {
+              <mat-divider class="divider"></mat-divider>
+              <h3 class="section-title">Ciudadano</h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">Nombre</span>
+                  <span class="info-value">{{ r.ciudadano.nombre }}</span>
+                </div>
+                @if (r.ciudadano.telefono) {
+                  <div class="info-item">
+                    <span class="info-label">Teléfono</span>
+                    <span class="info-value">{{ r.ciudadano.telefono }}</span>
+                  </div>
+                }
+                @if (r.ciudadano.correo) {
+                  <div class="info-item">
+                    <span class="info-label">Correo</span>
+                    <span class="info-value">{{ r.ciudadano.correo }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Evidencias -->
+            @if (r.evidencia && r.evidencia.length > 0) {
+              <mat-divider class="divider"></mat-divider>
+              <h3 class="section-title">Evidencias</h3>
+              <div class="evidencias-grid">
+                @for (img of r.evidencia; track img) {
+                  <img
+                    [src]="img"
+                    alt="Evidencia"
+                    class="evidencia-img"
+                    loading="lazy"
+                  />
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Historial -->
+        @if (r.historial && r.historial.length > 0) {
+          <mat-card appearance="outlined" class="historial-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>timeline</mat-icon>
+              <mat-card-title>Historial</mat-card-title>
+              <mat-card-subtitle>Seguimiento del reporte</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="timeline">
+                @for (h of r.historial; track h._id) {
+                  <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                      <div class="timeline-header">
+                        <span class="timeline-fecha">{{
+                          h.fecha | date: "dd/MM/yyyy HH:mm"
+                        }}</span>
+                        @if (h.estado) {
+                          <span
+                            class="estado-chip timeline-chip"
+                            [ngClass]="estadoClass(h.estado)"
+                          >
+                            {{ estadoLabels[h.estado] }}
+                          </span>
+                        }
+                      </div>
+                      <span class="timeline-usuario">{{
+                        h.nombreUsuario ?? h.usuario
+                      }}</span>
+                      @if (h.comentarioPublico) {
+                        <p class="timeline-comentario">
+                          {{ h.comentarioPublico }}
+                        </p>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+
+      <!-- ── Columna lateral (acciones) ─────────────────── -->
+      <div class="side-col">
+        <!-- Cambiar estado -->
+        <mat-card appearance="outlined" class="action-card">
+          <mat-card-header>
+            <mat-card-title>Cambiar estado</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form
+              [formGroup]="estadoForm"
+              (ngSubmit)="cambiarEstado()"
+              class="action-form"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nuevo estado</mat-label>
+                <mat-select formControlName="estado">
+                  <mat-option value="en_proceso">En proceso</mat-option>
+                  <mat-option value="resuelto">Resuelto</mat-option>
+                  <mat-option value="cancelado">Cancelado</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Comentario público</mat-label>
+                <textarea
+                  matInput
+                  formControlName="comentario"
+                  rows="2"
+                ></textarea>
+                <mat-error>El comentario es requerido</mat-error>
+              </mat-form-field>
+              <app-action-button
+                label="Guardar estado"
+                icon="save"
+                [loading]="guardando()"
+                [disabled]="estadoForm.invalid"
+                (clicked)="cambiarEstado()"
+                style="width: 100%"
+              />
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Cambiar prioridad -->
+        <mat-card appearance="outlined" class="action-card">
+          <mat-card-header>
+            <mat-card-title>Prioridad</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form
+              [formGroup]="prioridadForm"
+              (ngSubmit)="cambiarPrioridad()"
+              class="action-form"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Prioridad</mat-label>
+                <mat-select formControlName="prioridad">
+                  <mat-option value="baja">Baja</mat-option>
+                  <mat-option value="normal">Normal</mat-option>
+                  <mat-option value="alta">Alta</mat-option>
+                  <mat-option value="urgente">Urgente</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <app-action-button
+                label="Actualizar prioridad"
+                icon="flag"
+                [loading]="guardando()"
+                [disabled]="prioridadForm.invalid"
+                (clicked)="cambiarPrioridad()"
+                style="width: 100%"
+              />
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Asignar -->
+        <mat-card appearance="outlined" class="action-card">
+          <mat-card-header>
+            <mat-card-title>Asignar a</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (r.asignadoA) {
+              <div class="asignado-info">
+                <mat-icon>person</mat-icon>
+                <span>{{ r.nombreAsignado }}</span>
+              </div>
+              <mat-divider class="divider"></mat-divider>
+            }
+            <form
+              [formGroup]="asignarForm"
+              (ngSubmit)="asignar()"
+              class="action-form"
+            >
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>ID de usuario</mat-label>
+                <input
+                  matInput
+                  formControlName="usuarioId"
+                  placeholder="ID del responsable"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nombre del responsable</mat-label>
+                <input matInput formControlName="nombreAsignado" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nota interna (opcional)</mat-label>
+                <textarea
+                  matInput
+                  formControlName="notaInterna"
+                  rows="2"
+                ></textarea>
+              </mat-form-field>
+              <app-action-button
+                label="Asignar"
+                icon="person_add"
+                [loading]="guardando()"
+                [disabled]="asignarForm.invalid"
+                (clicked)="asignar()"
+                style="width: 100%"
+              />
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

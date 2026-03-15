@@ -1,0 +1,150 @@
+<footer class="pf">
+  <!-- ── Cuerpo principal ──────────────────────────────────────────────── -->
+  <div class="pf__body">
+    <div class="pf__body-inner">
+      <!-- Columna brand -->
+      <div class="pf__brand">
+        <div class="pf__brand-top">
+          <img
+            [src]="municipio()?.logoUrl || '/assets/logo/escudo_sagim.svg'"
+            [alt]="municipio()?.nombre"
+            class="pf__brand-logo"
+            [class.pf__brand-logo--fallback]="!municipio()?.logoUrl"
+          />
+        </div>
+        <p class="pf__brand-nombre">
+          H. Ayuntamiento de {{ municipio()?.nombre }}
+        </p>
+
+        <div class="pf__brand-datos">
+          @if (footer()?.direccion) {
+            <p class="pf__brand-dato">{{ footer()!.direccion }}</p>
+          }
+          @if (footer()?.telefono) {
+            <p class="pf__brand-dato">
+              <a [href]="'tel:' + footer()!.telefono" class="pf__link">{{
+                footer()!.telefono
+              }}</a>
+            </p>
+          }
+          @if (footer()?.correo) {
+            <p class="pf__brand-dato">
+              <a [href]="'mailto:' + footer()!.correo" class="pf__link">{{
+                footer()!.correo
+              }}</a>
+            </p>
+          }
+        </div>
+
+        <!-- Redes sociales -->
+        @if (redes()) {
+          <div class="pf__redes">
+            @if (redes()!.facebook) {
+              <a
+                [href]="redes()!.facebook"
+                target="_blank"
+                rel="noopener"
+                class="pf__red"
+                aria-label="Facebook"
+                >f</a
+              >
+            }
+            @if (redes()!.twitter) {
+              <a
+                [href]="redes()!.twitter"
+                target="_blank"
+                rel="noopener"
+                class="pf__red"
+                aria-label="Twitter"
+                >𝕏</a
+              >
+            }
+            @if (redes()!.instagram) {
+              <a
+                [href]="redes()!.instagram"
+                target="_blank"
+                rel="noopener"
+                class="pf__red"
+                aria-label="Instagram"
+                >ig</a
+              >
+            }
+            @if (redes()!.youtube) {
+              <a
+                [href]="redes()!.youtube"
+                target="_blank"
+                rel="noopener"
+                class="pf__red"
+                aria-label="YouTube"
+                >▶</a
+              >
+            }
+            @if (redes()!.sitioWeb) {
+              <a
+                [href]="redes()!.sitioWeb"
+                target="_blank"
+                rel="noopener"
+                class="pf__red pf__red--web"
+                aria-label="Sitio web"
+              >
+                🌐 Sitio web
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Columnas de enlaces -->
+      @if ((footer()?.columnas ?? []).length > 0) {
+        <div class="pf__cols">
+          @for (col of footer()!.columnas; track col.titulo) {
+            <div class="pf__col">
+              <h4 class="pf__col-titulo">{{ col.titulo }}</h4>
+              <ul class="pf__col-links">
+                @for (link of col.links; track link.url) {
+                  <li>
+                    @if (link.externo) {
+                      <a
+                        [href]="link.url"
+                        target="_blank"
+                        rel="noopener"
+                        class="pf__col-link"
+                        >{{ link.texto }}</a
+                      >
+                    } @else {
+                      <a
+                        [routerLink]="linkRouterPath(link.url)"
+                        class="pf__col-link"
+                        >{{ link.texto }}</a
+                      >
+                    }
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ── Números de emergencia ────────────────────────────────────────── -->
+  @if (footer()?.numerosEmergencia?.length) {
+    <div class="pf__emergencia">
+      <div class="pf__emergencia-inner">
+        @for (num of footer()!.numerosEmergencia; track num.numero) {
+          <div class="pf__emergencia-item">
+            <span class="pf__emergencia-numero">{{ num.numero }}</span>
+            <span class="pf__emergencia-servicio">{{ num.servicio }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── Barra legal ───────────────────────────────────────────────────── -->
+  <div class="pf__legal">
+    <span>{{ footer()?.textoLegal ?? "" }}</span>
+    <span class="pf__legal-sagim">Powered by <strong>SAGIM</strong></span>
+  </div>
+</footer>

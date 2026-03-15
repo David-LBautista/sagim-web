@@ -89,12 +89,21 @@
           ></mat-datepicker-toggle>
           <mat-datepicker #pickerHasta></mat-datepicker>
         </mat-form-field>
-
-        <button mat-stroked-button type="button" (click)="limpiarFiltros()">
-          <mat-icon>clear</mat-icon>
-          Limpiar
-        </button>
       </form>
+      <div class="filters-actions">
+        @if (filtrosActivos() > 0) {
+          <app-action-button
+            label="Limpiar"
+            color="secondary"
+            (clicked)="limpiarFiltros()"
+          />
+        }
+        <app-action-button
+          label="Buscar"
+          color="primary"
+          (clicked)="buscar()"
+        />
+      </div>
     </mat-card-content>
   </mat-card>
 

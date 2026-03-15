@@ -1,0 +1,131 @@
+<div class="portal-avisos">
+  <!-- Header -->
+  <div class="portal-avisos__header">
+    <div>
+      <h1 class="sagim-title-xl">Avisos y Noticias</h1>
+      <p class="sagim-subtitle-light">
+        Gestiona los comunicados visibles en el portal ciudadano.
+      </p>
+    </div>
+    <app-action-button
+      label="Nuevo aviso"
+      icon="add"
+      color="primary"
+      (clicked)="crear()"
+    />
+  </div>
+
+  @if (cargando()) {
+    <div class="portal-avisos__loading">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (avisosOrdenados().length === 0) {
+    <div class="portal-avisos__empty">
+      <mat-icon>campaign</mat-icon>
+      <p>No hay avisos creados aún.</p>
+      <button mat-stroked-button color="primary" (click)="crear()">
+        Crear primer aviso
+      </button>
+    </div>
+  } @else {
+    <div class="portal-avisos__list">
+      @for (aviso of avisosOrdenados(); track aviso._id) {
+        <mat-card
+          appearance="outlined"
+          class="aviso-card"
+          [class.aviso-card--inactivo]="!aviso.activo"
+        >
+          <mat-card-content>
+            <div class="aviso-card__top">
+              <!-- Tipo badge -->
+              <span
+                class="aviso-card__badge aviso-card__badge--{{ aviso.tipo }}"
+              >
+                <mat-icon>{{ tipoConfig[aviso.tipo].icon }}</mat-icon>
+                {{ tipoConfig[aviso.tipo].label }}
+              </span>
+
+              <!-- Estado vigencia -->
+              @if (aviso.activo && estaVigente(aviso)) {
+                <span class="aviso-card__vigencia aviso-card__vigencia--activo"
+                  >Activo y vigente</span
+                >
+              } @else if (aviso.activo && !estaVigente(aviso)) {
+                <span
+                  class="aviso-card__vigencia aviso-card__vigencia--expirado"
+                  >Fuera de vigencia</span
+                >
+              } @else {
+                <span
+                  class="aviso-card__vigencia aviso-card__vigencia--inactivo"
+                  >Inactivo</span
+                >
+              }
+
+              <span class="aviso-card__orden">Orden: {{ aviso.orden }}</span>
+            </div>
+
+            <div class="aviso-card__body">
+              @if (aviso.imagenUrl) {
+                <img
+                  class="aviso-card__img"
+                  [src]="aviso.imagenUrl"
+                  alt="Imagen del aviso"
+                />
+              }
+              <div class="aviso-card__content">
+                <h3 class="aviso-card__titulo">{{ aviso.titulo }}</h3>
+                <p class="aviso-card__cuerpo">{{ aviso.cuerpo }}</p>
+                @if (aviso.url) {
+                  <span class="aviso-card__url">
+                    <mat-icon>link</mat-icon> {{ aviso.url }}
+                    @if (aviso.urlTexto) {
+                      · "{{ aviso.urlTexto }}"
+                    }
+                  </span>
+                }
+                <div class="aviso-card__fechas">
+                  <span>
+                    <mat-icon>schedule</mat-icon>
+                    {{ aviso.vigenciaInicio | date: "dd/MM/yyyy" }} —
+                    {{ aviso.vigenciaFin | date: "dd/MM/yyyy" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <mat-divider />
+
+            <div class="aviso-card__actions">
+              <mat-slide-toggle
+                [checked]="aviso.activo ?? true"
+                (change)="toggleActivo(aviso)"
+                color="primary"
+              >
+                {{ aviso.activo ? "Activo" : "Inactivo" }}
+              </mat-slide-toggle>
+
+              <div class="aviso-card__actions-right">
+                <button
+                  mat-icon-button
+                  [matTooltip]="'Editar'"
+                  (click)="editar(aviso)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  [matTooltip]="'Eliminar'"
+                  color="warn"
+                  (click)="eliminar(aviso)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,130 @@
+<app-sagim-dialog
+  [title]="esEdicion ? 'Editar aviso' : 'Nuevo aviso'"
+  [submitLabel]="esEdicion ? 'Guardar cambios' : 'Crear aviso'"
+  [isSubmitting]="guardando()"
+  (submitClick)="guardar()"
+  (cancelClick)="dialogRef.close()"
+>
+  <form [formGroup]="form" class="aviso-form">
+    <div class="aviso-form__row aviso-form__row--2">
+      <mat-form-field appearance="outline" class="aviso-form__tipo">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="tipo">
+          @for (t of tipos; track t.value) {
+            <mat-option [value]="t.value">{{ t.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Orden de aparición</mat-label>
+        <input matInput type="number" formControlName="orden" min="1" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Título</mat-label>
+      <input
+        matInput
+        formControlName="titulo"
+        placeholder="Ej: Paga tu predial antes del 31 de marzo"
+      />
+      <mat-hint align="end"
+        >{{ form.get("titulo")?.value?.length ?? 0 }}/120</mat-hint
+      >
+      @if (
+        form.get("titulo")?.hasError("required") && form.get("titulo")?.touched
+      ) {
+        <mat-error>El título es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cuerpo del mensaje</mat-label>
+      <textarea
+        matInput
+        formControlName="cuerpo"
+        rows="3"
+        placeholder="Descripción detallada del aviso..."
+      ></textarea>
+      <mat-hint align="end"
+        >{{ form.get("cuerpo")?.value?.length ?? 0 }}/500</mat-hint
+      >
+      @if (
+        form.get("cuerpo")?.hasError("required") && form.get("cuerpo")?.touched
+      ) {
+        <mat-error>El cuerpo es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="aviso-form__row aviso-form__row--2">
+      <mat-form-field appearance="outline">
+        <mat-label>URL de acción (opcional)</mat-label>
+        <input
+          matInput
+          formControlName="url"
+          placeholder="/servicios/predial"
+        />
+        <mat-icon matPrefix>link</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Texto del botón</mat-label>
+        <input matInput formControlName="urlTexto" placeholder="Ir a pagos" />
+      </mat-form-field>
+    </div>
+
+    <div class="aviso-form__row aviso-form__row--2">
+      <mat-form-field appearance="outline">
+        <mat-label>Vigencia inicio</mat-label>
+        <input
+          matInput
+          type="datetime-local"
+          formControlName="vigenciaInicio"
+        />
+        @if (
+          form.get("vigenciaInicio")?.hasError("required") &&
+          form.get("vigenciaInicio")?.touched
+        ) {
+          <mat-error>Requerido</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Vigencia fin</mat-label>
+        <input matInput type="datetime-local" formControlName="vigenciaFin" />
+        @if (
+          form.get("vigenciaFin")?.hasError("required") &&
+          form.get("vigenciaFin")?.touched
+        ) {
+          <mat-error>Requerido</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Imagen -->
+    <div class="aviso-form__imagen">
+      <p class="aviso-form__imagen-label">
+        Imagen (opcional) — JPEG, PNG o WebP · máx. 3 MB
+      </p>
+      @if (imagenPreview()) {
+        <div class="aviso-form__imagen-preview">
+          <img [src]="imagenPreview()!" alt="Vista previa" />
+          <button
+            mat-icon-button
+            type="button"
+            (click)="imagenPreview.set(null); imagenFile = null"
+            matTooltip="Quitar imagen"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+      <app-image-upload-button
+        [label]="imagenPreview() ? 'Cambiar imagen' : 'Subir imagen'"
+        accept="image/jpeg,image/png,image/webp"
+        (fileChange)="onImagenChange($event)"
+      />
+    </div>
+  </form>
+</app-sagim-dialog>

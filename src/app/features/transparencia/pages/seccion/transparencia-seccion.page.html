@@ -1,0 +1,263 @@
+<div class="transp-seccion">
+  <!-- ── LOADING ──────────────────────────────────────────────────────────── -->
+  @if (cargando()) {
+    <div class="loading-center">
+      <mat-spinner diameter="48" />
+    </div>
+  }
+
+  @if (!cargando() && seccion(); as sec) {
+    <!-- ── HEADER ────────────────────────────────────────────────────────── -->
+    <div class="page-header">
+      <button
+        mat-icon-button
+        (click)="volver()"
+        matTooltip="Volver al listado"
+        class="btn-back"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-text">
+        <h1 class="sagim-title-xl">{{ sec.titulo }}</h1>
+        <p class="sagim-subtitle-light">
+          {{ sec.articulo }} · {{ sec.areaResponsable }}
+        </p>
+      </div>
+      <div class="header-actions">
+        <!-- Toggle al corriente -->
+        <mat-slide-toggle
+          [checked]="sec.alCorriente"
+          (change)="toggleCorriente($event.checked)"
+          color="primary"
+          class="corriente-toggle"
+        >
+          {{ sec.alCorriente ? "Al corriente" : "En riesgo" }}
+        </mat-slide-toggle>
+
+        <app-action-button
+          label="Agregar documento"
+          icon="add"
+          color="primary"
+          (clicked)="abrirModal(null)"
+        />
+      </div>
+    </div>
+
+    <!-- ── ESTADO CHIPS ───────────────────────────────────────────────────── -->
+    <div class="estado-chips">
+      <span
+        class="chip chip--tipo"
+        [class.chip--municipal]="sec.esEspecificaMunicipio"
+      >
+        <mat-icon>{{
+          !sec.esEspecificaMunicipio ? "gavel" : "account_balance"
+        }}</mat-icon>
+        {{
+          !sec.esEspecificaMunicipio ? "Común (Art. 50)" : "Municipal (Art. 51)"
+        }}
+      </span>
+      <span class="chip chip--periodo">
+        <mat-icon>schedule</mat-icon>
+        {{ sec.periodoActualizacion }}
+      </span>
+      <span
+        class="chip"
+        [class.chip--corriente]="sec.alCorriente"
+        [class.chip--riesgo]="!sec.alCorriente"
+      >
+        <mat-icon>{{ sec.alCorriente ? "verified" : "warning" }}</mat-icon>
+        {{ sec.alCorriente ? "Al corriente" : "En riesgo" }}
+      </span>
+      @if (sec.ultimaActualizacion) {
+        <span class="chip chip--fecha">
+          <mat-icon>update</mat-icon>
+          Actualizado {{ sec.ultimaActualizacion | date: "dd/MM/yyyy" }}
+        </span>
+      }
+    </div>
+
+    <!-- ── AVISO AL CORRIENTE ─────────────────────────────────────────────── -->
+    @if (!sec.alCorriente && sec.documentos.length > 0) {
+      <div class="aviso-corriente">
+        <mat-icon>info</mat-icon>
+        <div class="aviso-corriente__body">
+          <strong>Pendiente de confirmación</strong>
+          <p>
+            Tienes documentos cargados pero la sección aún figura como
+            <em>En riesgo</em>. Usa el interruptor del encabezado para marcarla
+            <em>Al corriente</em> una vez que la información esté completa y
+            vigente.
+          </p>
+        </div>
+      </div>
+    }
+
+    <!-- ── DOCUMENTOS ────────────────────────────────────────────────────── -->
+    <mat-card appearance="outlined" class="docs-card">
+      <mat-card-header>
+        <mat-card-title>Documentos</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- ── CON SUBSECCIONES ──────────────────────────────────────────── -->
+        @if (tieneSubsecciones()) {
+          @for (sub of sec.subsecciones!; track sub.clave) {
+            <div class="subseccion">
+              <div class="subseccion__header">
+                <h4 class="subseccion__titulo">{{ sub.titulo }}</h4>
+                <app-action-button
+                  label="Agregar"
+                  icon="add"
+                  color="primary"
+                  (clicked)="abrirModal(sub.clave)"
+                />
+              </div>
+
+              @if (sub.documentos.length === 0) {
+                <div class="docs-empty docs-empty--sub">
+                  <mat-icon>folder_off</mat-icon>
+                  <p>Sin documentos en esta subsección</p>
+                </div>
+              } @else {
+                <div class="docs-list">
+                  @for (doc of sub.documentos; track $index) {
+                    <ng-container
+                      *ngTemplateOutlet="
+                        docRow;
+                        context: { doc: doc, idx: $index, subClave: sub.clave }
+                      "
+                    />
+                  }
+                </div>
+              }
+            </div>
+          }
+        }
+
+        <!-- ── SIN SUBSECCIONES ──────────────────────────────────────────── -->
+        @else {
+          @if (sec.documentos.length === 0) {
+            <div class="docs-empty">
+              <mat-icon>folder_off</mat-icon>
+              <p>No hay documentos cargados</p>
+            </div>
+          } @else {
+            <div class="docs-list">
+              @for (doc of sec.documentos; track $index) {
+                <ng-container
+                  *ngTemplateOutlet="
+                    docRow;
+                    context: { doc: doc, idx: $index, subClave: null }
+                  "
+                />
+              }
+            </div>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── DOC ROW TEMPLATE ──────────────────────────────────────────────── -->
+    <ng-template #docRow let-doc="doc" let-idx="idx" let-subClave="subClave">
+      <div class="doc-row">
+        <mat-icon class="doc-icon doc-icon--{{ doc.tipo }}">{{
+          docIcon(doc)
+        }}</mat-icon>
+        <div class="doc-info">
+          <span class="doc-nombre">{{ doc.nombre }}</span>
+          @if (doc.descripcion) {
+            <span class="doc-desc">{{ doc.descripcion }}</span>
+          }
+          @if (doc.periodoReferencia) {
+            <span class="doc-periodo"
+              >Período: {{ doc.periodoReferencia }}</span
+            >
+          }
+          @if (doc.ejercicio) {
+            <span class="doc-periodo">Ejercicio: {{ doc.ejercicio }}</span>
+          }
+          <div class="doc-meta">
+            <span class="doc-tipo-badge doc-tipo-badge--{{ doc.tipo }}">
+              {{
+                doc.tipo === "pdf"
+                  ? "PDF"
+                  : doc.tipo === "excel"
+                    ? "Excel"
+                    : doc.tipo === "link"
+                      ? "Enlace"
+                      : "Texto"
+              }}
+            </span>
+            @if (doc.nombreSubidoPor) {
+              <span class="doc-subido">
+                <mat-icon>person</mat-icon>
+                {{ doc.nombreSubidoPor }}
+              </span>
+            }
+            @if (doc.fechaSubida) {
+              <span class="doc-fecha">{{
+                doc.fechaSubida | date: "dd/MM/yyyy"
+              }}</span>
+            }
+          </div>
+        </div>
+        <div class="doc-actions">
+          @if (docUrl(doc); as url) {
+            <a
+              mat-icon-button
+              [href]="url"
+              target="_blank"
+              rel="noopener"
+              matTooltip="Abrir"
+            >
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          }
+          <button
+            mat-icon-button
+            color="warn"
+            matTooltip="Eliminar"
+            (click)="eliminarDocumento(idx, subClave)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- ── NOTA INTERNA ──────────────────────────────────────────────────── -->
+    <mat-card appearance="outlined" class="nota-card">
+      <mat-card-header>
+        <mat-card-title>Nota interna</mat-card-title>
+        <mat-card-subtitle
+          >Solo visible para el personal del municipio</mat-card-subtitle
+        >
+      </mat-card-header>
+      <mat-card-content>
+        <textarea
+          class="nota-textarea"
+          rows="5"
+          placeholder="Escribe aquí observaciones internas sobre esta obligación..."
+          [ngModel]="notaEditada()"
+          (ngModelChange)="notaEditada.set($event)"
+        ></textarea>
+        <div class="nota-footer">
+          @if (sec.ultimaModificacionPor?.nombre) {
+            <span class="nota-last"
+              >Última modificación por:
+              {{ sec.ultimaModificacionPor!.nombre }}</span
+            >
+          }
+          <app-action-button
+            label="Guardar nota"
+            icon="save"
+            color="primary"
+            [disabled]="!notaDirty()"
+            [loading]="guardandoNota()"
+            (clicked)="guardarNota()"
+          />
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+  <!-- end seccion -->
+</div>

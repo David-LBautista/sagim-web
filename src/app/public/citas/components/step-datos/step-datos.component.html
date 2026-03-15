@@ -133,23 +133,22 @@
 
     <!-- Acciones -->
     <div class="step-datos__acciones">
-      <button mat-stroked-button type="button" (click)="atras.emit()">
-        <mat-icon>arrow_back</mat-icon>
-        Atrás
-      </button>
-      <button
-        mat-raised-button
+      <app-action-button
+        label="Atrás"
+        icon="arrow_back"
+        color="secondary"
+        type="button"
+        (clicked)="atras.emit()"
+      />
+      <app-action-button
+        [label]="enviando() ? 'Confirmando…' : 'Confirmar cita'"
+        icon="check_circle"
+        iconPosition="end"
         color="primary"
-        type="submit"
+        [loading]="enviando()"
         [disabled]="enviando()"
-      >
-        {{ enviando() ? "Confirmando…" : "Confirmar cita" }}
-        @if (enviando()) {
-          <mat-spinner diameter="18" color="accent" />
-        } @else {
-          <mat-icon iconPositionEnd>check_circle</mat-icon>
-        }
-      </button>
+        (clicked)="enviar()"
+      />
     </div>
   </form>
 </div>

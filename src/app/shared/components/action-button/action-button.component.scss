@@ -1,5 +1,14 @@
 :host {
   display: inline-flex;
+
+  &[style*="width"] {
+    display: flex;
+
+    .action-button {
+      flex: 1;
+      justify-content: center;
+    }
+  }
 }
 
 .action-button {
@@ -32,6 +41,25 @@
     mat-icon { color: #ffffff; }
 
     .btn-spinner ::ng-deep circle { stroke: #ffffff !important; }
+
+    &:disabled { opacity: 0.52; }
+  }
+
+  // Color secondary → outlined neutro
+  &.action-button--secondary {
+    background-color: transparent !important;
+    color: var(--sagim-text-dark, #3a3a3a) !important;
+    border: 1.5px solid #c0c9d4 !important;
+    box-shadow: none !important;
+
+    mat-icon { color: var(--sagim-text-dark, #3a3a3a); }
+
+    .btn-spinner ::ng-deep circle { stroke: var(--sagim-text-dark, #3a3a3a) !important; }
+
+    &:hover:not(:disabled) {
+      background-color: rgba(0, 0, 0, 0.04) !important;
+      border-color: #8a97a3 !important;
+    }
 
     &:disabled { opacity: 0.52; }
   }

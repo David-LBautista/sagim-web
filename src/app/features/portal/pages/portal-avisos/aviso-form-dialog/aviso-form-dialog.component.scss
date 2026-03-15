@@ -1,0 +1,89 @@
+.aviso-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+
+  &__row {
+    display: flex;
+    gap: 12px;
+
+    &--2 > * {
+      flex: 1;
+    }
+  }
+
+  &__imagen {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__imagen-label {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #7a7a7a;
+  }
+
+  &__imagen-preview {
+    position: relative;
+    width: fit-content;
+
+    img {
+      width: 120px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+
+    button {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      mat-icon {
+        font-size: 14px;
+      }
+    }
+  }
+
+  &__imagen-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px dashed #1f6fae;
+    color: #1f6fae;
+    cursor: pointer;
+    font-size: 0.875rem;
+    width: fit-content;
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(31, 111, 174, 0.06);
+    }
+
+    mat-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-content {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+mat-spinner {
+  display: inline-block;
+}

@@ -74,6 +74,7 @@ export interface ConsultaCita {
 export interface MunicipioPublico {
   nombre: string;
   logoUrl?: string;
+  bannerUrl?: string;
   slug: string;
 }
 

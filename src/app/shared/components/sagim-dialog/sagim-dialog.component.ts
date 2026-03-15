@@ -4,6 +4,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { ActionButtonComponent } from '../action-button/action-button.component';
 
 @Component({
   selector: 'app-sagim-dialog',
@@ -14,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    ActionButtonComponent,
   ],
   templateUrl: './sagim-dialog.component.html',
   styleUrls: ['./sagim-dialog.component.scss'],

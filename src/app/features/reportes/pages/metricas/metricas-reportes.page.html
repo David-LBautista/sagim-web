@@ -1,0 +1,240 @@
+<div class="metricas-reportes">
+  <div class="page-header">
+    <div>
+      <h1 class="sagim-title-xl">Métricas de Reportes</h1>
+      <p class="sagim-subtitle-light">
+        Análisis estadístico del módulo de reportes ciudadanos
+      </p>
+    </div>
+
+    <!-- Filtros de periodo -->
+    <div class="periodo-filters">
+      <mat-form-field appearance="outline" class="periodo-field">
+        <mat-label>Mes</mat-label>
+        <mat-select
+          [value]="mesSeleccionado()"
+          (valueChange)="mesSeleccionado.set($event); cargar()"
+        >
+          @for (m of meses; track m.value) {
+            <mat-option [value]="m.value">{{ m.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="periodo-field">
+        <mat-label>Año</mat-label>
+        <mat-select
+          [value]="anioSeleccionado()"
+          (valueChange)="anioSeleccionado.set($event); cargar()"
+        >
+          @for (a of anios; track a) {
+            <mat-option [value]="a">{{ a }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="periodo-field">
+        <mat-label>Módulo</mat-label>
+        <mat-select
+          [value]="moduloSeleccionado()"
+          (valueChange)="moduloSeleccionado.set($event); cargar()"
+        >
+          @for (m of modulosFiltro; track m.value) {
+            <mat-option [value]="m.value">{{ m.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <mat-progress-bar
+      mode="indeterminate"
+      class="loading-bar"
+    ></mat-progress-bar>
+  }
+
+  @if (metricas(); as m) {
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>inbox</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ m.totalMes }}</div>
+          <div class="kpi-label">Total del mes</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>check_circle</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value kpi-value--trend-up">{{ m.resueltoseMes }}</div>
+          <div class="kpi-label">Resueltos</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>pending</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ m.pendientes }}</div>
+          <div class="kpi-label">Pendientes</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>sync</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">{{ m.enProceso }}</div>
+          <div class="kpi-label">En proceso</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>trending_up</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value kpi-value--trend-up">
+            {{ tasaResolucion() | number: "1.0-0" }}%
+          </div>
+          <div class="kpi-label">Tasa de resolución</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="kpi-exec-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>schedule</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="kpi-value">
+            {{ m.tiempoPromedioResolucion | number: "1.0-1" }}h
+          </div>
+          <div class="kpi-label">Tiempo promedio</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts row 1 -->
+    <div class="charts-row" style="margin-top: 16px">
+      <mat-card appearance="outlined" class="chart-card chart-card--wide">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>show_chart</mat-icon>
+          <mat-card-title
+            >Tendencia del mes — {{ mesLabel() }}
+            {{ anioSeleccionado() }}</mat-card-title
+          >
+          <mat-card-subtitle>Reportes registrados por día</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <apx-chart
+            [series]="tendenciaSeries"
+            [chart]="tendenciaConfig"
+            [xaxis]="tendenciaXaxis"
+            [yaxis]="tendenciaYaxis"
+            [stroke]="tendenciaStroke"
+            [colors]="tendenciaColors"
+            [dataLabels]="tendenciaDataLabels"
+            [grid]="tendenciaGrid"
+            [tooltip]="tendenciaTooltip"
+            [legend]="tendenciaLegend"
+          ></apx-chart>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="chart-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>pie_chart</mat-icon>
+          <mat-card-title>Por origen</mat-card-title>
+          <mat-card-subtitle
+            >Distribución según canal de ingreso</mat-card-subtitle
+          >
+        </mat-card-header>
+        <mat-card-content>
+          <apx-chart
+            [series]="origenSeries"
+            [chart]="origenConfig"
+            [labels]="origenLabels"
+            [colors]="origenColors"
+            [legend]="origenLegend"
+            [tooltip]="origenTooltip"
+          ></apx-chart>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Chart row 2: por categoría -->
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>bar_chart</mat-icon>
+        <mat-card-title>Reportes por categoría</mat-card-title>
+        <mat-card-subtitle
+          >Volumen de reportes agrupado por categoría</mat-card-subtitle
+        >
+      </mat-card-header>
+      <mat-card-content>
+        <apx-chart
+          [series]="categoriaSeries"
+          [chart]="categoriaConfig"
+          [xaxis]="categoriaXaxis"
+          [plotOptions]="categoriaPlotOptions"
+          [colors]="categoriaColors"
+          [dataLabels]="categoriaDataLabels"
+          [tooltip]="categoriaTooltip"
+          [legend]="categoriaLegend"
+        ></apx-chart>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Por módulo table -->
+    @if (m.porModulo && m.porModulo.length > 0) {
+      <mat-card appearance="outlined" class="chart-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>account_tree</mat-icon>
+          <mat-card-title>Resumen por módulo</mat-card-title>
+          <mat-card-subtitle
+            >Totales y tasas de resolución por área</mat-card-subtitle
+          >
+        </mat-card-header>
+        <mat-card-content>
+          <div class="modulo-table-wrapper">
+            <table class="modulo-table">
+              <thead>
+                <tr>
+                  <th>Módulo</th>
+                  <th>Total</th>
+                  <th>Resueltos</th>
+                  <th>Pendientes</th>
+                  <th>% Resolución</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of m.porModulo; track row.modulo) {
+                  <tr>
+                    <td>{{ getModuloLabel(row.modulo) }}</td>
+                    <td class="center">{{ row.total }}</td>
+                    <td class="center success-text">{{ row.resueltos }}</td>
+                    <td class="center warn-text">{{ row.pendientes }}</td>
+                    <td class="center">
+                      {{
+                        row.total > 0
+                          ? ((row.resueltos / row.total) * 100
+                              | number: "1.0-0") + "%"
+                          : "—"
+                      }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+</div>

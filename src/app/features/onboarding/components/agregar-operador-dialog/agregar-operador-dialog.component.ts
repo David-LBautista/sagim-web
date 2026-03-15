@@ -22,6 +22,7 @@ import {
 } from '../../../../core/modules/app.modules.registry';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { NotificationType } from '../../../../shared/models/notification.model';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 
 export interface AgregarOperadorDialogData {
   municipioId: string;
@@ -52,6 +53,7 @@ interface ModuloOption {
     MatIconModule,
     MatSelectModule,
     MatProgressSpinnerModule,
+    ActionButtonComponent,
   ],
   templateUrl: './agregar-operador-dialog.component.html',
   styleUrl: './agregar-operador-dialog.component.scss',

@@ -1,0 +1,222 @@
+.config-reportes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sagim-spacing-md);
+  max-width: 860px;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.loading-bar {
+  border-radius: 4px;
+}
+
+/* ── Section label ───────────────────────────────────────── */
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sagim-text-mid, #7a7a7a);
+  margin: 4px 0 8px;
+
+  &__sub {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--sagim-text-mid);
+    margin-top: 2px;
+  }
+}
+
+.section-divider {
+  margin-bottom: 16px !important;
+}
+
+/* ── Layout ──────────────────────────────────────────────── */
+.config-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sagim-spacing-md);
+}
+
+/* ── Cards ───────────────────────────────────────────────── */
+.config-card {
+  border-radius: var(--sagim-radius-md) !important;
+
+  mat-card-header {
+    padding-bottom: 4px;
+
+    mat-icon[mat-card-avatar] {
+      background: rgba(31, 111, 174, 0.1);
+      color: var(--sagim-secondary);
+      border-radius: 50%;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  mat-card-content {
+    padding-top: 12px;
+  }
+}
+
+/* ── Toggle row ──────────────────────────────────────────── */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sagim-spacing-md);
+}
+
+.toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toggle-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--sagim-text-dark);
+}
+
+.toggle-desc {
+  font-size: 0.8rem;
+  color: var(--sagim-text-mid);
+}
+
+/* ── Form grid ───────────────────────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sagim-spacing-sm) var(--sagim-spacing-md);
+
+  mat-form-field {
+    width: 100%;
+  }
+  .span-full {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    .span-full {
+      grid-column: 1;
+    }
+  }
+}
+
+/* ── Categorías ──────────────────────────────────────────── */
+.categorias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--sagim-spacing-sm);
+}
+
+.cat-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sagim-spacing-sm);
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--sagim-radius-sm, 6px);
+  cursor: pointer;
+  transition:
+    border-color 120ms,
+    background 120ms;
+
+  &:hover {
+    border-color: var(--sagim-secondary);
+    background: rgba(31, 111, 174, 0.03);
+  }
+
+  &--active {
+    border-color: var(--sagim-secondary);
+    background: rgba(31, 111, 174, 0.06);
+  }
+
+  &__main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.cat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  color: var(--sagim-secondary);
+  flex-shrink: 0;
+}
+
+.cat-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cat-nombre {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sagim-text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cat-area {
+  font-size: 0.72rem;
+  color: var(--sagim-text-mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-catalogo {
+  color: var(--sagim-text-mid);
+  font-size: 0.875rem;
+  padding: var(--sagim-spacing-md);
+}
+
+/* ── Actions ─────────────────────────────────────────────── */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-guardar {
+  background-color: var(--sagim-secondary) !important;
+  color: #fff !important;
+  border-radius: var(--sagim-radius-md) !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Spinner ─────────────────────────────────────────────── */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

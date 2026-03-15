@@ -1,0 +1,300 @@
+.buscar-pago {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 16px 80px;
+  background: #f4f6f8;
+
+  &__card {
+    width: 100%;
+    max-width: 520px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(15, 42, 68, 0.1);
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  // ── Encabezado ─────────────────────────────────────────────────────────
+  &__header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__icon-wrap {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: #e8f0fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: #1f6fae;
+    }
+  }
+
+  &__titulo {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f2a44;
+  }
+
+  &__subtitulo {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #7a7a7a;
+    line-height: 1.5;
+    max-width: 380px;
+  }
+
+  // ── Formulario ─────────────────────────────────────────────────────────
+  &__form {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__input-wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  &__input-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #7a7a7a;
+    pointer-events: none;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    border: 1.5px solid #dce3ea;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: "Inter", "Roboto", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #0f2a44;
+    background: #f9fafc;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #1f6fae;
+      background: #fff;
+    }
+
+    &::placeholder {
+      font-weight: 400;
+      color: #b0bec5;
+      letter-spacing: 0;
+    }
+  }
+
+  &__btn-buscar {
+    padding: 0 22px;
+    height: 46px;
+    background: #0f2a44;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.875rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background: #1f6fae;
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    mat-spinner {
+      --mdc-circular-progress-active-indicator-color: #fff;
+    }
+  }
+
+  // ── Estados intermedios ────────────────────────────────────────────────
+  &__estado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0;
+    color: #7a7a7a;
+    font-size: 0.875rem;
+
+    &--error {
+      color: #d64545;
+      mat-icon {
+        font-size: 36px;
+        width: 36px;
+        height: 36px;
+      }
+      p {
+        margin: 0;
+        text-align: center;
+      }
+    }
+  }
+
+  // ── Resultado ─────────────────────────────────────────────────────────
+  &__resultado {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1.5px solid #dce3ea;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  &__resultado-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #f4f6f8;
+    border-bottom: 1px solid #dce3ea;
+  }
+
+  &__muni-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  &__muni-nombre {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #7a7a7a;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__folio {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f2a44;
+    letter-spacing: 0.03em;
+  }
+
+  &__filas {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f2f5;
+    font-size: 0.875rem;
+
+    span {
+      color: #7a7a7a;
+    }
+
+    strong {
+      color: #0f2a44;
+      font-weight: 600;
+      text-align: right;
+      max-width: 60%;
+    }
+
+    &--monto {
+      padding: 16px 20px;
+      background: #f9fafc;
+
+      strong {
+        color: #0f2a44;
+      }
+    }
+  }
+
+  &__monto {
+    font-size: 1.35rem;
+    font-weight: 800 !important;
+    color: #0f2a44;
+
+    small {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #7a7a7a;
+      margin-left: 4px;
+    }
+  }
+
+  &__btn-pagar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    background: var(--sagim-primary, #0f2a44);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    letter-spacing: 0.02em;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background: var(--sagim-secondary, #1f6fae);
+    }
+  }
+}
+
+@media (max-width: 540px) {
+  .buscar-pago {
+    padding: 24px 12px 60px;
+
+    &__card {
+      padding: 28px 20px;
+    }
+
+    &__form {
+      flex-direction: column;
+    }
+
+    &__btn-buscar {
+      height: 44px;
+      width: 100%;
+    }
+  }
+}

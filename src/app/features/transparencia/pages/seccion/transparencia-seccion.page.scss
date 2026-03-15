@@ -1,0 +1,416 @@
+:host {
+  display: block;
+}
+
+// ─── Loading ─────────────────────────────────────────────────────────────────
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+// ─── Header ─────────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-back {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.header-text {
+  flex: 1;
+  min-width: 0;
+
+  h1 {
+    margin: 0 0 2px;
+  }
+  p {
+    margin: 0;
+  }
+}
+
+.header-clave {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--sagim-secondary);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.corriente-toggle {
+  font-size: 13px;
+}
+
+// ─── Estado chips ────────────────────────────────────────────────────────────
+.estado-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #f0f3f7;
+  color: var(--sagim-text-mid);
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  &--tipo {
+    background: #e8edf5;
+    color: var(--sagim-primary);
+  }
+  &--municipal {
+    background: #edf5e8;
+    color: var(--sagim-success);
+  }
+  &--periodo {
+    background: #eef4fb;
+    color: var(--sagim-secondary);
+  }
+  &--corriente {
+    background: #edf5e8;
+    color: var(--sagim-success);
+  }
+  &--riesgo {
+    background: #fff4e5;
+    color: var(--sagim-warning);
+  }
+  &--fecha {
+    background: #f5f5f5;
+    color: var(--sagim-text-mid);
+  }
+}
+
+.seccion-desc {
+  font-size: 14px;
+  color: var(--sagim-text-mid);
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+// ─── Aviso al corriente ───────────────────────────────────────────────────────
+.aviso-corriente {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 16px 20px;
+  background: rgba(240, 161, 42, 0.1);
+  border: 1px solid rgba(240, 161, 42, 0.4);
+  border-left: 4px solid var(--sagim-warning, #f0a12a);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  color: var(--sagim-text-dark, #3a3a3a);
+
+  > mat-icon {
+    color: var(--sagim-warning, #f0a12a);
+    margin-top: 2px;
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  &__body {
+    strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--sagim-text-mid, #7a7a7a);
+    }
+  }
+}
+
+// ─── Documentos card ─────────────────────────────────────────────────────────
+.docs-card {
+  margin-bottom: 20px;
+  background: #fff;
+
+  mat-card-header {
+    padding: 16px 20px 0;
+    align-items: center;
+
+    mat-icon[mat-card-avatar] {
+      font-size: 26px;
+      width: 26px;
+      height: 26px;
+      color: var(--sagim-secondary);
+      opacity: 0.7;
+    }
+    mat-card-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+  }
+
+  mat-card-content {
+    padding: 12px 0 0;
+  }
+}
+
+// ─── Subsección ──────────────────────────────────────────────────────────────
+.subseccion {
+  border-top: 1px solid #f0f3f7;
+  padding: 16px 20px 8px;
+
+  &:first-child {
+    border-top: none;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+
+  &__titulo {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sagim-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin: 0;
+  }
+}
+
+.docs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 24px;
+  color: var(--sagim-text-mid);
+
+  &--sub {
+    padding: 20px 24px;
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+    p {
+      font-size: 13px;
+    }
+  }
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.35;
+  }
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.docs-list {
+  .doc-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f0f3f7;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.doc-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  margin-top: 2px;
+
+  &--pdf {
+    color: #e53935;
+  }
+  &--excel {
+    color: #1d6f42;
+  }
+  &--link {
+    color: var(--sagim-secondary);
+  }
+  &--texto {
+    color: var(--sagim-text-mid);
+  }
+}
+
+.doc-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.doc-nombre {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--sagim-text-dark);
+}
+.doc-desc {
+  font-size: 13px;
+  color: var(--sagim-text-mid);
+}
+.doc-periodo {
+  font-size: 12px;
+  color: var(--sagim-text-mid);
+  font-style: italic;
+}
+
+.doc-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.doc-tipo-badge {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-weight: 600;
+
+  &--pdf {
+    background: #ffebee;
+    color: #e53935;
+  }
+  &--link {
+    background: #e3f2fd;
+    color: var(--sagim-secondary);
+  }
+  &--texto {
+    background: #f3f4f6;
+    color: var(--sagim-text-mid);
+  }
+}
+
+.doc-subido,
+.doc-fecha {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--sagim-text-mid);
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.doc-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+// ─── Nota card ───────────────────────────────────────────────────────────────
+.nota-card {
+  background: #fff;
+
+  mat-card-header {
+    padding: 16px 20px 0;
+    align-items: center;
+
+    mat-icon[mat-card-avatar] {
+      font-size: 26px;
+      width: 26px;
+      height: 26px;
+      color: var(--sagim-secondary);
+      opacity: 0.7;
+    }
+    mat-card-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    mat-card-subtitle {
+      font-size: 12px;
+    }
+  }
+
+  mat-card-content {
+    padding: 16px 20px 20px;
+  }
+}
+
+.nota-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid #dde2ea;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--sagim-text-dark);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus {
+    border-color: var(--sagim-secondary);
+  }
+
+  &::placeholder {
+    color: #bcc5d0;
+  }
+}
+
+.nota-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nota-last {
+  font-size: 12px;
+  color: var(--sagim-text-mid);
+}
+
+.inline-spinner {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}

@@ -1,0 +1,206 @@
+<div class="consultar-reporte">
+  <div class="consultar-reporte__container">
+    <!-- ── FORMULARIO DE CONSULTA ──────────────────────────────────────── -->
+    @if (vista() === "formulario") {
+      <div class="consultar-reporte__card">
+        <div class="consultar-reporte__header">
+          <mat-icon class="consultar-reporte__header-icon"
+            >manage_search</mat-icon
+          >
+          <div>
+            <h2 class="consultar-reporte__titulo">Consultar reporte</h2>
+            <p class="consultar-reporte__subtitulo">
+              Ingresa el folio y token que recibiste al enviar tu reporte
+            </p>
+          </div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="consultar()" novalidate>
+          <mat-form-field appearance="outline" class="consultar-reporte__field">
+            <mat-label>Folio</mat-label>
+            <input
+              matInput
+              formControlName="folio"
+              placeholder="REP-2604-0001"
+              autocomplete="off"
+            />
+            <mat-icon matSuffix>confirmation_number</mat-icon>
+            @if (form.get("folio")?.touched && form.get("folio")?.invalid) {
+              <mat-error>El folio es requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="consultar-reporte__field">
+            <mat-label>Token</mat-label>
+            <input
+              matInput
+              formControlName="token"
+              placeholder="Token recibido por correo"
+              autocomplete="off"
+            />
+            <mat-icon matSuffix>vpn_key</mat-icon>
+            @if (form.get("token")?.touched && form.get("token")?.invalid) {
+              <mat-error>El token es requerido</mat-error>
+            }
+          </mat-form-field>
+
+          @if (error()) {
+            <div class="consultar-reporte__error">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          <div class="consultar-reporte__acciones">
+            <app-action-button
+              label="Consultar"
+              icon="search"
+              [loading]="cargando()"
+              (clicked)="consultar()"
+            />
+          </div>
+        </form>
+
+        <mat-divider class="consultar-reporte__divider" />
+
+        <div class="consultar-reporte__footer-link">
+          <a [routerLink]="['/public', slug(), 'reportes']">
+            <mat-icon>add_circle_outline</mat-icon>
+            Enviar un nuevo reporte
+          </a>
+        </div>
+      </div>
+    }
+
+    <!-- ── RESULTADO ──────────────────────────────────────────────────── -->
+    @if (vista() === "resultado" && reporte()) {
+      <div class="consultar-reporte__card">
+        <div class="consultar-reporte__header">
+          <mat-icon class="consultar-reporte__header-icon">assignment</mat-icon>
+          <div>
+            <h2 class="consultar-reporte__titulo">Tu reporte</h2>
+            <p class="consultar-reporte__subtitulo">
+              Folio: <strong>{{ reporte()!.folio }}</strong>
+            </p>
+          </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="consultar-reporte__estado-wrap">
+          <span class="estado-badge estado-badge--{{ reporte()!.estado }}">
+            {{ getEstadoLabel(reporte()!.estado) }}
+          </span>
+        </div>
+
+        <!-- Detalle -->
+        <div class="consultar-reporte__detalle">
+          <div class="detalle-row">
+            <mat-icon>category</mat-icon>
+            <div>
+              <span class="detalle-row__label">Categoría</span>
+              <span class="detalle-row__valor">{{
+                reporte()!.categoriaNombre
+              }}</span>
+            </div>
+          </div>
+          <div class="detalle-row">
+            <mat-icon>business</mat-icon>
+            <div>
+              <span class="detalle-row__label">Área responsable</span>
+              <span class="detalle-row__valor">{{
+                reporte()!.areaResponsable
+              }}</span>
+            </div>
+          </div>
+          <div class="detalle-row">
+            <mat-icon>description</mat-icon>
+            <div>
+              <span class="detalle-row__label">Descripción</span>
+              <span class="detalle-row__valor">{{
+                reporte()!.descripcion
+              }}</span>
+            </div>
+          </div>
+          @if (reporte()!.ubicacion.descripcion) {
+            <div class="detalle-row">
+              <mat-icon>place</mat-icon>
+              <div>
+                <span class="detalle-row__label">Ubicación</span>
+                <span class="detalle-row__valor">{{
+                  reporte()!.ubicacion.descripcion
+                }}</span>
+              </div>
+            </div>
+          }
+          <div class="detalle-row">
+            <mat-icon>event</mat-icon>
+            <div>
+              <span class="detalle-row__label">Fecha de reporte</span>
+              <span class="detalle-row__valor">{{
+                reporte()!.fechaCreacion | date: "dd/MM/yyyy HH:mm"
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historial público -->
+        @if (reporte()!.historial.length) {
+          <mat-divider class="consultar-reporte__historial-divider" />
+          <p class="consultar-reporte__historial-titulo">
+            <mat-icon>timeline</mat-icon>
+            Historial de seguimiento
+          </p>
+          <ul class="consultar-reporte__historial">
+            @for (h of reporte()!.historial; track h.fecha) {
+              <li class="historial-item">
+                <div
+                  class="historial-item__dot historial-item__dot--{{
+                    h.estado
+                  }}"
+                ></div>
+                <div class="historial-item__body">
+                  <div class="historial-item__header">
+                    <span class="estado-badge estado-badge--{{ h.estado }}">
+                      {{ getEstadoLabel(h.estado) }}
+                    </span>
+                    <span class="historial-item__fecha">
+                      {{ h.fecha | date: "dd/MM/yyyy HH:mm" }}
+                    </span>
+                  </div>
+                  @if (h.comentarioPublico) {
+                    <p class="historial-item__comentario">
+                      {{ h.comentarioPublico }}
+                    </p>
+                  }
+                  @if (h.cambiadoPor) {
+                    <span class="historial-item__autor"
+                      >Por: {{ h.cambiadoPor }}</span
+                    >
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        }
+
+        <!-- Acciones -->
+        <div
+          class="consultar-reporte__acciones consultar-reporte__acciones--resultado"
+        >
+          <app-action-button
+            label="Nueva consulta"
+            icon="arrow_back"
+            color="secondary"
+            (clicked)="volver()"
+          />
+          <app-action-button
+            label="Nuevo reporte"
+            icon="add_circle_outline"
+            color="primary"
+            (clicked)="nuevoReporte()"
+          />
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-export type ActionButtonColor = 'primary' | 'accent' | 'warn';
+export type ActionButtonColor = 'primary' | 'accent' | 'warn' | 'secondary';
 
 @Component({
   selector: 'app-action-button',
@@ -20,7 +20,8 @@ export type ActionButtonColor = 'primary' | 'accent' | 'warn';
 })
 export class ActionButtonComponent {
   @Input({ required: true }) label!: string;
-  @Input({ required: true }) icon!: string;
+  @Input() icon = '';
+  @Input() iconPosition: 'start' | 'end' = 'start';
   @Input() color: ActionButtonColor = 'primary';
   @Input() disabled = false;
   @Input() loading = false;

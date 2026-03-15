@@ -1,5 +1,12 @@
 <!-- ══ Nueva Orden Interna ══════════════════════════════════════════════ -->
-<mat-dialog-content class="dialog-content">
+<app-sagim-dialog
+  title="Nueva orden interna"
+  submitLabel="Generar Orden"
+  [isSubmitting]="submitting()"
+  [submitDisabled]="!formValido || submitting()"
+  (submitClick)="onGenerarOrden()"
+  (cancelClick)="onCerrar()"
+>
   <form [formGroup]="form" class="orden-form">
     <!-- ══ Ciudadano (requerido) ═══════════════════════════════════════ -->
     <p class="section-label">
@@ -236,21 +243,4 @@
       >
     </mat-form-field>
   </form>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end" class="dialog-actions">
-  <button mat-button type="button" (click)="onCerrar()">Cancelar</button>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="!formValido || submitting()"
-    (click)="onGenerarOrden()"
-  >
-    @if (submitting()) {
-      <mat-spinner diameter="18" style="display: inline-flex"></mat-spinner>
-    } @else {
-      <mat-icon>bolt</mat-icon>
-    }
-    {{ submitting() ? "Generando..." : "Generar Orden" }}
-  </button>
-</mat-dialog-actions>
+</app-sagim-dialog>

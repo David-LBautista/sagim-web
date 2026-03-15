@@ -15,7 +15,8 @@ import {
   of,
   finalize,
 } from 'rxjs';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
+import { SagimDialogComponent } from '../../../../shared/components/sagim-dialog/sagim-dialog.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -35,9 +36,6 @@ import { NotificationType } from '../../../../shared/models/notification.model';
 import { AREAS_RESPONSABLES } from '../../models/ordenes-pago.model';
 import { CiudadanoSearchResult } from '../../models/caja.model';
 import { ServicioCobrable } from '../../models/servicios.model';
-import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
-
-
 
 @Component({
   selector: 'app-nueva-orden-dialog',
@@ -45,7 +43,6 @@ import { ActionButtonComponent } from '../../../../shared/components/action-butt
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -56,7 +53,7 @@ import { ActionButtonComponent } from '../../../../shared/components/action-butt
     MatProgressSpinnerModule,
     MatDividerModule,
     MatTooltipModule,
-    ActionButtonComponent,
+    SagimDialogComponent,
   ],
   templateUrl: './nueva-orden-dialog.component.html',
   styleUrls: ['./nueva-orden-dialog.component.scss'],

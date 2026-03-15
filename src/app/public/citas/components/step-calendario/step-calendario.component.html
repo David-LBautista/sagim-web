@@ -101,20 +101,20 @@
 
     <!-- Acciones -->
     <div class="step-cal__acciones">
-      <button mat-stroked-button (click)="atras.emit()" type="button">
-        <mat-icon>arrow_back</mat-icon>
-        Atrás
-      </button>
-      <button
-        mat-raised-button
+      <app-action-button
+        label="Atrás"
+        icon="arrow_back"
+        color="secondary"
+        (clicked)="atras.emit()"
+      />
+      <app-action-button
+        label="Siguiente"
+        icon="arrow_forward"
+        iconPosition="end"
         color="primary"
         [disabled]="!puedeContinuar()"
-        (click)="continuar()"
-        type="button"
-      >
-        Siguiente
-        <mat-icon iconPositionEnd>arrow_forward</mat-icon>
-      </button>
+        (clicked)="continuar()"
+      />
     </div>
   }
 </div>

@@ -20,8 +20,8 @@
   }
 
   .loading-bar {
-    margin-bottom: 16px;
-    border-radius: 4px;
+    margin-bottom: var(--sagim-spacing-md, 16px);
+    border-radius: var(--sagim-radius-sm, 4px);
   }
 
   // ── Layout ────────────────────────────────────────────────────────────────
@@ -176,7 +176,7 @@
     flex-shrink: 0;
 
     &--warn-chip {
-      background: #f0a12a;
+      background: var(--sagim-warning, #f0a12a);
     }
     &--info-chip {
       background: var(--sagim-secondary, #1f6fae);

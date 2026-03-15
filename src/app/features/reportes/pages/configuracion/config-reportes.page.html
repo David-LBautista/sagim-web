@@ -1,0 +1,140 @@
+<div class="config-reportes">
+  <div class="page-header">
+    <h1 class="sagim-title-xl">Configuración de Reportes</h1>
+    <p class="sagim-subtitle-light">
+      Ajusta el módulo de reportes ciudadanos para tu municipio
+    </p>
+  </div>
+
+  @if (cargando()) {
+    <mat-progress-bar
+      mode="indeterminate"
+      class="loading-bar"
+    ></mat-progress-bar>
+  }
+
+  @if (!cargando()) {
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="config-layout">
+      <!-- Estado del módulo -->
+      <mat-card appearance="outlined" class="config-card">
+        <mat-card-content>
+          <p class="section-label">
+            Estado del módulo
+            <span class="section-label__sub"
+              >Activa o desactiva el módulo de reportes para el portal
+              ciudadano</span
+            >
+          </p>
+          <mat-divider class="section-divider"></mat-divider>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <span class="toggle-label">Módulo activo</span>
+              <span class="toggle-desc">
+                Cuando está activo, los ciudadanos pueden enviar reportes desde
+                el portal público
+              </span>
+            </div>
+            <mat-slide-toggle
+              formControlName="activo"
+              color="primary"
+            ></mat-slide-toggle>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Mensajes -->
+      <mat-card appearance="outlined" class="config-card">
+        <mat-card-content>
+          <p class="section-label">Mensajes y tiempos</p>
+          <mat-divider class="section-divider"></mat-divider>
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="span-full">
+              <mat-label>Mensaje de bienvenida *</mat-label>
+              <textarea
+                matInput
+                formControlName="mensajeBienvenida"
+                rows="3"
+                placeholder="Mensaje que se mostrará al ciudadano al acceder al módulo de reportes"
+              ></textarea>
+              @if (
+                form.controls.mensajeBienvenida.invalid &&
+                form.controls.mensajeBienvenida.touched
+              ) {
+                <mat-error>El mensaje es requerido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="span-full">
+              <mat-label>Tiempo de respuesta estimado</mat-label>
+              <input
+                matInput
+                formControlName="tiempoRespuestaEstimado"
+                placeholder="Ej: 3-5 días hábiles"
+              />
+              <mat-hint
+                >Este texto se mostrará al ciudadano después de enviar su
+                reporte</mat-hint
+              >
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Categorías activas -->
+      <mat-card appearance="outlined" class="config-card">
+        <mat-card-content>
+          <p class="section-label">
+            Categorías habilitadas
+            <span class="section-label__sub"
+              >Selecciona las categorías disponibles en el portal
+              ciudadano</span
+            >
+          </p>
+          <mat-divider class="section-divider"></mat-divider>
+          <div class="categorias-grid">
+            @for (cat of catalogo(); track cat.clave) {
+              <label
+                class="cat-toggle"
+                [class.cat-toggle--active]="isCategoriaActiva(cat.clave)"
+              >
+                <div class="cat-toggle__main">
+                  <mat-icon class="cat-icon">{{
+                    categoriaIcons[cat.clave]
+                  }}</mat-icon>
+                  <div class="cat-info">
+                    <span class="cat-nombre">{{ cat.nombre }}</span>
+                    <span class="cat-area">{{ cat.areaResponsable }}</span>
+                  </div>
+                </div>
+                <mat-checkbox
+                  [checked]="isCategoriaActiva(cat.clave)"
+                  (change)="toggleCategoria(cat.clave)"
+                  color="primary"
+                ></mat-checkbox>
+              </label>
+            }
+
+            @if (catalogo().length === 0) {
+              <p class="no-catalogo">Cargando catálogo...</p>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Guardar -->
+      <div class="form-actions">
+        <button
+          mat-flat-button
+          type="submit"
+          class="btn-guardar"
+          [disabled]="form.invalid || guardando()"
+        >
+          <mat-icon [class.spin]="guardando()">{{
+            guardando() ? "sync" : "save"
+          }}</mat-icon>
+          {{ guardando() ? "Guardando..." : "Guardar cambios" }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

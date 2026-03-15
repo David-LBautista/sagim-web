@@ -1,0 +1,10 @@
+<label class="image-upload-btn">
+  <mat-icon>upload</mat-icon>
+  {{ label }}
+  <input
+    type="file"
+    [accept]="accept"
+    (change)="fileChange.emit($event)"
+    hidden
+  />
+</label>

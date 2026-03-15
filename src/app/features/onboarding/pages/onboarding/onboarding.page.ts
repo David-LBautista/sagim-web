@@ -25,6 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 
 import { OnboardingService } from '../../services/onboarding.service';
 import {
@@ -52,6 +53,7 @@ import {
   AgregarOperadorDialogData,
   AgregarOperadorDialogResult,
 } from '../../components/agregar-operador-dialog/agregar-operador-dialog.component';
+import { ImportarPadronDialogComponent } from '../../../municipios/components/importar-padron-dialog/importar-padron-dialog.component';
 
 // ── Tipos internos ────────────────────────────────────────────────────────────
 
@@ -84,6 +86,7 @@ interface CategoriaGroup {
     MatTooltipModule,
     MatChipsModule,
     MatCheckboxModule,
+    ActionButtonComponent,
   ],
   templateUrl: './onboarding.page.html',
   styleUrl: './onboarding.page.scss',
@@ -488,6 +491,14 @@ export class OnboardingPage implements OnInit {
   }
 
   // ── Paso 4 ────────────────────────────────────────────────────────────────
+
+  abrirImportarPadron(): void {
+    this.dialog.open(ImportarPadronDialogComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      disableClose: false,
+    });
+  }
 
   onSaltarPadron(): void {
     this.padronContinuando.set(true);

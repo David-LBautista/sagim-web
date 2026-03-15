@@ -1,0 +1,348 @@
+<div class="nuevo-reporte">
+  <div class="nuevo-reporte__container">
+    <!-- ── OVERLAY ENVIANDO ──────────────────────────────────────────────── -->
+    @if (enviando()) {
+      <div class="nuevo-reporte__overlay">
+        <mat-spinner diameter="48" />
+        <p>Enviando tu reporte…</p>
+      </div>
+    }
+
+    <!-- ── FORMULARIO ────────────────────────────────────────────────────── -->
+    @if (vista() === "formulario") {
+      <!-- Banner de bienvenida -->
+      @if (info()) {
+        <div class="nuevo-reporte__welcome">
+          <mat-icon class="nuevo-reporte__welcome-icon">campaign</mat-icon>
+          <div>
+            <p class="nuevo-reporte__welcome-msg">
+              {{ info()!.mensajeBienvenida }}
+            </p>
+            <p class="nuevo-reporte__welcome-sub">
+              <mat-icon>schedule</mat-icon>
+              Tiempo de respuesta estimado:
+              {{ info()!.tiempoRespuestaEstimado }}
+            </p>
+          </div>
+        </div>
+      }
+
+      @if (cargando()) {
+        <div class="nuevo-reporte__loading">
+          <mat-spinner diameter="36" />
+          <span>Cargando categorías…</span>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+          <!-- SECCIÓN: Tipo de reporte -->
+          <div class="nuevo-reporte__card">
+            <p class="section-label">
+              Tipo de reporte
+              <span class="section-label__sub"
+                >¿Qué problema quieres reportar?</span
+              >
+            </p>
+            <mat-divider class="section-divider" />
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Categoría</mat-label>
+              <mat-select formControlName="categoria">
+                @for (cat of categorias(); track cat.clave) {
+                  <mat-option [value]="cat.clave">{{ cat.nombre }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matSuffix>category</mat-icon>
+              @if (
+                form.get("categoria")?.touched && form.get("categoria")?.invalid
+              ) {
+                <mat-error>Selecciona una categoría</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Descripción del área responsable -->
+            @if (form.get("categoria")?.value) {
+              @for (cat of categorias(); track cat.clave) {
+                @if (cat.clave === form.get("categoria")?.value) {
+                  <div class="nuevo-reporte__cat-info">
+                    <mat-icon>info_outline</mat-icon>
+                    <span
+                      >Área responsable:
+                      <strong>{{ cat.areaResponsable }}</strong></span
+                    >
+                  </div>
+                }
+              }
+            }
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Descripción del problema</mat-label>
+              <textarea
+                matInput
+                formControlName="descripcion"
+                rows="4"
+                placeholder="Describe el problema con el mayor detalle posible"
+                maxlength="1000"
+              ></textarea>
+              <mat-hint align="end"
+                >{{ form.get("descripcion")?.value?.length ?? 0 }} /
+                1000</mat-hint
+              >
+              @if (
+                form.get("descripcion")?.touched &&
+                form.get("descripcion")?.invalid
+              ) {
+                <mat-error>Describe el problema (mín. 15 caracteres)</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- SECCIÓN: Ubicación -->
+          <div class="nuevo-reporte__card">
+            <p class="section-label">
+              Ubicación
+              <span class="section-label__sub"
+                >¿Dónde ocurre el problema? (opcional)</span
+              >
+            </p>
+            <mat-divider class="section-divider" />
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Calle / Avenida</mat-label>
+                <input
+                  matInput
+                  formControlName="calle"
+                  placeholder="Ej. Av. Hidalgo 100"
+                />
+                <mat-icon matSuffix>signpost</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Colonia / Fraccionamiento</mat-label>
+                <input
+                  matInput
+                  formControlName="colonia"
+                  placeholder="Ej. Centro"
+                />
+                <mat-icon matSuffix>location_city</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Referencia adicional</mat-label>
+              <input
+                matInput
+                formControlName="referencia"
+                placeholder="Ej. Frente al parque central"
+              />
+              <mat-icon matSuffix>place</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <!-- SECCIÓN: Datos del ciudadano -->
+          <div class="nuevo-reporte__card">
+            <p class="section-label">
+              Tus datos
+              <span class="section-label__sub"
+                >Opcionales — para seguimiento personalizado</span
+              >
+            </p>
+            <mat-divider class="section-divider" />
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre completo</mat-label>
+                <input
+                  matInput
+                  formControlName="nombre"
+                  placeholder="Ej. María González"
+                />
+                <mat-icon matSuffix>person</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono</mat-label>
+                <input
+                  matInput
+                  formControlName="telefono"
+                  placeholder="10 dígitos"
+                  maxlength="10"
+                />
+                <mat-icon matSuffix>phone</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Correo electrónico</mat-label>
+              <input
+                matInput
+                formControlName="correo"
+                type="email"
+                placeholder="correo@ejemplo.com"
+              />
+              <mat-icon matSuffix>email</mat-icon>
+              @if (form.get("correo")?.touched && form.get("correo")?.invalid) {
+                <mat-error>Ingresa un correo válido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-checkbox
+              formControlName="recibirNotificaciones"
+              color="primary"
+            >
+              Deseo recibir notificaciones sobre el avance de mi reporte
+            </mat-checkbox>
+          </div>
+
+          <!-- SECCIÓN: Evidencias -->
+          <div class="nuevo-reporte__card">
+            <p class="section-label">
+              Evidencias
+              <span class="section-label__sub"
+                >Fotos o documentos del problema (máx. 5 archivos)</span
+              >
+            </p>
+            <mat-divider class="section-divider" />
+
+            <div class="nuevo-reporte__upload-area">
+              <label for="evidencias-input" class="nuevo-reporte__upload-label">
+                <mat-icon>upload_file</mat-icon>
+                <span>Seleccionar archivos</span>
+                <span class="nuevo-reporte__upload-hint"
+                  >JPG, PNG, PDF — máx. 10 MB por archivo</span
+                >
+              </label>
+              <input
+                id="evidencias-input"
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,application/pdf"
+                class="nuevo-reporte__file-input"
+                (change)="onFileChange($event)"
+                [disabled]="evidenciasNombres().length >= 5"
+              />
+            </div>
+
+            @if (evidenciasNombres().length > 0) {
+              <ul class="nuevo-reporte__files-list">
+                @for (
+                  nombre of evidenciasNombres();
+                  track nombre;
+                  let i = $index
+                ) {
+                  <li class="nuevo-reporte__file-item">
+                    <mat-icon>insert_drive_file</mat-icon>
+                    <span>{{ nombre }}</span>
+                    <button
+                      mat-icon-button
+                      type="button"
+                      (click)="eliminarEvidencia(i)"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+
+          <!-- Error global -->
+          @if (error()) {
+            <div class="nuevo-reporte__error">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          <!-- Acciones -->
+          <div class="nuevo-reporte__acciones">
+            <app-action-button
+              label="Enviar reporte"
+              icon="send"
+              color="primary"
+              iconPosition="end"
+              [loading]="enviando()"
+              [disabled]="enviando()"
+              (clicked)="enviar()"
+            />
+          </div>
+        </form>
+      }
+
+      <mat-divider class="nuevo-reporte__footer-divider" />
+      <div class="nuevo-reporte__footer-link">
+        <a [routerLink]="['/public', slug(), 'reportes', 'consultar']">
+          <mat-icon>search</mat-icon>
+          ¿Ya tienes un reporte? Consulta su estado aquí
+        </a>
+      </div>
+    }
+
+    <!-- ── CONFIRMACIÓN ──────────────────────────────────────────────────── -->
+    @if (vista() === "confirmacion" && resultado()) {
+      <div class="nuevo-reporte__card nuevo-reporte__card--confirmacion">
+        <div class="nuevo-reporte__confirm-icon-wrap">
+          <mat-icon class="nuevo-reporte__confirm-icon">check_circle</mat-icon>
+        </div>
+        <h2 class="nuevo-reporte__confirm-titulo">¡Reporte enviado!</h2>
+        <p class="nuevo-reporte__confirm-msg">{{ resultado()!.mensaje }}</p>
+
+        <div class="nuevo-reporte__confirm-datos">
+          <div class="confirm-dato">
+            <span class="confirm-dato__label">Folio</span>
+            <span class="confirm-dato__valor confirm-dato__valor--folio">{{
+              resultado()!.folio
+            }}</span>
+          </div>
+          <div class="confirm-dato">
+            <span class="confirm-dato__label">Token de consulta</span>
+            <span class="confirm-dato__valor confirm-dato__valor--token">{{
+              resultado()!.tokenConsulta
+            }}</span>
+          </div>
+          <div class="confirm-dato">
+            <span class="confirm-dato__label">Categoría</span>
+            <span class="confirm-dato__valor">{{
+              resultado()!.categoria
+            }}</span>
+          </div>
+          <div class="confirm-dato">
+            <span class="confirm-dato__label">Área responsable</span>
+            <span class="confirm-dato__valor">{{
+              resultado()!.areaResponsable
+            }}</span>
+          </div>
+          <div class="confirm-dato">
+            <span class="confirm-dato__label">Estado</span>
+            <span class="estado-badge estado-badge--{{ resultado()!.estado }}">
+              {{ resultado()!.estado | titlecase }}
+            </span>
+          </div>
+        </div>
+
+        <div class="nuevo-reporte__confirm-aviso">
+          <mat-icon>info_outline</mat-icon>
+          <span
+            >Guarda tu folio y token para consultar el estado de tu reporte en
+            cualquier momento.</span
+          >
+        </div>
+
+        <div class="nuevo-reporte__confirm-acciones">
+          <app-action-button
+            label="Consultar mi reporte"
+            icon="search"
+            color="primary"
+            (clicked)="irAConsultar()"
+          />
+          <app-action-button
+            label="Enviar otro reporte"
+            icon="add_circle_outline"
+            color="secondary"
+            (clicked)="nuevoReporte()"
+          />
+        </div>
+      </div>
+    }
+  </div>
+</div>

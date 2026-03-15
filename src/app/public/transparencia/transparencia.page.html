@@ -1,0 +1,346 @@
+<div class="transparencia">
+  <!-- ── Hero ────────────────────────────────────────────────── -->
+  <div class="transparencia__hero">
+    <div class="transparencia__hero-inner">
+      <div>
+        <h1 class="transparencia__hero-titulo">Portal de Transparencia</h1>
+        <p class="transparencia__hero-sub">
+          {{ municipio()?.nombre ?? "Municipio" }} &mdash; Información pública
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="transparencia__container">
+    <!-- ── Cargando ──────────────────────────────────────────────────── -->
+    @if (cargando()) {
+      <div class="transparencia__loading">
+        <mat-spinner diameter="40" />
+        <p>Cargando información de transparencia...</p>
+      </div>
+    }
+
+    <!-- ── Error ─────────────────────────────────────────────────────── -->
+    @if (!cargando() && error()) {
+      <div class="transparencia__aviso transparencia__aviso--error">
+        <mat-icon>error_outline</mat-icon>
+        <div>
+          <strong>No disponible</strong>
+          <p>
+            La información de transparencia no está disponible en este momento.
+          </p>
+        </div>
+      </div>
+    }
+
+    @if (!cargando() && !error()) {
+      <!-- ── Nota legal ──────────────────────────────────────────────── -->
+      <div class="transparencia__aviso">
+        <mat-icon>info_outline</mat-icon>
+        <div>
+          <strong>Información pública de oficio</strong>
+          <p>
+            En cumplimiento a lo establecido en la Ley 250 de Transparencia y
+            Acceso a la Información Pública para el Estado de Veracruz.
+          </p>
+        </div>
+      </div>
+
+      <!-- ── Obligaciones Comunes ───────────────────────────────────── -->
+      @if (comunes().length > 0) {
+        <div class="transparencia__grupo">
+          <h2 class="transparencia__grupo-titulo">
+            <mat-icon>gavel</mat-icon>
+            Obligaciones Comunes
+          </h2>
+
+          <div class="transparencia__acordeones">
+            @for (ob of comunes(); track ob.clave) {
+              <div class="acord" [class.acord--open]="abierto(ob.clave)">
+                <button class="acord__header" (click)="toggle(ob.clave)">
+                  <mat-icon class="acord__chevron">
+                    {{ abierto(ob.clave) ? "expand_more" : "chevron_right" }}
+                  </mat-icon>
+                  <span class="acord__header-text">
+                    <span class="acord__titulo">{{ ob.titulo }}</span>
+                    @if (ob.descripcion) {
+                      <span class="acord__desc">{{ ob.descripcion }}</span>
+                    }
+                  </span>
+                  <span class="acord__articulo">{{ ob.articulo }}</span>
+                  @if (ob.totalDocumentos > 0) {
+                    <span class="acord__count">{{ ob.totalDocumentos }}</span>
+                  }
+                </button>
+
+                @if (abierto(ob.clave)) {
+                  <div class="acord__body">
+                    <div class="acord__meta">
+                      <span>
+                        <mat-icon>person_pin_circle</mat-icon>
+                        {{ ob.areaResponsable }}
+                      </span>
+                      @if (ob.ultimaActualizacion) {
+                        <span>
+                          <mat-icon>update</mat-icon>
+                          Última actualización:
+                          {{
+                            ob.ultimaActualizacion
+                              | date: 'd "de" MMMM "de" y' : "" : "es-MX"
+                          }}
+                        </span>
+                      }
+                    </div>
+
+                    @if (cargandoDetalle().has(ob.clave)) {
+                      <div class="acord__cargando">
+                        <mat-spinner diameter="24" />
+                        <span>Cargando documentos...</span>
+                      </div>
+                    } @else if (detalles().get(ob.clave); as det) {
+                      @if (det.subsecciones.length > 0) {
+                        <!-- ── Subsecciones anidadas ── -->
+                        <div class="acord-hijos">
+                          @for (sub of det.subsecciones; track sub.clave) {
+                            @if (sub.documentos.length > 0) {
+                              <div
+                                class="acord-hijo"
+                                [class.acord-hijo--open]="abiertoSub(sub.clave)"
+                              >
+                                <button
+                                  class="acord-hijo__header"
+                                  (click)="toggleSub(sub.clave)"
+                                >
+                                  <mat-icon class="acord__chevron">
+                                    {{
+                                      abiertoSub(sub.clave)
+                                        ? "expand_more"
+                                        : "chevron_right"
+                                    }}
+                                  </mat-icon>
+                                  <span class="acord-hijo__titulo">{{
+                                    sub.titulo
+                                  }}</span>
+                                  <span class="acord-hijo__count">
+                                    {{ sub.documentos.length }}
+                                    doc{{
+                                      sub.documentos.length !== 1 ? "s" : ""
+                                    }}
+                                  </span>
+                                </button>
+
+                                @if (abiertoSub(sub.clave)) {
+                                  <div class="acord__docs acord__docs--sub">
+                                    @for (
+                                      doc of sub.documentos;
+                                      track doc.nombre
+                                    ) {
+                                      <ng-container
+                                        *ngTemplateOutlet="
+                                          docRow;
+                                          context: { $implicit: doc }
+                                        "
+                                      />
+                                    }
+                                  </div>
+                                }
+                              </div>
+                            }
+                          }
+                        </div>
+                      } @else {
+                        <!-- ── Documentos directos ── -->
+                        <div class="acord__docs">
+                          @for (doc of det.documentos; track doc.nombre) {
+                            <ng-container
+                              *ngTemplateOutlet="
+                                docRow;
+                                context: { $implicit: doc }
+                              "
+                            />
+                          }
+                        </div>
+                      }
+                    } @else {
+                      <div class="acord__sin-docs">
+                        <mat-icon>folder_open</mat-icon>
+                        <span>Sin documentos disponibles</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ── Obligaciones Municipales ───────────────────────────────── -->
+      @if (municipales().length > 0) {
+        <div class="transparencia__grupo">
+          <h2 class="transparencia__grupo-titulo">
+            <mat-icon>account_balance</mat-icon>
+            Obligaciones Específicas del Municipio
+          </h2>
+
+          <div class="transparencia__acordeones">
+            @for (ob of municipales(); track ob.clave) {
+              <div class="acord" [class.acord--open]="abierto(ob.clave)">
+                <button class="acord__header" (click)="toggle(ob.clave)">
+                  <mat-icon class="acord__chevron">
+                    {{ abierto(ob.clave) ? "expand_more" : "chevron_right" }}
+                  </mat-icon>
+                  <span class="acord__header-text">
+                    <span class="acord__titulo">{{ ob.titulo }}</span>
+                    @if (ob.descripcion) {
+                      <span class="acord__desc">{{ ob.descripcion }}</span>
+                    }
+                  </span>
+                  <span class="acord__articulo">{{ ob.articulo }}</span>
+                  @if (ob.totalDocumentos > 0) {
+                    <span class="acord__count">{{ ob.totalDocumentos }}</span>
+                  }
+                </button>
+
+                @if (abierto(ob.clave)) {
+                  <div class="acord__body">
+                    <div class="acord__meta">
+                      <span>
+                        <mat-icon>person_pin_circle</mat-icon>
+                        {{ ob.areaResponsable }}
+                      </span>
+                      @if (ob.ultimaActualizacion) {
+                        <span>
+                          <mat-icon>update</mat-icon>
+                          Última actualización:
+                          {{
+                            ob.ultimaActualizacion
+                              | date: 'd "de" MMMM "de" y' : "" : "es-MX"
+                          }}
+                        </span>
+                      }
+                    </div>
+
+                    @if (cargandoDetalle().has(ob.clave)) {
+                      <div class="acord__cargando">
+                        <mat-spinner diameter="24" />
+                        <span>Cargando documentos...</span>
+                      </div>
+                    } @else if (detalles().get(ob.clave); as det) {
+                      @if (det.subsecciones.length > 0) {
+                        <div class="acord-hijos">
+                          @for (sub of det.subsecciones; track sub.clave) {
+                            @if (sub.documentos.length > 0) {
+                              <div
+                                class="acord-hijo"
+                                [class.acord-hijo--open]="abiertoSub(sub.clave)"
+                              >
+                                <button
+                                  class="acord-hijo__header"
+                                  (click)="toggleSub(sub.clave)"
+                                >
+                                  <mat-icon class="acord__chevron">
+                                    {{
+                                      abiertoSub(sub.clave)
+                                        ? "expand_more"
+                                        : "chevron_right"
+                                    }}
+                                  </mat-icon>
+                                  <span class="acord-hijo__titulo">{{
+                                    sub.titulo
+                                  }}</span>
+                                  <span class="acord-hijo__count">
+                                    {{ sub.documentos.length }}
+                                    doc{{
+                                      sub.documentos.length !== 1 ? "s" : ""
+                                    }}
+                                  </span>
+                                </button>
+
+                                @if (abiertoSub(sub.clave)) {
+                                  <div class="acord__docs acord__docs--sub">
+                                    @for (
+                                      doc of sub.documentos;
+                                      track doc.nombre
+                                    ) {
+                                      <ng-container
+                                        *ngTemplateOutlet="
+                                          docRow;
+                                          context: { $implicit: doc }
+                                        "
+                                      />
+                                    }
+                                  </div>
+                                }
+                              </div>
+                            }
+                          }
+                        </div>
+                      } @else {
+                        <div class="acord__docs">
+                          @for (doc of det.documentos; track doc.nombre) {
+                            <ng-container
+                              *ngTemplateOutlet="
+                                docRow;
+                                context: { $implicit: doc }
+                              "
+                            />
+                          }
+                        </div>
+                      }
+                    } @else {
+                      <div class="acord__sin-docs">
+                        <mat-icon>folder_open</mat-icon>
+                        <span>Sin documentos disponibles</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ── Sin contenido ─────────────────────────────────────────── -->
+      @if (comunes().length === 0 && municipales().length === 0) {
+        <div class="transparencia__aviso">
+          <mat-icon>hourglass_empty</mat-icon>
+          <div>
+            <strong>Sin información disponible</strong>
+            <p>El municipio aún no ha publicado documentos de transparencia.</p>
+          </div>
+        </div>
+      }
+    }
+    <!-- end !cargando && !error -->
+  </div>
+</div>
+
+<!-- ── Plantilla reutilizable de fila de documento ────────────────────── -->
+<ng-template #docRow let-doc>
+  <div class="doc-item">
+    <mat-icon class="doc-item__icon doc-item__icon--{{ doc.tipo }}">
+      {{ docIcon(doc) }}
+    </mat-icon>
+    <div class="doc-item__info">
+      <span class="doc-item__nombre">{{ doc.nombre }}</span>
+      @if (doc.periodoReferencia) {
+        <span class="doc-item__periodo">{{ doc.periodoReferencia }}</span>
+      }
+    </div>
+    @if (doc.tipo === "texto") {
+      <span class="doc-item__badge doc-item__badge--texto">Texto</span>
+    } @else if (docUrl(doc); as url) {
+      <a
+        class="doc-item__btn"
+        [href]="url"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ docLabel(doc) }}
+        <mat-icon>open_in_new</mat-icon>
+      </a>
+    }
+  </div>
+</ng-template>

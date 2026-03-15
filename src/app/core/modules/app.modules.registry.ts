@@ -18,7 +18,9 @@ export type AppModulo =
   | 'MUNICIPIOS'
   | 'REPORTES'
   | 'CITAS'
-  | 'AUDITORIA';
+  | 'AUDITORIA'
+  | 'PORTAL'
+  | 'TRANSPARENCIA';
 
 export const APP_MODULES: Record<
   AppModulo,
@@ -202,6 +204,25 @@ export const APP_MODULES: Record<
     loadRoutes: () =>
       import('../../features/auditoria/auditoria.routes').then(
         (m) => m.AUDITORIA_ROUTES,
+      ),
+  },
+
+  PORTAL: {
+    label: 'Portal Público',
+    route: '/portal',
+    icon: 'web',
+    loadRoutes: () =>
+      import('../../features/portal/portal.routes').then(
+        (m) => m.PORTAL_ROUTES,
+      ),
+  },
+  TRANSPARENCIA: {
+    label: 'Transparencia',
+    route: '/transparencia',
+    icon: 'visibility',
+    loadRoutes: () =>
+      import('../../features/transparencia/transparencia.routes').then(
+        (m) => m.TRANSPARENCIA_ROUTES,
       ),
   },
 };

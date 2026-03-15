@@ -22,6 +22,7 @@ interface SubMenuItem {
   route: string;
   icon?: string;
   roles?: string[];
+  exact?: boolean;
 }
 
 interface MenuSection {
@@ -53,7 +54,13 @@ export class SidebarComponent implements OnInit {
   private menuSections: MenuSection[] = [
     {
       header: 'Administración del Sistema',
-      modules: ['USUARIOS', 'MUNICIPIOS', 'AUDITORIA'],
+      modules: [
+        'USUARIOS',
+        'MUNICIPIOS',
+        'AUDITORIA',
+        'PORTAL',
+        'TRANSPARENCIA',
+      ],
     },
     {
       header: 'Áreas Municipales',
@@ -256,6 +263,64 @@ export class SidebarComponent implements OnInit {
                   label: 'Apoyos',
                   route: '/dif/apoyos',
                   icon: 'volunteer_activism',
+                },
+              ],
+            });
+          } else if (moduloKey === 'REPORTES') {
+            const userRol = this.authService.getRol();
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              children: [
+                {
+                  label: 'Lista de Reportes',
+                  route: '/reportes',
+                  icon: 'list_alt',
+                  exact: true,
+                },
+                {
+                  label: 'Métricas',
+                  route: '/reportes/metricas',
+                  icon: 'bar_chart',
+                },
+                {
+                  label: 'Configuración',
+                  route: '/reportes/configuracion',
+                  icon: 'settings',
+                  roles: ['SUPER_ADMIN', 'ADMIN_MUNICIPIO'],
+                },
+              ].filter(
+                (child) =>
+                  !child.roles || (userRol && child.roles.includes(userRol)),
+              ),
+            });
+          } else if (moduloKey === 'PORTAL') {
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              children: [
+                {
+                  label: 'Configuración',
+                  route: '/portal/configuracion',
+                  icon: 'settings',
+                },
+                {
+                  label: 'Avisos y Noticias',
+                  route: '/portal/avisos',
+                  icon: 'campaign',
+                },
+              ],
+            });
+          } else if (moduloKey === 'TRANSPARENCIA') {
+            items.push({
+              icon: moduloConfig.icon,
+              label: moduloConfig.label,
+              children: [
+                {
+                  label: 'Obligaciones',
+                  route: '/transparencia',
+                  icon: 'library_books',
+                  exact: true,
                 },
               ],
             });

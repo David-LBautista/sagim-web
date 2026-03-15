@@ -211,62 +211,52 @@
 <mat-dialog-actions align="end">
   <!-- Paso 0 -->
   @if (pasoActual() === 0) {
-    <button mat-button type="button" (click)="cerrar()">Cancelar</button>
-    <button
-      mat-raised-button
-      color="primary"
-      type="button"
+    <app-action-button
+      label="Cancelar"
+      color="secondary"
+      (clicked)="cerrar()"
+    />
+    <app-action-button
+      label="Continuar"
+      icon="arrow_forward"
+      iconPosition="end"
       [disabled]="!archivoSeleccionado"
-      (click)="irAPaso1()"
-    >
-      Continuar
-      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
-    </button>
+      (clicked)="irAPaso1()"
+    />
   }
 
   <!-- Paso 1 -->
   @if (pasoActual() === 1) {
-    <button
-      mat-button
-      type="button"
-      (click)="volverAPaso0()"
+    <app-action-button
+      label="Regresar"
+      icon="arrow_back"
+      color="secondary"
       [disabled]="importando()"
-    >
-      <mat-icon>arrow_back</mat-icon>
-      Regresar
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      type="button"
-      [disabled]="!curpMapeado || importando()"
-      (click)="iniciarImportacion()"
-    >
-      <span class="btn-label">
-        @if (importando()) {
-          <mat-spinner
-            diameter="18"
-            style="display: inline-block"
-          ></mat-spinner>
-          <span>Importando…</span>
-        } @else {
-          <mat-icon>upload</mat-icon>
-          <span>Importar</span>
-        }
-      </span>
-    </button>
+      (clicked)="volverAPaso0()"
+    />
+    <app-action-button
+      label="Importar"
+      icon="upload"
+      [loading]="importando()"
+      [disabled]="!curpMapeado"
+      (clicked)="iniciarImportacion()"
+    />
   }
 
   <!-- Paso 2 -->
   @if (pasoActual() === 2) {
     @if (resultado()?.errores ?? 0 > 0) {
-      <button mat-button type="button" (click)="descargarReporteErrores()">
-        <mat-icon>download</mat-icon>
-        Descargar reporte de errores
-      </button>
+      <app-action-button
+        label="Descargar reporte de errores"
+        icon="download"
+        color="secondary"
+        (clicked)="descargarReporteErrores()"
+      />
     }
-    <button mat-raised-button color="primary" type="button" (click)="cerrar()">
-      Cerrar
-    </button>
+    <app-action-button
+      label="Cerrar"
+      icon="check"
+      (clicked)="cerrar()"
+    />
   }
 </mat-dialog-actions>

@@ -1,0 +1,209 @@
+$primary: #0f2a44;
+$secondary: #1f6fae;
+$success: #6fae3b;
+$warning: #f0a12a;
+$danger: #d64545;
+$info: #1f6fae;
+$text-dark: #3a3a3a;
+$text-mid: #7a7a7a;
+$bg-light: #f4f6f8;
+
+.portal-avisos {
+  max-width: 860px;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    padding: 60px 0;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 64px 0;
+    color: $text-mid;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      opacity: 0.4;
+    }
+    p {
+      margin: 0;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+// ── Aviso card ─────────────────────────────────────────────────────────────
+.aviso-card {
+  transition: opacity 0.2s;
+
+  &--inactivo {
+    opacity: 0.6;
+  }
+
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px !important;
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+
+    &--alerta {
+      background: #fdeaea;
+      color: #b53030;
+    }
+    &--informativo {
+      background: #e8f3fc;
+      color: #155a8a;
+    }
+    &--evento {
+      background: #edf7e6;
+      color: #3d7a1a;
+    }
+    &--convocatoria {
+      background: #fef6e4;
+      color: #9e6200;
+    }
+  }
+
+  &__vigencia {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+
+    &--activo {
+      background: #edf7e6;
+      color: #3d7a1a;
+    }
+    &--expirado {
+      background: #fef6e4;
+      color: #9e6200;
+    }
+    &--inactivo {
+      background: #f1f1f1;
+      color: $text-mid;
+    }
+  }
+
+  &__orden {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: $text-mid;
+  }
+
+  &__body {
+    display: flex;
+    gap: 16px;
+  }
+
+  &__img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__titulo {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-dark;
+  }
+
+  &__cuerpo {
+    margin: 0;
+    font-size: 0.875rem;
+    color: $text-mid;
+    line-height: 1.5;
+  }
+
+  &__url {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    color: $secondary;
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__fechas {
+    font-size: 0.78rem;
+    color: $text-mid;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 4px;
+  }
+
+  &__actions-right {
+    display: flex;
+    gap: 4px;
+  }
+}

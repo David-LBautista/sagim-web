@@ -48,7 +48,7 @@
               class="area-row"
               [class.area-row--selected]="
                 areaSeleccionada()?._id === config._id
-              "
+              "configura
               [class.area-row--active]="config.activo"
               [class.area-row--inactive]="!config.activo"
               (click)="seleccionarArea(config)"
@@ -104,14 +104,10 @@
             <form [formGroup]="form">
               <!-- Section 1: General -->
               <mat-card appearance="outlined" class="section-card">
-                <mat-card-header style="margin-bottom: 16px">
-                  <mat-card-title>Configuración General</mat-card-title>
-                  <mat-card-subtitle>{{
-                    getAreaNombre(areaSeleccionada()!)
-                  }}</mat-card-subtitle>
-                </mat-card-header>
                 <mat-card-content>
-                  <div class="general-grid">
+                  <p class="section-label">Configuración General <span class="section-label__sub">{{ getAreaNombre(areaSeleccionada()!) }}</span></p>
+                  <mat-divider class="section-divider" ></mat-divider>
+                  <div class="general-grid" style="margin-top: 24px;">
                     <div class="general-grid__toggle">
                       <mat-slide-toggle
                         formControlName="activo"
@@ -268,14 +264,9 @@
                 class="section-card"
                 style="margin-top: 16px"
               >
-                <mat-card-header>
-                  <mat-card-title>Horarios por Día</mat-card-title>
-                  <mat-card-subtitle
-                    >Define los bloques de atención para cada día de la
-                    semana</mat-card-subtitle
-                  >
-                </mat-card-header>
                 <mat-card-content>
+                  <p class="section-label">Horarios por Día <span class="section-label__sub">Define los bloques de atención para cada día de la semana</span></p>
+                  <mat-divider class="section-divider"></mat-divider>
                   <div class="dias-grid" formGroupName="horarios">
                     @for (dia of diasSemana; track dia.key) {
                       @if (dia.key !== "sabado" && dia.key !== "domingo") {
@@ -379,12 +370,11 @@
                 } @else {
                   <button
                     mat-flat-button
-                    color="primary"
                     type="button"
+                    class="btn-guardar"
                     (click)="guardar(areaSeleccionada()!)"
                     [disabled]="form.invalid"
                   >
-                    <mat-icon>save</mat-icon>
                     Guardar configuración
                   </button>
                 }
@@ -394,15 +384,9 @@
 
           <!-- Section 3: Bloqueos (outside the schedule form) -->
           <mat-card appearance="outlined" class="section-card">
-            <mat-card-header>
-              <mat-icon mat-card-avatar>event_busy</mat-icon>
-              <mat-card-title>Bloqueos de Fechas</mat-card-title>
-              <mat-card-subtitle
-                >Festivos, reuniones u otras fechas sin
-                servicio</mat-card-subtitle
-              >
-            </mat-card-header>
             <mat-card-content>
+              <p class="section-label">Bloqueos de Fechas <span class="section-label__sub">Festivos, reuniones u otras fechas sin servicio</span></p>
+              <mat-divider class="section-divider"></mat-divider>
               <form [formGroup]="bloqueoForm" class="bloqueo-form">
                 <mat-form-field appearance="outline">
                   <mat-label>Fecha inicio</mat-label>
@@ -452,12 +436,11 @@
                 } @else {
                   <button
                     mat-flat-button
-                    color="warn"
                     type="button"
+                    class="btn-guardar"
                     (click)="crearBloqueo()"
                     [disabled]="bloqueoForm.invalid"
                   >
-                    <mat-icon>block</mat-icon>
                     Bloquear
                   </button>
                 }

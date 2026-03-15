@@ -81,16 +81,14 @@
     </div>
 
     <div class="step-area__acciones">
-      <button
-        mat-raised-button
+      <app-action-button
+        label="Siguiente"
+        icon="arrow_forward"
+        iconPosition="end"
         color="primary"
         [disabled]="!puedeContinuar()"
-        (click)="continuar()"
-        class="step-area__btn-continuar"
-      >
-        Siguiente
-        <mat-icon iconPositionEnd>arrow_forward</mat-icon>
-      </button>
+        (clicked)="continuar()"
+      />
     </div>
   }
 </div>

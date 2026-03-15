@@ -23,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -60,6 +61,7 @@ function curpValidator(control: AbstractControl): ValidationErrors | null {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    ActionButtonComponent,
   ],
   templateUrl: './step-datos.component.html',
   styleUrl: './step-datos.component.scss',

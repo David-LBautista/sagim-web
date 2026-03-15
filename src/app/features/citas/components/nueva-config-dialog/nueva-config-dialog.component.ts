@@ -22,6 +22,7 @@ import {
 } from '@angular/material/autocomplete';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SagimDialogComponent } from '../../../../shared/components/sagim-dialog/sagim-dialog.component';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { CitasService } from '../../services/citas.service';
 import { TesoreriaService } from '../../../tesoreria/services/tesoreria.service';
 import {
@@ -46,6 +47,7 @@ export type NuevaConfigDialogResult = CrearConfiguracionDto;
     CommonModule,
     ReactiveFormsModule,
     SagimDialogComponent,
+    ActionButtonComponent,
     MatButtonModule,
     MatIconModule,
     MatListModule,

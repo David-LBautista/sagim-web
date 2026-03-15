@@ -1,0 +1,669 @@
+<div class="portal-config">
+  <!-- Header -->
+  <div class="portal-config__header">
+    <div class="portal-config__header-info">
+      <div class="portal-config__title-row">
+        <div>
+          <h1 class="sagim-title-xl">Configuración del Portal Público</h1>
+          <p class="sagim-subtitle-light">
+            Gestiona la información, apariencia y contenido del portal
+            ciudadano.
+          </p>
+        </div>
+      </div>
+    </div>
+    <app-action-button
+      label="Ver portal público"
+      icon="open_in_new"
+      color="primary"
+      (clicked)="verPortal()"
+    />
+  </div>
+
+  <!-- Loading spinner -->
+  @if (cargando()) {
+    <div class="portal-config__loading">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else {
+    <mat-tab-group animationDuration="200ms" class="portal-config__tabs">
+      <!-- ===== TAB 1: GENERAL ===== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">settings</mat-icon>
+          General
+        </ng-template>
+
+        <form
+          [formGroup]="generalForm"
+          (ngSubmit)="guardarGeneral()"
+          class="tab-form"
+        >
+          <mat-card appearance="outlined" class="section-card">
+            <mat-card-content class="tab-card__content">
+              <p class="section-label">
+                Información general
+                <span class="section-label__sub"
+                  >Textos e información básica que aparece en el portal</span
+                >
+              </p>
+              <mat-divider class="section-divider" />
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Subtítulo del municipio</mat-label>
+                <input
+                  matInput
+                  formControlName="subtitulo"
+                  placeholder="Ej: Gobierno Comprometido con tu Bienestar"
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Mensaje de bienvenida</mat-label>
+                <textarea
+                  matInput
+                  formControlName="mensajeBienvenida"
+                  rows="4"
+                  placeholder="Texto que aparece en el hero de la página de inicio..."
+                ></textarea>
+              </mat-form-field>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="section-card">
+            <mat-card-content
+              class="tab-card__content tab-card__content--toggles"
+            >
+              <p class="section-label">
+                Secciones visibles
+                <span class="section-label__sub"
+                  >Controla qué módulos muestra el portal a los ciudadanos</span
+                >
+              </p>
+              <mat-divider class="section-divider" />
+              <div class="toggle-row">
+                <div class="toggle-row__info">
+                  <span class="toggle-row__label">Módulo de Citas</span>
+                  <span class="toggle-row__sub"
+                    >Permite a los ciudadanos agendar citas en línea</span
+                  >
+                </div>
+                <mat-slide-toggle
+                  formControlName="mostrarCitas"
+                  color="primary"
+                />
+              </div>
+              <mat-divider />
+
+              <div class="toggle-row">
+                <div class="toggle-row__info">
+                  <span class="toggle-row__label">Módulo de Reportes</span>
+                  <span class="toggle-row__sub"
+                    >Permite a los ciudadanos enviar reportes ciudadanos</span
+                  >
+                </div>
+                <mat-slide-toggle
+                  formControlName="mostrarReportes"
+                  color="primary"
+                />
+              </div>
+              <mat-divider />
+
+              <div class="toggle-row">
+                <div class="toggle-row__info">
+                  <span class="toggle-row__label">Módulo de Transparencia</span>
+                  <span class="toggle-row__sub"
+                    >Muestra la sección de transparencia y documentos
+                    públicos</span
+                  >
+                </div>
+                <mat-slide-toggle
+                  formControlName="mostrarTransparencia"
+                  color="primary"
+                />
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card
+            appearance="outlined"
+            class="section-card section-card--warning"
+          >
+            <mat-card-content class="tab-card__content">
+              <p class="section-label section-label--warning">
+                Modo mantenimiento
+                <span class="section-label__sub"
+                  >Muestra una página de mantenimiento en lugar del portal</span
+                >
+              </p>
+              <mat-divider class="section-divider" />
+              <div class="toggle-row">
+                <div class="toggle-row__info">
+                  <span class="toggle-row__label toggle-row__label--danger"
+                    >Portal en mantenimiento</span
+                  >
+                  <span class="toggle-row__sub"
+                    >Los ciudadanos verán una página de "Sitio en
+                    mantenimiento"</span
+                  >
+                </div>
+                <mat-slide-toggle
+                  formControlName="enMantenimiento"
+                  color="warn"
+                />
+              </div>
+              @if (enMantenimiento) {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Mensaje de mantenimiento</mat-label>
+                  <input
+                    matInput
+                    formControlName="mensajeMantenimiento"
+                    placeholder="El portal estará disponible en breve."
+                  />
+                  <mat-hint
+                    >Texto que ven los ciudadanos durante el
+                    mantenimiento</mat-hint
+                  >
+                </mat-form-field>
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <div class="tab-form__actions">
+            <app-action-button
+              label="Guardar cambios"
+              icon="save"
+              color="primary"
+              [loading]="guardandoGeneral()"
+              (clicked)="guardarGeneral()"
+            />
+          </div>
+        </form>
+      </mat-tab>
+
+      <!-- ===== TAB 2: APARIENCIA ===== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">palette</mat-icon>
+          Apariencia
+        </ng-template>
+
+        <form
+          [formGroup]="aparienciaForm"
+          (ngSubmit)="guardarApariencia()"
+          class="tab-form"
+        >
+          <mat-card appearance="outlined" class="section-card">
+            <mat-card-content class="tab-card__content">
+              <p class="section-label">
+                Colores institucionales
+                <span class="section-label__sub"
+                  >Define los colores que se aplican en el portal público</span
+                >
+              </p>
+              <mat-divider class="section-divider" />
+              <div class="color-row">
+                <div class="color-picker-group">
+                  <label class="color-picker-group__label"
+                    >Color primario</label
+                  >
+                  <div class="color-picker-group__input-row">
+                    <input
+                      type="color"
+                      formControlName="colorPrimario"
+                      class="color-picker-input"
+                    />
+                    <input
+                      matInput
+                      formControlName="colorPrimario"
+                      class="color-hex-input"
+                      placeholder="#0f2a44"
+                    />
+                  </div>
+                  <div
+                    class="color-preview"
+                    [style.background-color]="
+                      aparienciaForm.get('colorPrimario')?.value
+                    "
+                  ></div>
+                </div>
+
+                <div class="color-picker-group">
+                  <label class="color-picker-group__label"
+                    >Color secundario</label
+                  >
+                  <div class="color-picker-group__input-row">
+                    <input
+                      type="color"
+                      formControlName="colorSecundario"
+                      class="color-picker-input"
+                    />
+                    <input
+                      matInput
+                      formControlName="colorSecundario"
+                      class="color-hex-input"
+                      placeholder="#1f6fae"
+                    />
+                  </div>
+                  <div
+                    class="color-preview"
+                    [style.background-color]="
+                      aparienciaForm.get('colorSecundario')?.value
+                    "
+                  ></div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="section-card">
+            <mat-card-content class="tab-card__content">
+              <p class="section-label">
+                Banner de inicio
+                <span class="section-label__sub"
+                  >Imagen de fondo en el hero de la página de inicio &mdash;
+                  máx. 5&nbsp;MB</span
+                >
+              </p>
+              <mat-divider class="section-divider" />
+              @if (bannerPreview()) {
+                <div class="banner-preview">
+                  <img
+                    [src]="bannerPreview()"
+                    alt="Preview del banner"
+                    class="banner-preview__img"
+                  />
+                  <span class="banner-preview__label"
+                    >Vista previa del banner</span
+                  >
+                </div>
+              }
+
+              <div class="banner-upload-row">
+                <app-image-upload-button
+                  label="Seleccionar imagen"
+                  accept="image/*"
+                  (fileChange)="onBannerSelected($event)"
+                />
+
+                @if (bannerFile) {
+                  <app-action-button
+                    label="Subir banner"
+                    icon="cloud_upload"
+                    color="accent"
+                    [loading]="subiendoBanner()"
+                    [disabled]="subiendoBanner()"
+                    (clicked)="uploadBanner()"
+                  />
+                }
+
+                @if (aparienciaForm.get("bannerUrl")?.value) {
+                  <span
+                    class="banner-current-url"
+                    [matTooltip]="aparienciaForm.get('bannerUrl')?.value"
+                  >
+                    <mat-icon>check_circle</mat-icon>
+                    Banner cargado
+                  </span>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <div class="tab-form__actions">
+            <app-action-button
+              label="Guardar colores"
+              icon="save"
+              color="primary"
+              [loading]="guardandoApariencia()"
+              (clicked)="guardarApariencia()"
+            />
+          </div>
+        </form>
+      </mat-tab>
+
+      <!-- ===== TAB 3: REDES SOCIALES ===== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">share</mat-icon>
+          Redes sociales
+        </ng-template>
+
+        <form
+          [formGroup]="redesForm"
+          (ngSubmit)="guardarRedes()"
+          class="tab-form"
+        >
+          <mat-card appearance="outlined" class="section-card">
+            <mat-card-content class="tab-card__content">
+              <p class="section-label">
+                Perfiles y sitio web
+                <span class="section-label__sub"
+                  >Escribe la URL completa de cada perfil o déjalo vacío para
+                  ocultarlo</span
+                >
+              </p>
+              <mat-divider class="section-divider" />
+              <div class="social-field">
+                <mat-icon class="social-icon social-icon--material"
+                  >facebook</mat-icon
+                >
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Facebook</mat-label>
+                  <input
+                    matInput
+                    formControlName="facebook"
+                    placeholder="https://facebook.com/municipio"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="social-field">
+                <mat-icon class="social-icon social-icon--material"
+                  >alternate_email</mat-icon
+                >
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Twitter / X</mat-label>
+                  <input
+                    matInput
+                    formControlName="twitter"
+                    placeholder="https://x.com/municipio"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="social-field">
+                <mat-icon class="social-icon social-icon--material"
+                  >photo_camera</mat-icon
+                >
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Instagram</mat-label>
+                  <input
+                    matInput
+                    formControlName="instagram"
+                    placeholder="https://instagram.com/municipio"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="social-field">
+                <mat-icon class="social-icon social-icon--material"
+                  >play_circle</mat-icon
+                >
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>YouTube</mat-label>
+                  <input
+                    matInput
+                    formControlName="youtube"
+                    placeholder="https://youtube.com/@municipio"
+                  />
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <div class="tab-form__actions">
+            <app-action-button
+              label="Guardar redes"
+              icon="save"
+              color="primary"
+              [loading]="guardandoRedes()"
+              (clicked)="guardarRedes()"
+            />
+          </div>
+        </form>
+      </mat-tab>
+
+      <!-- ===== TAB 4: FOOTER ===== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">view_agenda</mat-icon>
+          Footer
+        </ng-template>
+
+        <form
+          [formGroup]="footerForm"
+          (ngSubmit)="guardarFooter()"
+          class="tab-form"
+        >
+          <!-- Contacto -->
+          <mat-card appearance="outlined" class="section-card">
+            <mat-card-content class="tab-card__content">
+              <p class="section-label">
+                Información de contacto
+                <span class="section-label__sub"
+                  >Datos que aparecen en la sección inferior del portal</span
+                >
+              </p>
+              <mat-divider class="section-divider" />
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Dirección</mat-label>
+                <input
+                  matInput
+                  formControlName="direccion"
+                  placeholder="Calle, Colonia, CP"
+                />
+                <mat-icon matSuffix>location_on</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Correo electrónico</mat-label>
+                <input
+                  matInput
+                  formControlName="correo"
+                  type="email"
+                  placeholder="contacto@municipio.gob.mx"
+                />
+                <mat-icon matSuffix>email</mat-icon>
+                @if (footerForm.get("correo")?.hasError("email")) {
+                  <mat-error>Correo inválido</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Teléfono</mat-label>
+                <input
+                  matInput
+                  formControlName="telefono"
+                  placeholder="(123) 456-7890"
+                />
+                <mat-icon matSuffix>phone</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Texto legal / copyright</mat-label>
+                <textarea
+                  matInput
+                  formControlName="textoLegal"
+                  rows="2"
+                  placeholder="© 2025 H. Ayuntamiento de La Perla. Todos los derechos reservados."
+                ></textarea>
+              </mat-form-field>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Columnas de links -->
+          <mat-card appearance="outlined" class="section-card">
+            <mat-card-content
+              class="tab-card__content"
+              formArrayName="columnas"
+            >
+              <p class="section-label">
+                Columnas de enlaces
+                <span class="section-label__sub"
+                  >Máximo 3 columnas de enlaces en el footer del portal</span
+                >
+              </p>
+              <mat-divider class="section-divider" />
+              @for (
+                col of columnas.controls;
+                track $index;
+                let colIdx = $index
+              ) {
+                <div [formGroupName]="colIdx" class="columna-block">
+                  <div class="columna-block__header">
+                    <h4>Columna {{ colIdx + 1 }}</h4>
+                    <button
+                      mat-icon-button
+                      type="button"
+                      color="warn"
+                      [matTooltip]="'Eliminar columna'"
+                      (click)="removeColumna(colIdx)"
+                    >
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </div>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Título de la columna</mat-label>
+                    <input
+                      matInput
+                      formControlName="titulo"
+                      placeholder="Ej: Servicios"
+                    />
+                  </mat-form-field>
+
+                  <div class="links-list" formArrayName="links">
+                    @for (
+                      link of linksOf(colIdx).controls;
+                      track $index;
+                      let linkIdx = $index
+                    ) {
+                      <div [formGroupName]="linkIdx" class="link-row">
+                        <mat-form-field
+                          appearance="outline"
+                          class="link-row__texto"
+                        >
+                          <mat-label>Texto</mat-label>
+                          <input matInput formControlName="texto" />
+                        </mat-form-field>
+                        <mat-form-field
+                          appearance="outline"
+                          class="link-row__url"
+                        >
+                          <mat-label>URL</mat-label>
+                          <input
+                            matInput
+                            formControlName="url"
+                            placeholder="https://"
+                          />
+                          @if (
+                            linksOf(colIdx)
+                              .at(linkIdx)
+                              .get("url")
+                              ?.hasError("pattern")
+                          ) {
+                            <mat-error>Debe comenzar con https://</mat-error>
+                          }
+                        </mat-form-field>
+                        <div
+                          class="link-row__externo"
+                          [matTooltip]="'Abre en nueva pestaña'"
+                        >
+                          <mat-slide-toggle formControlName="externo" />
+                          <span class="link-row__externo-label">Externo</span>
+                        </div>
+                        <button
+                          mat-icon-button
+                          type="button"
+                          color="warn"
+                          (click)="removeLink(colIdx, linkIdx)"
+                        >
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    }
+                    <app-action-button
+                      label="Agregar enlace"
+                      color="secondary"
+                      (clicked)="addLink(colIdx)"
+                    />
+                  </div>
+                </div>
+                @if (!$last) {
+                  <mat-divider />
+                }
+              }
+
+              @if (columnas.length === 0) {
+                <p class="empty-state">No hay columnas. Agrega hasta 3.</p>
+              }
+            </mat-card-content>
+            <mat-card-actions align="end">
+              <app-action-button
+                label="Agregar columna"
+                color="accent"
+                (clicked)="addColumna()"
+              />
+            </mat-card-actions>
+          </mat-card>
+
+          <!-- Números de emergencia -->
+          <mat-card appearance="outlined" class="section-card">
+            <mat-card-content
+              class="tab-card__content"
+              formArrayName="numerosEmergencia"
+            >
+              <p class="section-label">
+                Números de emergencia
+                <span class="section-label__sub"
+                  >Se muestran en una barra destacada del portal</span
+                >
+              </p>
+              <mat-divider class="section-divider" />
+              @for (num of numerosEmergencia.controls; track $index) {
+                <div [formGroupName]="$index" class="numero-row">
+                  <mat-form-field
+                    appearance="outline"
+                    class="numero-row__numero"
+                  >
+                    <mat-label>Número</mat-label>
+                    <input matInput formControlName="numero" />
+                    <mat-icon matSuffix>phone</mat-icon>
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    class="numero-row__servicio"
+                  >
+                    <mat-label>Servicio (ej: Policía)</mat-label>
+                    <input matInput formControlName="servicio" />
+                  </mat-form-field>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    color="warn"
+                    (click)="removeNumero($index)"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              }
+
+              @if (numerosEmergencia.length === 0) {
+                <p class="empty-state">
+                  No hay números de emergencia registrados.
+                </p>
+              }
+            </mat-card-content>
+            <mat-card-actions align="end">
+              <app-action-button
+                label="Agregar número"
+                color="accent"
+                (clicked)="addNumero()"
+              />
+            </mat-card-actions>
+          </mat-card>
+
+          <div class="tab-form__actions">
+            <app-action-button
+              label="Guardar footer"
+              icon="save"
+              color="primary"
+              [loading]="guardandoFooter()"
+              (clicked)="guardarFooter()"
+            />
+          </div>
+        </form>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>

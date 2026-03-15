@@ -1,0 +1,289 @@
+<div class="lista-reportes">
+  <div class="page-header">
+    <div class="page-header__text">
+      <h1 class="sagim-title-xl">Reportes Ciudadanos</h1>
+      <p class="sagim-subtitle-light">
+        Gestiona y da seguimiento a los reportes recibidos
+      </p>
+    </div>
+    <button mat-flat-button (click)="abrirNuevoReporte()" class="btn-nuevo">
+      <mat-icon>add</mat-icon>
+      Nuevo reporte
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>pending</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value">
+          {{ cargando() ? "..." : totalPendientes() }}
+        </div>
+        <div class="kpi-label">Pendientes</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>sync</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value">{{ cargando() ? "..." : totalEnProceso() }}</div>
+        <div class="kpi-label">En proceso</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>check_circle</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value kpi-value--trend-up">
+          {{ cargando() ? "..." : totalResueltos() }}
+        </div>
+        <div class="kpi-label">Resueltos</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="kpi-exec-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>warning</mat-icon>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="kpi-value kpi-value--trend-down">
+          {{ cargando() ? "..." : totalUrgentes() }}
+        </div>
+        <div class="kpi-label">Urgentes</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Banner de nuevos reportes en tiempo real -->
+  @if (nuevosEnTiempoReal() > 0) {
+    <div class="realtime-banner">
+      <mat-icon>notifications_active</mat-icon>
+      <span>{{ nuevosEnTiempoReal() }} nuevo(s) reporte(s) recibido(s)</span>
+      <button mat-button (click)="recargarConNuevos()">Ver ahora</button>
+    </div>
+  }
+
+  <!-- Filtros -->
+  <mat-card appearance="outlined" class="filters-card">
+    <mat-card-content>
+      <form [formGroup]="filtros" class="filters-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Buscar</mat-label>
+          <input
+            matInput
+            formControlName="buscar"
+            placeholder="Folio, ciudadano, descripción"
+          />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categoría</mat-label>
+          <mat-select formControlName="categoria">
+            <mat-option value="">Todas</mat-option>
+            @for (cat of categorias; track cat) {
+              <mat-option [value]="cat">{{ categoriaLabels[cat] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            <mat-option value="">Todos</mat-option>
+            @for (e of estados; track e) {
+              <mat-option [value]="e">{{ estadoLabels[e] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prioridad</mat-label>
+          <mat-select formControlName="prioridad">
+            <mat-option value="">Todas</mat-option>
+            @for (p of prioridades; track p) {
+              <mat-option [value]="p">{{ prioridadLabels[p] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Desde</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerDesde"
+            formControlName="fechaInicio"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="pickerDesde"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerDesde></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Hasta</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerHasta"
+            formControlName="fechaFin"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="pickerHasta"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerHasta></mat-datepicker>
+        </mat-form-field>
+
+        <div class="filters-actions">
+          @if (filtrosActivos() > 0) {
+            <app-action-button
+              label="Limpiar ({{ filtrosActivos() }})"
+              color="secondary"
+              (clicked)="limpiarFiltros()"
+            />
+          }
+          <app-action-button
+            label="Buscar"
+            icon="search"
+            color="primary"
+            (clicked)="buscar()"
+          />
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  @if (cargando()) {
+    <mat-progress-bar
+      mode="indeterminate"
+      class="loading-bar"
+    ></mat-progress-bar>
+  }
+
+  <!-- Tabla -->
+  <mat-card appearance="outlined" class="table-card">
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="reportes()" class="reportes-table">
+        <!-- Folio -->
+        <ng-container matColumnDef="folio">
+          <th mat-header-cell *matHeaderCellDef>Folio</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="folio-badge">{{ r.folio }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Categoría -->
+        <ng-container matColumnDef="categoria">
+          <th mat-header-cell *matHeaderCellDef>Categoría</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="cat-col">
+              <mat-icon class="cat-icon">{{
+                getCategoriaIcon(r.categoria)
+              }}</mat-icon>
+              <span>{{ getCategoriaLabel(r.categoria) }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Ciudadano -->
+        <ng-container matColumnDef="ciudadano">
+          <th mat-header-cell *matHeaderCellDef>Ciudadano</th>
+          <td mat-cell *matCellDef="let r">
+            @if (r.ciudadano) {
+              <div class="ciudadano-col">
+                <span class="ciudadano-col__nombre">{{
+                  r.ciudadano.nombre
+                }}</span>
+                @if (r.ciudadano.telefono) {
+                  <span class="ciudadano-col__tel">{{
+                    r.ciudadano.telefono
+                  }}</span>
+                }
+              </div>
+            } @else {
+              <span class="text-mid">Anónimo</span>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Módulo -->
+        <ng-container matColumnDef="modulo">
+          <th mat-header-cell *matHeaderCellDef>Módulo</th>
+          <td mat-cell *matCellDef="let r">{{ getModuloLabel(r.modulo) }}</td>
+        </ng-container>
+
+        <!-- Prioridad -->
+        <ng-container matColumnDef="prioridad">
+          <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="estado-chip" [ngClass]="prioridadClass(r.prioridad)">
+              {{ getPrioridadLabel(r.prioridad) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="estado-chip" [ngClass]="estadoClass(r.estado)">
+              {{ getEstadoLabel(r.estado) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Fecha -->
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="fecha-text">{{
+              r.fechaCreacion | date: "dd/MM/yyyy"
+            }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let r">
+            <a mat-icon-button [routerLink]="r._id" matTooltip="Ver detalle">
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: columnas"
+          class="reporte-row"
+        ></tr>
+
+        <tr class="mat-row no-data-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="columnas.length">
+            <div class="no-data">
+              <mat-icon>search_off</mat-icon>
+              <p>No se encontraron reportes con los filtros seleccionados</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="limit()"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPage($event)"
+      showFirstLastButtons
+    ></mat-paginator>
+  </mat-card>
+</div>

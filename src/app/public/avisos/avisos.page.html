@@ -1,0 +1,63 @@
+<div class="avisos-page">
+  <!-- Hero -->
+  <div class="avisos-page__hero">
+    <div class="avisos-page__hero-inner">
+      <div class="avisos-page__hero-icon">
+        <mat-icon>campaign</mat-icon>
+      </div>
+      <div>
+        <h1 class="avisos-page__hero-titulo">Avisos y Noticias</h1>
+        <p class="avisos-page__hero-sub">
+          {{ municipio()?.nombre }} — Comunicados oficiales
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="avisos-page__inner">
+    <!-- Lista de avisos -->
+    @if (avisos().length === 0) {
+      <div class="avisos-page__empty">
+        <span class="avisos-page__empty-icon">📭</span>
+        <p>No hay avisos activos en este momento.</p>
+        <p class="avisos-page__empty-sub">
+          Vuelve pronto para más información.
+        </p>
+      </div>
+    } @else {
+      <div class="avisos-page__list">
+        @for (aviso of avisos(); track aviso._id) {
+          <article class="aviso-item aviso-item--{{ aviso.tipo }}">
+            @if (aviso.imagenUrl) {
+              <img
+                class="aviso-item__img"
+                [src]="aviso.imagenUrl"
+                [alt]="aviso.titulo"
+              />
+            }
+            <div class="aviso-item__body">
+              <span class="aviso-item__badge">
+                <mat-icon>{{ tipoConfig[aviso.tipo].icon }}</mat-icon>
+                {{ tipoConfig[aviso.tipo].label | uppercase }}
+              </span>
+              <h2 class="aviso-item__titulo">{{ aviso.titulo }}</h2>
+              <p class="aviso-item__cuerpo">{{ aviso.cuerpo }}</p>
+
+              @if (aviso.url) {
+                <a class="aviso-item__cta" [href]="aviso.url">
+                  {{ aviso.urlTexto || "Ver más" }}
+                  <mat-icon>arrow_forward</mat-icon>
+                </a>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+
+    <!-- Volver -->
+    <a class="avisos-page__back" [routerLink]="['/public', slug()]">
+      <mat-icon>arrow_back</mat-icon> Volver al inicio
+    </a>
+  </div>
+</div>

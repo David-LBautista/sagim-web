@@ -16,8 +16,8 @@
   }
 
   .loading-bar {
-    margin-bottom: 16px;
-    border-radius: 4px;
+    margin-bottom: var(--sagim-spacing-md, 16px);
+    border-radius: var(--sagim-radius-sm, 4px);
   }
 
   // ── Empty state ───────────────────────────────────────────────────────────
@@ -252,6 +252,29 @@
   }
 
   // ── Section cards ─────────────────────────────────────────────────────────
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sagim-text-mid, #7a7a7a);
+  margin: 4px 0 8px;
+
+  &__sub {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--sagim-text-mid, #7a7a7a);
+    margin-top: 1px;
+  }
+}
+
+.section-divider {
+  margin-bottom: 16px !important;
+}
+
   .section-card {
     [mat-card-avatar] {
       background: rgba(31, 111, 174, 0.1);
@@ -384,6 +407,12 @@
     padding: 4px 0 8px;
   }
 
+  .btn-guardar {
+    background-color: var(--sagim-primary) !important;
+    color: #fff !important;
+    border-radius: var(--sagim-radius-md) !important;
+  }
+
   .save-bar {
     width: 160px;
     align-self: center;
@@ -404,6 +433,12 @@
 
     &__motivo {
       flex: 2 1 240px;
+    }
+
+    .btn-guardar {
+      flex-shrink: 0;
+      align-self: flex-end;
+      margin-bottom: 1.6em;
     }
   }
 

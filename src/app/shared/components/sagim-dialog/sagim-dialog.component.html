@@ -12,20 +12,17 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="sagim-dialog-actions">
-  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
-    {{ cancelLabel }}
-  </button>
-  <button
-    mat-raised-button
+  <app-action-button
+    [label]="cancelLabel"
+    color="secondary"
+    [disabled]="isSubmitting"
+    (clicked)="onCancel()"
+  />
+  <app-action-button
+    [label]="isSubmitting ? submitLabel + '...' : submitLabel"
     color="primary"
-    (click)="onSubmit()"
-    [disabled]="submitDisabled || isSubmitting || isLoading"
-  >
-    @if (isSubmitting) {
-      <mat-spinner diameter="20"></mat-spinner>
-      <span>{{ submitLabel }}...</span>
-    } @else {
-      <span>{{ submitLabel }}</span>
-    }
-  </button>
+    [loading]="isSubmitting"
+    [disabled]="submitDisabled || isLoading"
+    (clicked)="onSubmit()"
+  />
 </mat-dialog-actions>

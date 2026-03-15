@@ -14,6 +14,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 
 import { AuditoriaService } from '../../services/auditoria.service';
 import {
@@ -47,6 +48,7 @@ dayjs.locale('es');
     MatNativeDateModule,
     MatChipsModule,
     MatDividerModule,
+    ActionButtonComponent,
   ],
   templateUrl: './auditoria-logs.page.html',
   styleUrl: './auditoria-logs.page.scss',

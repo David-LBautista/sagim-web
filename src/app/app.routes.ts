@@ -143,6 +143,20 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'transparencia',
+        loadChildren: () =>
+          import('./features/transparencia/transparencia.routes').then(
+            (m) => m.TRANSPARENCIA_ROUTES,
+          ),
+      },
+      {
+        path: 'portal',
+        loadChildren: () =>
+          import('./features/portal/portal.routes').then(
+            (m) => m.PORTAL_ROUTES,
+          ),
+      },
+      {
         path: '',
         redirectTo: 'presidencia',
         pathMatch: 'full',
@@ -182,6 +196,11 @@ export const routes: Routes = [
     component: PublicLayoutComponent,
     children: [
       {
+        path: '',
+        loadComponent: () =>
+          import('./public/home/home.page').then((m) => m.HomePage),
+      },
+      {
         path: 'citas',
         loadChildren: () =>
           import('./public/citas/public-citas.routes').then(
@@ -189,9 +208,30 @@ export const routes: Routes = [
           ),
       },
       {
-        path: '',
-        redirectTo: 'citas',
-        pathMatch: 'full',
+        path: 'reportes',
+        loadChildren: () =>
+          import('./public/reportes/public-reportes.routes').then(
+            (m) => m.PUBLIC_REPORTES_ROUTES,
+          ),
+      },
+      {
+        path: 'transparencia',
+        loadComponent: () =>
+          import('./public/transparencia/transparencia.page').then(
+            (m) => m.TransparenciaPage,
+          ),
+      },
+      {
+        path: 'avisos',
+        loadComponent: () =>
+          import('./public/avisos/avisos.page').then((m) => m.AvisosPage),
+      },
+      {
+        path: 'pagar',
+        loadComponent: () =>
+          import('./public/pago/buscar-pago.page').then(
+            (m) => m.BuscarPagoPage,
+          ),
       },
     ],
   },

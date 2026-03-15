@@ -1,0 +1,329 @@
+.detalle-reporte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sagim-spacing-md);
+}
+
+.btn-back {
+  color: var(--sagim-primary);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 64px 0;
+}
+
+/* ── Two-column layout ───────────────────────────────────── */
+.detalle-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--sagim-spacing-md);
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main-col,
+.side-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sagim-spacing-md);
+}
+
+/* ── Cards ───────────────────────────────────────────────── */
+mat-card {
+  border-radius: var(--sagim-radius-md) !important;
+}
+
+.header-card mat-card-content {
+  padding: 20px 24px 24px !important;
+}
+.historial-card,
+.action-card {
+  mat-card-header {
+    padding: 16px 20px 0;
+
+    mat-icon[mat-card-avatar] {
+      width: 28px;
+      height: 28px;
+      font-size: 28px;
+      color: var(--sagim-secondary);
+      opacity: 0.75;
+    }
+
+    mat-card-title {
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      color: var(--sagim-text-dark) !important;
+      margin: 0 !important;
+    }
+
+    mat-card-subtitle {
+      font-size: 12px !important;
+      color: var(--sagim-text-mid) !important;
+      margin: 0 !important;
+    }
+  }
+}
+.historial-card mat-card-content {
+  padding: 12px 20px 16px !important;
+}
+.action-card mat-card-content {
+  padding: 8px 16px 16px !important;
+}
+
+/* ── Header top ──────────────────────────────────────────── */
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: var(--sagim-spacing-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--sagim-spacing-md);
+}
+
+.folio-badge {
+  display: inline-block;
+  background: var(--sagim-primary);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+
+/* ── Info grid ───────────────────────────────────────────── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--sagim-spacing-md) var(--sagim-spacing-lg);
+  margin-bottom: var(--sagim-spacing-md);
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sagim-text-mid);
+}
+
+.info-value {
+  font-size: 0.92rem;
+  color: var(--sagim-text-dark);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.4;
+}
+
+.info-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--sagim-secondary);
+}
+
+/* ── Sections ────────────────────────────────────────────── */
+.divider {
+  margin: var(--sagim-spacing-md) 0 !important;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--sagim-text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0 0 var(--sagim-spacing-md);
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--sagim-bg-light, #f4f6f8);
+}
+
+.descripcion {
+  font-size: 0.9rem;
+  color: var(--sagim-text-dark);
+  line-height: 1.5;
+}
+
+/* ── Evidencias ──────────────────────────────────────────── */
+.evidencias-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sagim-spacing-sm);
+}
+
+.evidencia-img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: var(--sagim-radius-sm, 6px);
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+}
+
+/* ── Timeline ────────────────────────────────────────────── */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 16px;
+  border-left: 2px solid #e2e8f0;
+}
+
+.timeline-item {
+  position: relative;
+  padding: 0 0 20px 20px;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -8px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--sagim-secondary);
+  border: 2px solid #fff;
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timeline-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.timeline-fecha {
+  font-size: 0.7rem;
+  color: var(--sagim-text-mid);
+}
+
+.timeline-usuario {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sagim-text-dark);
+}
+
+.timeline-chip {
+  font-size: 0.7rem;
+  align-self: flex-start;
+}
+
+.timeline-comentario {
+  font-size: 0.85rem;
+  color: var(--sagim-text-dark);
+  margin: 0;
+  padding: 6px 10px;
+  background: var(--sagim-bg-light, #f4f6f8);
+  border-radius: var(--sagim-radius-sm, 6px);
+}
+
+/* ── Action forms ────────────────────────────────────────── */
+.action-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sagim-spacing-sm);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.btn-action {
+  background-color: var(--sagim-secondary) !important;
+  color: #fff !important;
+  border-radius: var(--sagim-radius-md) !important;
+}
+
+/* ── Asignado info ───────────────────────────────────────── */
+.asignado-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sagim-text-dark);
+  font-size: 0.9rem;
+  margin-bottom: var(--sagim-spacing-sm);
+
+  mat-icon {
+    color: var(--sagim-secondary);
+    font-size: 20px;
+  }
+}
+
+/* ── Estado/Prioridad chips ──────────────────────────────── */
+.estado-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.chip-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.chip-warn {
+  background: rgba(240, 161, 42, 0.15);
+  color: #b07a00;
+}
+.chip-info {
+  background: rgba(31, 111, 174, 0.12);
+  color: var(--sagim-secondary);
+}
+.chip-success {
+  background: rgba(111, 174, 59, 0.15);
+  color: #3d6a10;
+}
+.chip-neutral {
+  background: #f0f0f0;
+  color: #666;
+}
+.chip-danger {
+  background: rgba(214, 69, 69, 0.12);
+  color: var(--sagim-danger);
+}
+
+/* ── Spinner ─────────────────────────────────────────────── */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

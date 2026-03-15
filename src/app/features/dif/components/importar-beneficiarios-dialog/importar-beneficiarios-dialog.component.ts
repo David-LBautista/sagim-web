@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { BeneficiariosService } from '../../services/beneficiarios.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import type {
@@ -102,6 +103,7 @@ const CAMPOS_BENEFICIARIOS_DEFAULTS: CampoBeneficiario[] = [
     MatRadioModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    ActionButtonComponent,
   ],
   templateUrl: './importar-beneficiarios-dialog.component.html',
   styleUrl: './importar-beneficiarios-dialog.component.scss',

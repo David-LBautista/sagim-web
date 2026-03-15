@@ -87,16 +87,6 @@
       </div>
 
       <div class="filtros-actions">
-        <button mat-flat-button (click)="buscar()">
-          <mat-icon>search</mat-icon>
-          Buscar
-        </button>
-        @if (filtrosActivos() > 0) {
-          <button mat-stroked-button (click)="limpiarFiltros()">
-            <mat-icon>clear</mat-icon>
-            Limpiar ({{ filtrosActivos() }})
-          </button>
-        }
         @if (!cargando()) {
           <span class="result-count">
             {{ totalRegistros() }} resultado{{
@@ -104,12 +94,24 @@
             }}
           </span>
         }
+        @if (filtrosActivos() > 0) {
+          <app-action-button
+            label="Limpiar ({{ filtrosActivos() }})"
+            color="secondary"
+            (clicked)="limpiarFiltros()"
+          />
+        }
+        <app-action-button
+          label="Buscar"
+          color="primary"
+          (clicked)="buscar()"
+        />
       </div>
     </mat-card-content>
   </mat-card>
 
   <!-- Tabla -->
-  <mat-card appearance="outlined" class="table-card">
+  <mat-card appearance="outlined" class="table-card" style="margin-top: 24px;">
     <mat-card-content>
       @if (cargando()) {
         <div class="loading-center">

@@ -1,37 +1,19 @@
-<div class="public-layout">
-  <header class="public-header">
-    <div class="header-content">
-      @if (!logoError()) {
-        <img
-          class="header-logo"
-          [src]="logoSrc"
-          alt="SAGIM"
-          (error)="logoError.set(true)"
-        />
+@if (error() || mantenimiento()) {
+  <app-mantenimiento />
+} @else {
+  <div class="public-layout">
+    <app-public-navbar />
+
+    <main class="public-main">
+      @if (cargando()) {
+        <div class="public-loading">
+          <div class="public-loading__spinner"></div>
+        </div>
+      } @else {
+        <router-outlet />
       }
-      <div class="header-text">
-        <span class="header-municipio"
-          >Municipio de {{ municipio()?.nombre ?? "Portal Ciudadano" }}</span
-        >
-        <span class="header-subtitulo">{{ subtitulo() }}</span>
-      </div>
-    </div>
-  </header>
+    </main>
 
-  <main class="public-main">
-    @if (cargando()) {
-      <div class="public-loading">
-        <div class="public-loading__spinner"></div>
-      </div>
-    } @else {
-      <router-outlet />
-    }
-  </main>
-
-  <footer class="public-footer">
-    <span
-      >Powered by <strong>SAGIM</strong> — Sistema de Atención y Gestión
-      Integral Municipal</span
-    >
-  </footer>
-</div>
+    <app-public-footer />
+  </div>
+}

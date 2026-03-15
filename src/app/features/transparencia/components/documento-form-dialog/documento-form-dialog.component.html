@@ -1,0 +1,187 @@
+<div class="doc-dialog">
+  <!-- ── HEADER ──────────────────────────────────────────────────────────── -->
+  <div mat-dialog-title class="dialog-header">
+    <mat-icon class="dialog-icon">upload_file</mat-icon>
+    <span>Agregar documento</span>
+    <button mat-icon-button (click)="cancelar()" class="dialog-close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <!-- Tipo selector -->
+    <div class="tipo-selector">
+      @for (op of tipoOpciones; track op.value) {
+        <button
+          class="tipo-btn"
+          [class.is-active]="tipo === op.value"
+          (click)="tipo = op.value"
+          type="button"
+        >
+          <mat-icon>{{ op.icon }}</mat-icon>
+          {{ op.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Subsección (visible only when section has subsecciones and none was pre-selected) -->
+    @if (subsecciones().length > 0 && !data.subseccionClave) {
+      <mat-form-field appearance="outline" class="full-field">
+        <mat-label>Subsección</mat-label>
+        <mat-select [(ngModel)]="subseccionSeleccionada" required>
+          <mat-option [value]="null">— General (sin subsección) —</mat-option>
+          @for (sub of subsecciones(); track sub.clave) {
+            <mat-option [value]="sub.clave">{{ sub.titulo }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint
+          >Selecciona la subsección a la que pertenece este documento</mat-hint
+        >
+      </mat-form-field>
+    }
+
+    <!-- Nombre -->
+    <mat-form-field appearance="outline" class="full-field">
+      <mat-label>Nombre del documento</mat-label>
+      <input
+        matInput
+        [(ngModel)]="nombre"
+        placeholder="ej. Informe Q1 2024"
+        maxlength="120"
+      />
+    </mat-form-field>
+
+    <!-- Descripción opcional -->
+    <mat-form-field appearance="outline" class="full-field">
+      <mat-label>Descripción (opcional)</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="descripcion"
+        rows="2"
+        maxlength="300"
+      ></textarea>
+    </mat-form-field>
+
+    <!-- Período de referencia -->
+    <mat-form-field appearance="outline" class="full-field">
+      <mat-label>Período de referencia (opcional)</mat-label>
+      <input
+        matInput
+        [(ngModel)]="periodoReferencia"
+        placeholder="ej. Enero–Marzo 2024"
+        maxlength="60"
+      />
+      <mat-icon matSuffix>event_note</mat-icon>
+    </mat-form-field>
+
+    <!-- ── PDF ──────────────────────────────────────────────────────────── -->
+    @if (tipo === "pdf") {
+      <div class="file-zone">
+        <label class="file-label" for="archivo-input">
+          <mat-icon>picture_as_pdf</mat-icon>
+          @if (archivo) {
+            <span class="file-name">{{ archivo.name }}</span>
+            <span class="file-size"
+              >({{ archivo.size / 1024 / 1024 | number: "1.1-1" }} MB)</span
+            >
+          } @else {
+            <span>Selecciona o arrastra un archivo PDF</span>
+            <span class="file-hint">Máximo 20 MB</span>
+          }
+        </label>
+        <input
+          id="archivo-input"
+          type="file"
+          accept="application/pdf"
+          class="file-input"
+          (change)="onFileChange($event)"
+        />
+        @if (archivoError) {
+          <span class="file-error">{{ archivoError }}</span>
+        }
+      </div>
+    }
+
+    <!-- ── EXCEL ─────────────────────────────────────────────────────────── -->
+    @if (tipo === "excel") {
+      <div class="file-zone">
+        <label class="file-label" for="archivo-input">
+          <mat-icon>table_chart</mat-icon>
+          @if (archivo) {
+            <span class="file-name">{{ archivo.name }}</span>
+            <span class="file-size"
+              >({{ archivo.size / 1024 / 1024 | number: "1.1-1" }} MB)</span
+            >
+          } @else {
+            <span>Selecciona o arrastra un archivo Excel / CSV</span>
+            <span class="file-hint">.xlsx, .xls, .csv — Máximo 20 MB</span>
+          }
+        </label>
+        <input
+          id="archivo-input"
+          type="file"
+          accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+          class="file-input"
+          (change)="onFileChange($event)"
+        />
+        @if (archivoError) {
+          <span class="file-error">{{ archivoError }}</span>
+        }
+      </div>
+    }
+
+    <!-- ── LINK ─────────────────────────────────────────────────────────── -->
+    @if (tipo === "link") {
+      <mat-form-field appearance="outline" class="full-field">
+        <mat-label>URL del documento</mat-label>
+        <input
+          matInput
+          [(ngModel)]="url"
+          placeholder="https://..."
+          type="url"
+        />
+        <mat-icon matSuffix>link</mat-icon>
+      </mat-form-field>
+    }
+
+    <!-- ── TEXTO ─────────────────────────────────────────────────────────── -->
+    @if (tipo === "texto") {
+      <mat-form-field appearance="outline" class="full-field">
+        <mat-label>Contenido del documento</mat-label>
+        <textarea
+          matInput
+          [(ngModel)]="texto"
+          rows="6"
+          placeholder="Escribe el contenido de la obligación..."
+        ></textarea>
+      </mat-form-field>
+    }
+
+    <!-- Error global -->
+    @if (error()) {
+      <div class="error-banner">
+        <mat-icon>error</mat-icon>
+        {{ error() }}
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-stroked-button (click)="cancelar()" [disabled]="guardando()">
+      Cancelar
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="!valid || guardando()"
+      (click)="guardar()"
+    >
+      @if (guardando()) {
+        <mat-spinner diameter="16" color="accent" class="inline-spinner" />
+      } @else {
+        <mat-icon>save</mat-icon>
+      }
+      Guardar
+    </button>
+  </mat-dialog-actions>
+</div>

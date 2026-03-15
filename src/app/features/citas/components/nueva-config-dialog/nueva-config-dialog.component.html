@@ -136,7 +136,7 @@
           }
         </mat-chip-set>
       } @else {
-        <p class="dialog-hint">Sin trámites aún (opcional)</p>
+        <p class="dialog-hint">Requerido - agrega al menos un trámite</p>
       }
     </form>
   }
@@ -146,14 +146,11 @@
     <p class="dialog-hint">
       Define los bloques de atención por día de la semana.
     </p>
-    <form [formGroup]="horarioForm">
+    <form [formGroup]="horarioForm" class="horario-form">
       <div class="dias-list" formGroupName="horarios">
         @for (dia of diasSemana; track dia.key) {
           <div class="dia-row" [formGroupName]="dia.key">
-            <mat-slide-toggle formControlName="activo" color="primary">
-              {{ dia.label }}
-            </mat-slide-toggle>
-
+            <p class="dia-row__titulo" style="margin-bottom: 16px;">{{ dia.label }}</p>
             @if (
               horarioForm.get("horarios")?.get(dia.key)?.get("activo")?.value
             ) {
@@ -182,21 +179,28 @@
                       type="button"
                       color="warn"
                       (click)="removeBloque(dia.key, $index)"
+                      matTooltip="Eliminar bloque"
                     >
                       <mat-icon>remove_circle_outline</mat-icon>
                     </button>
                   </div>
                 }
-                <button
-                  mat-stroked-button
-                  type="button"
-                  class="add-bloque-btn"
-                  (click)="addBloque(dia.key)"
-                >
-                  <mat-icon>add</mat-icon> Bloque
-                </button>
               </div>
             }
+            <div class="dia-row__footer">
+              <mat-slide-toggle formControlName="activo" color="primary">
+                Activo
+              </mat-slide-toggle>
+              @if (
+                horarioForm.get("horarios")?.get(dia.key)?.get("activo")?.value
+              ) {
+                <app-action-button
+                  label="+ Bloque"
+                  color="secondary"
+                  (clicked)="addBloque(dia.key)"
+                />
+              }
+            </div>
           </div>
         }
       </div>

@@ -1,6 +1,13 @@
 <!-- ── Vista: Formulario ──────────────────────────────────────────────────── -->
 @if (vista() === "form") {
-  <mat-dialog-content>
+  <app-sagim-dialog
+    title="Nueva orden de pago"
+    submitLabel="Generar Orden"
+    [isSubmitting]="submitting()"
+    [submitDisabled]="form.invalid || !contribuyenteValido"
+    (submitClick)="onGenerarOrden()"
+    (cancelClick)="onCerrar()"
+  >
     <form [formGroup]="form" class="orden-form">
       <!-- ── Sección 1: Datos del pago ──────────────────────────────────── -->
       <p class="section-label">Datos del pago</p>
@@ -275,17 +282,5 @@
         <mat-hint>Opcional — vincula un folio de expediente con la orden</mat-hint>
       </mat-form-field>
     </form>
-  </mat-dialog-content>
-
-  <mat-dialog-actions align="end">
-    <button mat-button (click)="onCerrar()">Cancelar</button>
-    <app-action-button
-      [label]="submitting() ? 'Generando...' : 'Generar Orden'"
-      icon="bolt"
-      color="primary"
-      [disabled]="form.invalid || !contribuyenteValido"
-      [loading]="submitting()"
-      (clicked)="onGenerarOrden()"
-    />
-  </mat-dialog-actions>
+  </app-sagim-dialog>
 }

@@ -1,0 +1,362 @@
+<div class="home">
+  <!-- ── HERO / BANNER ─────────────────────────────────────────────────── -->
+  <section
+    class="home__hero"
+    [class.home__hero--with-image]="hasBanner()"
+    [ngStyle]="bannerStyle()"
+  >
+    @if (hasBanner()) {
+      <div class="home__hero-overlay"></div>
+    }
+    <div class="home__hero-inner">
+      <p class="home__hero-pretitulo">TE DAMOS LA BIENVENIDA AL</p>
+      <h1 class="home__hero-titulo">PORTAL CIUDADANO</h1>
+      <div class="home__hero-divider"></div>
+      <p class="home__hero-municipio">
+        {{
+          subtitulo() ||
+            ("H. AYUNTAMIENTO DE " + (municipio()?.nombre ?? "MUNICIPIO")
+              | uppercase)
+        }}
+      </p>
+      @if (mensajeBienvenida()) {
+        <p class="home__hero-subtitulo">{{ mensajeBienvenida() }}</p>
+      }
+    </div>
+  </section>
+
+  <!-- ── ACCESO RÁPIDO ─────────────────────────────────────────────────── -->
+  <section class="home__section home__section--servicios">
+    <div class="home__section-inner">
+      <h2 class="home__section-titulo">Servicios ciudadanos</h2>
+      <p class="home__section-sub">
+        Accede rápidamente a los servicios del municipio
+      </p>
+
+      <div class="home__cards-wrap">
+        <div class="home__dots home__dots--tl"></div>
+        <div class="home__dots home__dots--br"></div>
+        <div class="home__cards">
+          <!-- Citas -->
+          @if (mostrarCitas()) {
+            <a
+              class="home__card home__card--primary"
+              [routerLink]="['/public', slug(), 'citas']"
+            >
+              <div class="home__card-icon-wrap">
+                <mat-icon>event</mat-icon>
+              </div>
+              <h3 class="home__card-titulo">Agendar Cita</h3>
+              <p class="home__card-desc">
+                Programa una cita con cualquier área del municipio de forma
+                rápida y sencilla.
+              </p>
+              <span class="home__card-cta">
+                Ir a citas <mat-icon>arrow_forward</mat-icon>
+              </span>
+            </a>
+          }
+
+          <!-- Reportes -->
+          @if (mostrarReportes()) {
+            <a
+              class="home__card home__card--warning"
+              [routerLink]="['/public', slug(), 'reportes']"
+            >
+              <div class="home__card-icon-wrap">
+                <mat-icon>campaign</mat-icon>
+              </div>
+              <h3 class="home__card-titulo">Reportar Problema</h3>
+              <p class="home__card-desc">
+                Notifica baches, alumbrado, basura u otra incidencia en tu
+                colonia.
+              </p>
+              <span class="home__card-cta">
+                Levantar reporte <mat-icon>arrow_forward</mat-icon>
+              </span>
+            </a>
+          }
+
+          <!-- Transparencia -->
+          @if (mostrarTransparencia()) {
+            <a
+              class="home__card home__card--success"
+              [routerLink]="['/public', slug(), 'transparencia']"
+            >
+              <div class="home__card-icon-wrap">
+                <mat-icon>folder_open</mat-icon>
+              </div>
+              <h3 class="home__card-titulo">Transparencia</h3>
+              <p class="home__card-desc">
+                Consulta documentos oficiales, directorio de funcionarios y más.
+              </p>
+              <span class="home__card-cta">
+                Ver portal <mat-icon>arrow_forward</mat-icon>
+              </span>
+            </a>
+          }
+
+          <!-- Pagar en línea -->
+          <a
+            class="home__card home__card--info"
+            [routerLink]="['/public', slug(), 'pagar']"
+          >
+            <div class="home__card-icon-wrap">
+              <mat-icon>receipt_long</mat-icon>
+            </div>
+            <h3 class="home__card-titulo">Pagar en línea</h3>
+            <p class="home__card-desc">
+              Consulta y paga tu orden de cobro con tu número de folio.
+            </p>
+            <span class="home__card-cta">
+              Ir a pagos <mat-icon>arrow_forward</mat-icon>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AVISO PRINCIPAL ──────────────────────────────────────────── -->
+  @if (hayAvisos()) {
+    @let principal = avisos()[0];
+    <section
+      class="home__aviso-banner home__aviso-banner--{{ principal.tipo }}"
+      [class.home__aviso-banner--with-image]="principal.imagenUrl"
+      [ngStyle]="
+        principal.imagenUrl
+          ? { 'background-image': 'url(' + principal.imagenUrl + ')' }
+          : {}
+      "
+    >
+      <div class="home__aviso-banner__overlay"></div>
+      <div class="home__aviso-banner__inner">
+        <span class="home__aviso-banner__badge">
+          {{ principal.tipo | uppercase }}
+        </span>
+        <h2 class="home__aviso-banner__titulo">{{ principal.titulo }}</h2>
+        @if (principal.cuerpo) {
+          <p class="home__aviso-banner__cuerpo">{{ principal.cuerpo }}</p>
+        }
+        <button
+          class="home__aviso-banner__btn"
+          type="button"
+          (click)="abrirAviso(principal)"
+        >
+          {{ principal.urlTexto || "Ver más" }}
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </section>
+  }
+
+  <!-- ── ÚLTIMOS RESUELTOS ─────────────────────────────────────────────── -->
+  @if (ultimos().length) {
+    <section class="home__section home__section--resueltos">
+      <div class="home__section-inner">
+        <h2 class="home__section-titulo">Últimos reportes resueltos</h2>
+        <p class="home__section-sub">
+          Problemas recientes atendidos por el municipio
+        </p>
+        <div class="home__resueltos-wrap">
+          <div class="home__dots home__dots--tr"></div>
+          <ul class="home__resueltos">
+            @for (r of ultimos(); track r.folio) {
+              <li class="home__resuelto">
+                <div class="home__resuelto-icon">
+                  <mat-icon>check_circle</mat-icon>
+                </div>
+                <div class="home__resuelto-body">
+                  <span class="home__resuelto-categoria">{{
+                    r.categoriaNombre
+                  }}</span>
+                  <span class="home__resuelto-meta">
+                    {{ r.areaResponsable }} · Resuelto el
+                    {{ r.fechaResolucion | date: "dd/MM/yyyy" }}
+                  </span>
+                </div>
+                <span class="home__resuelto-folio">{{ r.folio }}</span>
+              </li>
+            }
+          </ul>
+          <div class="home__resueltos-footer">
+            <a
+              [routerLink]="['/public', slug(), 'metricas']"
+              class="home__ver-mas"
+            >
+              Ver todas las métricas <mat-icon>arrow_forward</mat-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ── KPI strip (si hay metricas) ──────────────────────────────────── -->
+  @if (metricas()) {
+    <section class="home__section home__section--kpis">
+      <div class="home__section-inner">
+        <div class="home__kpis-wrap">
+          <div class="home__dots home__dots--bl"></div>
+          <div class="home__kpis">
+            <div class="home__kpi">
+              <span class="home__kpi-valor">{{ metricas()!.totalMes }}</span>
+              <span class="home__kpi-label">Reportes este mes</span>
+            </div>
+            <div class="home__kpi">
+              <span class="home__kpi-valor home__kpi-valor--success">
+                {{ metricas()!.tasaResolucion | number: "1.0-0" }}%
+              </span>
+              <span class="home__kpi-label">Tasa de resolución</span>
+            </div>
+            <div class="home__kpi">
+              <span class="home__kpi-valor">{{
+                metricas()!.tiempoPromedioResolucion != null
+                  ? metricas()!.tiempoPromedioResolucion
+                  : "—"
+              }}</span>
+              <span class="home__kpi-label">Días promedio de atención</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ── AVISOS SECUNDARIOS ──────────────────────────────────────── -->
+  @if (avisos().length > 1) {
+    <section class="home__section home__section--avisos-grid">
+      <div class="home__section-inner">
+        <h2 class="home__section-titulo">Avisos y comunicados</h2>
+        <p class="home__section-sub">
+          Información oficial del H. Ayuntamiento para los ciudadanos
+        </p>
+        @let featured = avisos()[1];
+        <div
+          class="home__noticias-layout"
+          [class.home__noticias-layout--has-stack]="avisos().length > 2"
+        >
+          <!-- Noticia destacada -->
+          <div
+            class="home__noticia-featured home__noticia-featured--{{
+              featured.tipo
+            }}"
+            [class.home__noticia-featured--has-img]="featured.imagenUrl"
+          >
+            @if (featured.imagenUrl) {
+              <div
+                class="home__noticia-featured__bg"
+                [style.background-image]="'url(' + featured.imagenUrl + ')'"
+              ></div>
+            }
+            <div class="home__noticia-featured__overlay"></div>
+            <div class="home__noticia-featured__body">
+              <span
+                class="home__noticia-featured__badge home__noticia-featured__badge--{{
+                  featured.tipo
+                }}"
+              >
+                {{ featured.tipo | uppercase }}
+              </span>
+              <h3 class="home__noticia-featured__titulo">
+                {{ featured.titulo }}
+              </h3>
+              <button
+                class="home__noticia-featured__cta"
+                type="button"
+                (click)="abrirAviso(featured)"
+              >
+                Ver más <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Stack de noticias secundarias -->
+          @if (avisos().length > 2) {
+            <div class="home__noticias-stack">
+              @for (aviso of avisos().slice(2); track aviso._id) {
+                <div
+                  class="home__noticia-row home__noticia-row--{{ aviso.tipo }}"
+                  (click)="abrirAviso(aviso)"
+                  role="button"
+                  tabindex="0"
+                  (keydown.enter)="abrirAviso(aviso)"
+                >
+                  <div class="home__noticia-row__accent"></div>
+                  @if (aviso.imagenUrl) {
+                    <div class="home__noticia-row__img-wrap">
+                      <img
+                        class="home__noticia-row__img"
+                        [src]="aviso.imagenUrl"
+                        [alt]="aviso.titulo"
+                      />
+                    </div>
+                  }
+                  <div class="home__noticia-row__body">
+                    <span class="home__noticia-row__badge">{{
+                      aviso.tipo | uppercase
+                    }}</span>
+                    <h3 class="home__noticia-row__titulo">
+                      {{ aviso.titulo }}
+                    </h3>
+                    <span class="home__noticia-row__cta">
+                      Ver más <mat-icon>arrow_forward</mat-icon>
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ── MODAL DE AVISO ──────────────────────────────────────── -->
+  @if (avisoSeleccionado(); as a) {
+    <div class="aviso-modal-backdrop" (click)="cerrarAviso()">
+      <div
+        class="aviso-modal aviso-modal--{{ a.tipo }}"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          class="aviso-modal__close"
+          type="button"
+          (click)="cerrarAviso()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        @if (a.imagenUrl) {
+          <div class="aviso-modal__img-wrap">
+            <img
+              class="aviso-modal__img"
+              [src]="a.imagenUrl"
+              [alt]="a.titulo"
+            />
+          </div>
+        }
+        <div class="aviso-modal__body">
+          <span class="aviso-modal__badge aviso-modal__badge--{{ a.tipo }}">
+            {{ a.tipo | uppercase }}
+          </span>
+          <h2 class="aviso-modal__titulo">{{ a.titulo }}</h2>
+          <hr class="aviso-modal__divider" />
+          @if (a.cuerpo) {
+            <p class="aviso-modal__cuerpo">{{ a.cuerpo }}</p>
+          }
+          @if (a.url) {
+            <a
+              class="aviso-modal__link"
+              [href]="a.url"
+              target="_blank"
+              rel="noopener"
+            >
+              <mat-icon>open_in_new</mat-icon>
+              {{ a.urlTexto || "Abrir enlace" }}
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -35,6 +35,7 @@
               <mat-list-item
                 [routerLink]="child.route"
                 routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: !!child.exact }"
                 class="sub-nav-item"
               >
                 @if (child.icon) {

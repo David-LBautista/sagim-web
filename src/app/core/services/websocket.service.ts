@@ -22,6 +22,33 @@ export interface CitaCanceladaEvent {
   horario: string;
 }
 
+/** Payload del evento nuevo_reporte */
+export interface NuevoReporteEvent {
+  folio: string;
+  categoria: string;
+  categoriaNombre: string;
+  modulo: string;
+  areaResponsable: string;
+  ubicacion: string;
+  prioridad: string;
+}
+
+/** Payload del evento reporte_actualizado */
+export interface ReporteActualizadoEvent {
+  id: string;
+  folio: string;
+  estado: string;
+  modulo: string;
+}
+
+/** Payload del evento reporte_asignado (solo al usuario asignado) */
+export interface ReporteAsignadoEvent {
+  folio: string;
+  categoriaNombre: string;
+  ubicacion: string;
+  prioridad: string;
+}
+
 /** Payload del evento orden:pagada */
 export interface OrdenPagadaEvent {
   folioOrden: string;
@@ -103,6 +130,15 @@ export class WebSocketService {
 
   /** Emite cuando una cita es cancelada (tiempo real) */
   citaCancelada$ = new Subject<CitaCanceladaEvent>();
+
+  /** Emite cuando se crea un nuevo reporte */
+  nuevoReporte$ = new Subject<NuevoReporteEvent>();
+
+  /** Emite cuando un reporte cambia de estado o es asignado */
+  reporteActualizado$ = new Subject<ReporteActualizadoEvent>();
+
+  /** Emite cuando se asigna un reporte al usuario autenticado */
+  reporteAsignado$ = new Subject<ReporteAsignadoEvent>();
 
   /** Estado de conexión en tiempo real */
   conexionActiva$ = new BehaviorSubject<boolean>(false);
@@ -227,6 +263,21 @@ export class WebSocketService {
       this.citaCancelada$.next(data);
     });
 
+    this.socket.on('nuevo_reporte', (data: NuevoReporteEvent) => {
+      console.log('[WS] ← nuevo_reporte', data);
+      this.nuevoReporte$.next(data);
+    });
+
+    this.socket.on('reporte_actualizado', (data: ReporteActualizadoEvent) => {
+      console.log('[WS] ← reporte_actualizado', data);
+      this.reporteActualizado$.next(data);
+    });
+
+    this.socket.on('reporte_asignado', (data: ReporteAsignadoEvent) => {
+      console.log('[WS] ← reporte_asignado', data);
+      this.reporteAsignado$.next(data);
+    });
+
     this.socket.on('connect_error', (err: Error) => {
       console.error('[WS] Error de conexión:', err.message, err);
     });
@@ -263,6 +314,23 @@ export class WebSocketService {
     this.activeAreas.delete(area);
     console.log('[WS] emit leave:area →', area);
     this.socket?.emit('leave:area', area);
+  }
+
+  /** Suscribe el socket a la room personal del usuario para recibir reportes asignados. */
+  joinUsuario(userId: string): void {
+    if (!this.socket) return;
+    if (this.socket.connected) {
+      this.socket.emit('join_usuario', userId);
+    } else {
+      this.socket.once('connect', () =>
+        this.socket?.emit('join_usuario', userId),
+      );
+    }
+  }
+
+  /** Abandona la room personal del usuario. */
+  leaveUsuario(userId: string): void {
+    this.socket?.emit('leave_usuario', userId);
   }
 
   /**

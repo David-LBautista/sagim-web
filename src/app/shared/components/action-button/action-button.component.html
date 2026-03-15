@@ -1,14 +1,19 @@
 <button
   mat-raised-button
-  [color]="color"
+  type="button"
+  [color]="color === 'secondary' ? '' : color"
   [disabled]="disabled || loading"
   (click)="onClick()"
   class="action-button"
+  [class.action-button--secondary]="color === 'secondary'"
 >
   @if (loading) {
     <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
-  } @else {
+  } @else if (icon && iconPosition === 'start') {
     <mat-icon>{{ icon }}</mat-icon>
   }
   {{ label }}
+  @if (!loading && icon && iconPosition === 'end') {
+    <mat-icon iconPositionEnd>{{ icon }}</mat-icon>
+  }
 </button>

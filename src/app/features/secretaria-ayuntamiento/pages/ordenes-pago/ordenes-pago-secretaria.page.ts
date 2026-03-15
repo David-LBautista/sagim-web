@@ -74,6 +74,7 @@ export class OrdenesPagoSecretariaPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   readonly areaResponsable = 'Secretaría del Ayuntamiento';
+  readonly categoriaServicio = 'Secretaría del Ayuntamiento';
 
   // ── Estado ───────────────────────────────────────────────────────────────
   ordenes = signal<OrdenInterna[]>([]);
@@ -198,7 +199,10 @@ export class OrdenesPagoSecretariaPage implements OnInit, OnDestroy {
     const ref = this.dialog.open(NuevaOrdenInternaDialogComponent, {
       width: '560px',
       disableClose: true,
-      data: { areaResponsable: this.areaResponsable },
+      data: {
+        areaResponsable: this.areaResponsable,
+        categoriaServicio: this.categoriaServicio,
+      },
     });
     ref.afterClosed().subscribe((orden: OrdenInterna | null | undefined) => {
       console.log('[Secretaría] dialog cerrado, orden:', orden);

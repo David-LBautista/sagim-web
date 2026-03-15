@@ -65,10 +65,10 @@
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: #fdecea;
-  border: 1px solid #f44336;
-  border-radius: 8px;
-  color: #c62828;
+  background: rgba(214, 69, 69, 0.08);
+  border: 1px solid var(--sagim-danger);
+  border-radius: var(--sagim-radius-md, 8px);
+  color: var(--sagim-danger);
   font-size: 0.88rem;
   margin-bottom: 8px;
 
@@ -142,28 +142,28 @@
   text-transform: uppercase;
 
   &--pendiente {
-    background: #fff3e0;
-    color: #e65100;
-    border: 1px solid #ffcc80;
+    background: rgba(240, 161, 42, 0.12);
+    color: var(--sagim-warning);
+    border: 1px solid rgba(240, 161, 42, 0.35);
   }
 
   &--confirmada {
-    background: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #a5d6a7;
+    background: rgba(111, 174, 59, 0.12);
+    color: var(--sagim-success);
+    border: 1px solid rgba(111, 174, 59, 0.35);
   }
 
   &--atendida {
-    background: #e3f2fd;
-    color: #1565c0;
-    border: 1px solid #90caf9;
+    background: rgba(31, 111, 174, 0.1);
+    color: var(--sagim-secondary);
+    border: 1px solid rgba(31, 111, 174, 0.3);
   }
 
   &--cancelada,
   &--no_asistio {
-    background: #fce4ec;
-    color: #c62828;
-    border: 1px solid #ef9a9a;
+    background: rgba(214, 69, 69, 0.1);
+    color: var(--sagim-danger);
+    border: 1px solid rgba(214, 69, 69, 0.25);
   }
 }
 
@@ -216,7 +216,7 @@
   }
 
   &--instrucciones {
-    background: #fffde7;
+    background: rgba(240, 161, 42, 0.08);
     mat-icon {
       color: var(--sagim-warning, #f0a12a);
     }
@@ -235,10 +235,10 @@
   align-items: center;
   gap: 8px;
   font-size: 0.88rem;
-  color: #b71c1c;
-  background: #fce4ec;
-  border: 1px solid #ef9a9a;
-  border-radius: 8px;
+  color: var(--sagim-danger);
+  background: rgba(214, 69, 69, 0.08);
+  border: 1px solid rgba(214, 69, 69, 0.25);
+  border-radius: var(--sagim-radius-md, 8px);
   padding: 10px 14px;
   margin-bottom: 12px;
 
@@ -273,7 +273,7 @@
   }
 
   &--warn {
-    background: #fce4ec;
+    background: rgba(214, 69, 69, 0.1);
     mat-icon {
       color: var(--sagim-danger, #d64545);
     }

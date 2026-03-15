@@ -113,7 +113,7 @@ export interface ReporteMensualResponse {
 
 // ── Reporte por servicio ───────────────────────────────────────────────────
 export interface ReporteServicioResponse {
-  servicio: { nombre: string; costoBase: number };
+  servicio: { nombre: string; costo: number };
   estadisticas: {
     totalOrdenes: number;
     ordenesPagadas: number;

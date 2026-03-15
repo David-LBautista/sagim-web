@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { PublicCitasService } from '../../services/public-citas.service';
 import { AreaCitas } from '../../models/citas-publicas.models';
 
@@ -33,6 +34,7 @@ export interface SeleccionArea {
     MatButtonModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    ActionButtonComponent,
   ],
   templateUrl: './step-area.component.html',
   styleUrl: './step-area.component.scss',

@@ -1,0 +1,115 @@
+<div class="buscar-pago">
+  <div class="buscar-pago__card">
+    <!-- Encabezado -->
+    <div class="buscar-pago__header">
+      <div class="buscar-pago__icon-wrap">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <h1 class="buscar-pago__titulo">Pagar orden de cobro</h1>
+      <p class="buscar-pago__subtitulo">
+        Ingresa el folio de tu orden de cobro para consultar el detalle y
+        realizar el pago en línea.
+      </p>
+    </div>
+
+    <!-- Buscador -->
+    <form class="buscar-pago__form" (ngSubmit)="buscar()">
+      <div class="buscar-pago__input-wrap">
+        <mat-icon class="buscar-pago__input-icon">search</mat-icon>
+        <input
+          class="buscar-pago__input"
+          type="text"
+          placeholder="Ej. ORD-202603-0001"
+          [value]="folio()"
+          (input)="onFolioInput($any($event.target).value)"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+      <button
+        class="buscar-pago__btn-buscar"
+        type="submit"
+        [disabled]="!folio() || estado() === 'buscando'"
+      >
+        @if (estado() === "buscando") {
+          <mat-spinner diameter="20" />
+        } @else {
+          Buscar
+        }
+      </button>
+    </form>
+
+    <!-- Estado: buscando -->
+    @if (estado() === "buscando") {
+      <div class="buscar-pago__estado">
+        <mat-spinner diameter="40" />
+        <p>Buscando orden…</p>
+      </div>
+    }
+
+    <!-- Estado: error -->
+    @if (estado() === "error") {
+      <div class="buscar-pago__estado buscar-pago__estado--error">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ errorMsg() }}</p>
+      </div>
+    }
+
+    <!-- Estado: encontrada -->
+    @if (estado() === "encontrada" && orden(); as o) {
+      <div class="buscar-pago__resultado">
+        <div class="buscar-pago__resultado-header">
+          @if (o.municipio?.logoUrl) {
+            <img
+              class="buscar-pago__muni-logo"
+              [src]="o.municipio!.logoUrl"
+              [alt]="o.municipio!.nombre"
+            />
+          }
+          <div>
+            <p class="buscar-pago__muni-nombre">{{ o.municipio?.nombre }}</p>
+            <p class="buscar-pago__folio">{{ o.folio }}</p>
+          </div>
+        </div>
+
+        <div class="buscar-pago__filas">
+          <div class="buscar-pago__fila">
+            <span>Concepto</span>
+            <strong>{{ o.descripcion || "—" }}</strong>
+          </div>
+          <div class="buscar-pago__fila">
+            <span>Servicio</span>
+            <strong>{{ o.servicio?.nombre || "—" }}</strong>
+          </div>
+          <div class="buscar-pago__fila">
+            <span>Área</span>
+            <strong>{{
+              o.areaResponsable || o.servicio?.areaResponsable || "—"
+            }}</strong>
+          </div>
+          @if (o.expiresAt) {
+            <div class="buscar-pago__fila">
+              <span>Vence</span>
+              <strong>{{ formatFecha(o.expiresAt) }}</strong>
+            </div>
+          }
+          <div class="buscar-pago__fila buscar-pago__fila--monto">
+            <span>Total a pagar</span>
+            <strong class="buscar-pago__monto"
+              >{{ formatMonto(o.monto) }} <small>MXN</small></strong
+            >
+          </div>
+        </div>
+
+        <button
+          class="buscar-pago__btn-pagar"
+          type="button"
+          (click)="procederAlPago()"
+        >
+          <mat-icon>lock</mat-icon>
+          Proceder al pago
+        </button>
+      </div>
+    }
+  </div>
+</div>

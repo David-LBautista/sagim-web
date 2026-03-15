@@ -19,6 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCalendar, MatDatepickerModule } from '@angular/material/datepicker';
+import { ActionButtonComponent } from '../../../../shared/components/action-button/action-button.component';
 import { PublicCitasService } from '../../services/public-citas.service';
 import {
   DisponibilidadDia,
@@ -39,6 +40,7 @@ export interface SeleccionFechaHorario {
     MatIconModule,
     MatProgressSpinnerModule,
     MatDatepickerModule,
+    ActionButtonComponent,
   ],
   templateUrl: './step-calendario.component.html',
   styleUrl: './step-calendario.component.scss',

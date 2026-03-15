@@ -113,6 +113,7 @@ export enum ApiEndpoints {
   // ========================================
   // PAGOS PÚBLICOS (sin auth)
   // ========================================
+  PAGOS_ORDEN_BY_FOLIO = '/api/v1/pagos/orden/folio/:folio',
   PAGOS_ORDEN_BY_TOKEN = '/api/v1/pagos/orden/:token',
   PAGOS_CREAR_INTENT = '/api/v1/pagos/orden/:token/crear-intent',
   PAGOS_PAGAR = '/api/v1/pagos/orden/:token/pagar',
@@ -197,7 +198,31 @@ export enum ApiEndpoints {
   DASHBOARD_AUDITORIA_ACCESOS = '/api/v1/dashboard/auditoria/accesos',
 
   // ========================================
-  // PORTAL PÚBLICO — MUNICIPIO INFO
+  // PORTAL PÚBLICO — CONFIGURACIÓN COMPLETA
+  // ========================================
+  PUBLIC_PORTAL = '/api/v1/public/:slug/portal',
+
+  // ========================================
+  // PANEL INTERNO — CONFIGURACIÓN PORTAL (Admin)
+  // ========================================
+  PORTAL_CONFIG_GET = '/api/v1/portal/configuracion',
+  PORTAL_CONFIG_GENERAL = '/api/v1/portal/configuracion/general',
+  PORTAL_CONFIG_APARIENCIA = '/api/v1/portal/configuracion/apariencia',
+  PORTAL_CONFIG_REDES_SOCIALES = '/api/v1/portal/configuracion/redes-sociales',
+  PORTAL_CONFIG_FOOTER = '/api/v1/portal/configuracion/footer',
+  PORTAL_CONFIG_BANNER = '/api/v1/portal/configuracion/banner',
+
+  // ========================================
+  // PANEL INTERNO — AVISOS (Admin)
+  // ========================================
+  PORTAL_AVISOS_LIST = '/api/v1/portal/configuracion/avisos',
+  PORTAL_AVISOS_CREATE = '/api/v1/portal/configuracion/avisos',
+  PORTAL_AVISOS_UPDATE = '/api/v1/portal/configuracion/avisos/:id',
+  PORTAL_AVISOS_DELETE = '/api/v1/portal/configuracion/avisos/:id',
+  PORTAL_AVISOS_IMAGEN = '/api/v1/portal/configuracion/avisos/:id/imagen',
+
+  // ========================================
+  // PORTAL PÚBLICO — MUNICIPIO INFO (legacy)
   // ========================================
   PUBLIC_MUNICIPIO_INFO = '/api/v1/public/:slug/info',
 
@@ -210,6 +235,32 @@ export enum ApiEndpoints {
   PUBLIC_CITAS_CONSULTAR = '/api/v1/public/:slug/citas/consultar',
   PUBLIC_CITAS_CANCELAR = '/api/v1/public/:slug/citas/cancelar',
   PUBLIC_CITAS_CIUDADANO_CURP = '/api/v1/public/:slug/citas/ciudadano/:curp',
+
+  // ========================================
+  // PORTAL PÚBLICO — REPORTES CIUDADANO
+  // ========================================
+  PUBLIC_REPORTES_INFO = '/api/v1/public/:slug/reportes/info',
+  PUBLIC_REPORTES_CATEGORIAS = '/api/v1/public/:slug/reportes/categorias',
+  PUBLIC_REPORTES_CREAR = '/api/v1/public/:slug/reportes',
+  PUBLIC_REPORTES_CONSULTAR = '/api/v1/public/:slug/reportes/consultar',
+  PUBLIC_REPORTES_METRICAS = '/api/v1/public/:slug/reportes/metricas',
+
+  // ========================================
+  // TRANSPARENCIA — INTERNO (autenticado)
+  // ========================================
+  TRANSPARENCIA_LIST = '/api/v1/transparencia',
+  TRANSPARENCIA_CUMPLIMIENTO = '/api/v1/transparencia/cumplimiento',
+  TRANSPARENCIA_SECCION = '/api/v1/transparencia/:clave',
+  TRANSPARENCIA_DOCUMENTOS_ADD = '/api/v1/transparencia/:clave/documentos',
+  TRANSPARENCIA_DOCUMENTOS_DELETE = '/api/v1/transparencia/:clave/documentos',
+  TRANSPARENCIA_CORRIENTE = '/api/v1/transparencia/:clave/corriente',
+  TRANSPARENCIA_NOTA = '/api/v1/transparencia/:clave/nota',
+
+  // ========================================
+  // TRANSPARENCIA — PÚBLICO (sin auth)
+  // ========================================
+  PUBLIC_TRANSPARENCIA = '/api/v1/public/:slug/transparencia',
+  PUBLIC_TRANSPARENCIA_SECCION = '/api/v1/public/:slug/transparencia/:clave',
 
   // ========================================
   // PANEL INTERNO — CITAS (autenticado)
@@ -231,4 +282,21 @@ export enum ApiEndpoints {
   CITAS_CONFIG_BLOQUEOS_LIST = '/api/v1/citas/configuracion/bloqueos',
   CITAS_CONFIG_BLOQUEOS_CREAR = '/api/v1/citas/configuracion/bloqueos',
   CITAS_CONFIG_BLOQUEOS_ELIMINAR = '/api/v1/citas/configuracion/bloqueos/:id',
+
+  // ========================================
+  // REPORTES CIUDADANOS
+  // ========================================
+  REPORTES_LIST = '/api/v1/reportes',
+  REPORTES_MIS_REPORTES = '/api/v1/reportes/mis-reportes',
+  REPORTES_METRICAS = '/api/v1/reportes/metricas',
+  REPORTES_CONFIG_GET = '/api/v1/reportes/configuracion',
+  REPORTES_CONFIG_CATALOGO = '/api/v1/reportes/configuracion/catalogo',
+  REPORTES_GET = '/api/v1/reportes/:id',
+  REPORTES_CREATE = '/api/v1/reportes',
+  REPORTES_CAMBIAR_ESTADO = '/api/v1/reportes/:id/estado',
+  REPORTES_ASIGNAR = '/api/v1/reportes/:id/asignar',
+  REPORTES_PRIORIDAD = '/api/v1/reportes/:id/prioridad',
+  REPORTES_VISIBILIDAD = '/api/v1/reportes/:id/visibilidad',
+  REPORTES_CONFIG_UPDATE = '/api/v1/reportes/configuracion',
+  REPORTES_UPLOAD_IMAGES = '/api/v1/reportes/upload-images',
 }

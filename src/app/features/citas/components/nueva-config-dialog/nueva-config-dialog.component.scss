@@ -87,11 +87,27 @@
   background: #fafafa;
 }
 
+.dia-row__titulo {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3a3a3a;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dia-row__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
 .bloques {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 10px;
+  margin-bottom: 8px;
 }
 
 .bloque-row {
@@ -108,8 +124,6 @@
   width: 90px;
 }
 
-.add-bloque-btn {
-  font-size: 0.8rem;
-  align-self: flex-start;
-  margin-top: 2px;
+.horario-form {
+  min-width: min(520px, 82vw);
 }

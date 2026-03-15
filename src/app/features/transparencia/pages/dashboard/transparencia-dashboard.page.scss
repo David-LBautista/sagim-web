@@ -1,0 +1,416 @@
+:host {
+  display: block;
+}
+
+// ─── Header ─────────────────────────────────────────────────────────────────
+.page-header {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  h1 {
+    margin: 0;
+  }
+  p {
+    margin: 4px 0 0;
+  }
+}
+
+.loading-bar {
+  margin-bottom: 24px;
+  border-radius: 2px;
+}
+
+// ─── KPI Grid ───────────────────────────────────────────────────────────────
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi-exec-card {
+  background: #fff;
+  transition: box-shadow 0.2s;
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  mat-card-header {
+    padding: 10px 16px 0;
+    mat-icon[mat-card-avatar] {
+      width: 28px;
+      height: 28px;
+      font-size: 28px;
+      color: var(--sagim-secondary);
+      opacity: 0.65;
+    }
+  }
+  mat-card-content {
+    text-align: center;
+    padding: 6px 16px 14px;
+  }
+}
+
+.kpi-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--sagim-text-dark);
+  line-height: 1;
+  margin-bottom: 4px;
+
+  &--secondary {
+    color: var(--sagim-secondary);
+  }
+  &--success {
+    color: var(--sagim-success);
+  }
+  &--danger {
+    color: var(--sagim-danger);
+  }
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sagim-text-mid);
+}
+
+// ─── Cumplimiento ───────────────────────────────────────────────────────────
+.cumplimiento-card {
+  margin-bottom: 20px;
+  background: #fff;
+
+  mat-card-content {
+    padding: 20px 24px;
+  }
+}
+
+.cumplimiento-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cumplimiento-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--sagim-text-dark);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+  }
+}
+
+.cumplimiento-pct {
+  font-size: 22px;
+  font-weight: 700;
+
+  &.is-ok {
+    color: var(--sagim-success);
+  }
+  &.is-warn {
+    color: var(--sagim-warning);
+  }
+  &.is-danger {
+    color: var(--sagim-danger);
+  }
+}
+
+.cumplimiento-bar {
+  height: 10px;
+  border-radius: 5px;
+  margin-bottom: 8px;
+}
+
+.cumplimiento-footer {
+  font-size: 12px;
+  color: var(--sagim-text-mid);
+}
+
+// ─── En riesgo ──────────────────────────────────────────────────────────────
+.riesgo-card {
+  margin-bottom: 20px;
+  background: #fff;
+  overflow: hidden;
+
+  mat-card-header {
+    padding: 16px 20px 0;
+    align-items: center;
+  }
+
+  .riesgo-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 28px;
+    color: var(--sagim-warning);
+  }
+
+  mat-card-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  mat-card-subtitle {
+    font-size: 12px;
+  }
+}
+
+// ─── Table standard ─────────────────────────────────────────────────────────
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.transp-table {
+  width: 100%;
+
+  th {
+    background: #fafafa;
+    color: var(--sagim-text-dark, #3a3a3a);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--sagim-text-dark, #3a3a3a);
+    vertical-align: middle;
+  }
+
+  tr.mat-mdc-row {
+    cursor: pointer;
+    transition: background 0.15s;
+    &:hover {
+      background: rgba(0, 0, 0, 0.03);
+    }
+  }
+}
+
+.td-clave {
+  font-weight: 700;
+  color: var(--sagim-secondary);
+  font-size: 12px;
+}
+.td-titulo {
+  color: var(--sagim-text-dark);
+}
+.td-art {
+  color: var(--sagim-text-mid);
+  font-size: 12px;
+}
+.td-fecha {
+  color: var(--sagim-text-mid);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.td-action {
+  color: var(--sagim-text-mid);
+  mat-icon {
+    vertical-align: middle;
+  }
+}
+
+// ─── Filtro Tabs ────────────────────────────────────────────────────────────
+.filter-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.filter-tab {
+  padding: 6px 14px;
+  border: 1.5px solid #dde2ea;
+  border-radius: 20px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sagim-text-mid);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+
+  &:hover {
+    border-color: var(--sagim-secondary);
+    color: var(--sagim-secondary);
+  }
+
+  &.is-active {
+    background: var(--sagim-primary);
+    border-color: var(--sagim-primary);
+    color: #fff;
+  }
+}
+
+// ─── Secciones list ─────────────────────────────────────────────────────────
+.secciones-card {
+  background: #fff;
+  padding: 0;
+  overflow: hidden;
+}
+
+.secciones-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 24px;
+  color: var(--sagim-text-mid);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.4;
+  }
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+tr.mat-mdc-row.seccion-row {
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #f8f9fc;
+  }
+}
+
+// ─── Semáforo ───────────────────────────────────────────────────────────────
+.semaforo-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+
+  &--verde mat-icon {
+    color: var(--sagim-success);
+  }
+  &--amarillo mat-icon {
+    color: var(--sagim-warning);
+  }
+  &--rojo mat-icon {
+    color: var(--sagim-danger);
+  }
+}
+
+// ─── Seccion info ───────────────────────────────────────────────────────────
+.seccion-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.seccion-clave {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sagim-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.seccion-titulo {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sagim-text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ─── Seccion meta ───────────────────────────────────────────────────────────
+.seccion-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.seccion-area {
+  font-size: 12px;
+  color: var(--sagim-text-mid);
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.periodo-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #eef2f8;
+  color: var(--sagim-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.seccion-tipo {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #f0f3f7;
+  color: var(--sagim-text-mid);
+  font-weight: 600;
+
+  &.tipo--municipal {
+    background: #eef5e8;
+    color: var(--sagim-success);
+  }
+}
+
+.seccion-docs {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--sagim-text-mid);
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.seccion-chevron {
+  color: #c0c8d4;
+  flex-shrink: 0;
+}

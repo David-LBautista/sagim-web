@@ -70,16 +70,24 @@ export class PagoPage implements OnInit {
       .subscribe({
         next: (orden) => {
           this.orden.set(orden);
-          // Set shared public layout context
-          this.municipioContext.init(
-            '',
-            {
-              nombre: orden.municipio?.nombre ?? 'Municipio',
-              slug: '',
-              logoUrl: orden.municipio?.logoUrl,
+          this.municipioContext.init('', {
+            nombre: orden.municipio?.nombre ?? 'Municipio',
+            logoUrl: orden.municipio?.logoUrl,
+            general: {
+              subtitulo: 'Sistema de Pagos Municipales — SAGIM',
+              mensajeBienvenida: '',
+              mostrarCitas: false,
+              mostrarReportes: false,
+              mostrarTransparencia: false,
+              enMantenimiento: false,
             },
-            'Sistema de Pagos Municipales — SAGIM',
-          );
+            apariencia: {
+              colorPrimario: '#0f2a44',
+              colorSecundario: '#1f6fae',
+            },
+            redesSociales: {},
+            footer: { columnas: [], numerosEmergencia: [] },
+          });
 
           if (orden.estado === 'PAGADA') {
             this.estado.set('pagada');

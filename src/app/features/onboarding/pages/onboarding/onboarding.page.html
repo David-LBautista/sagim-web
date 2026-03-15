@@ -147,21 +147,14 @@
 
         <div class="ob-card-footer">
           <span></span>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="onContinuarDatos()"
-            [disabled]="!datosConfirmado() || datosContinuando()"
-          >
-            @if (datosContinuando()) {
-              <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
-              Guardando…
-            } @else {
-              <span class="btn-label"
-                >Continuar <mat-icon>arrow_forward</mat-icon></span
-              >
-            }
-          </button>
+          <app-action-button
+            label="Continuar"
+            icon="arrow_forward"
+            iconPosition="end"
+            [loading]="datosContinuando()"
+            [disabled]="!datosConfirmado()"
+            (clicked)="onContinuarDatos()"
+          />
         </div>
       </div>
     }
@@ -277,25 +270,14 @@
 
         <div class="ob-card-footer">
           <span></span>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="onContinuarServicios()"
-            [disabled]="
-              !serviciosConfirmado() ||
-              serviciosContinuando() ||
-              cargandoServicios()
-            "
-          >
-            @if (serviciosContinuando()) {
-              <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
-              Guardando…
-            } @else {
-              <span class="btn-label"
-                >Continuar <mat-icon>arrow_forward</mat-icon></span
-              >
-            }
-          </button>
+          <app-action-button
+            label="Continuar"
+            icon="arrow_forward"
+            iconPosition="end"
+            [loading]="serviciosContinuando()"
+            [disabled]="!serviciosConfirmado() || cargandoServicios()"
+            (clicked)="onContinuarServicios()"
+          />
         </div>
       </div>
     }
@@ -333,21 +315,14 @@
 
         <div class="ob-card-footer">
           <span></span>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="onContinuarEquipo()"
-            [disabled]="!equipoConfirmado() || equipoContinuando()"
-          >
-            @if (equipoContinuando()) {
-              <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
-              Guardando…
-            } @else {
-              <span class="btn-label"
-                >Continuar <mat-icon>arrow_forward</mat-icon></span
-              >
-            }
-          </button>
+          <app-action-button
+            label="Continuar"
+            icon="arrow_forward"
+            iconPosition="end"
+            [loading]="equipoContinuando()"
+            [disabled]="!equipoConfirmado()"
+            (clicked)="onContinuarEquipo()"
+          />
         </div>
       </div>
     }
@@ -363,10 +338,12 @@
 
         <div class="padron-opciones">
           <div class="padron-opcion">
-            <button mat-stroked-button color="primary" class="btn-importar">
-              <mat-icon>upload_file</mat-icon>
-              Importar padrón
-            </button>
+            <app-action-button
+              label="Importar padrón"
+              icon="upload_file"
+              color="secondary"
+              (clicked)="abrirImportarPadron()"
+            />
             <p class="padron-opcion-hint">
               Podrás importarlo desde un documento Excel
             </p>
@@ -375,19 +352,12 @@
           <div class="padron-separator"><span>o</span></div>
 
           <div class="padron-opcion">
-            <button
-              mat-stroked-button
-              class="btn-saltar"
-              (click)="onSaltarPadron()"
-              [disabled]="padronContinuando()"
-            >
-              @if (padronContinuando()) {
-                <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
-                Continuando…
-              } @else {
-                Saltar
-              }
-            </button>
+            <app-action-button
+              label="Saltar"
+              color="secondary"
+              [loading]="padronContinuando()"
+              (clicked)="onSaltarPadron()"
+            />
             <p class="padron-opcion-hint">
               Podrás importar tu padrón en cualquier momento desde
               Administración &rsaquo; Ciudadanos o registrarlos manualmente
@@ -453,20 +423,14 @@
           </div>
         }
 
-        <button
-          mat-raised-button
-          color="primary"
+        <app-action-button
+          label="Ir al sistema"
+          icon="arrow_forward"
+          iconPosition="end"
           class="btn-ir-sistema"
-          (click)="onIrAlSistema()"
-          [disabled]="finalizando()"
-        >
-          @if (finalizando()) {
-            <mat-spinner diameter="18" class="spinner-inline"></mat-spinner>
-            Finalizando…
-          } @else {
-            Ir al sistema
-          }
-        </button>
+          [loading]="finalizando()"
+          (clicked)="onIrAlSistema()"
+        />
       </div>
     }
   }

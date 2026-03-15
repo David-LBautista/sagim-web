@@ -3,44 +3,7 @@
   display: flex;
   flex-direction: column;
   background: var(--sagim-bg-light, #f4f6f8);
-}
-
-// ── Header ──────────────────────────────────────────────────────────────
-.public-header {
-  background: var(--sagim-primary, #0f2a44);
-  color: #fff;
-  padding: 20px 24px;
-
-  .header-content {
-    max-width: 760px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .header-logo {
-    height: 44px;
-    width: auto;
-    flex-shrink: 0;
-  }
-
-  .header-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .header-municipio {
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-  }
-
-  .header-subtitulo {
-    font-size: 0.8rem;
-    opacity: 0.75;
-  }
+  overflow-x: hidden;
 }
 
 // ── Main ────────────────────────────────────────────────────────────────
@@ -72,12 +35,4 @@
   }
 }
 
-// ── Footer ───────────────────────────────────────────────────────────────
-.public-footer {
-  text-align: center;
-  padding: 16px;
-  font-size: 0.75rem;
-  color: var(--sagim-text-mid, #7a7a7a);
-  border-top: 1px solid #e0e0e0;
-  background: #fff;
-}
+// ── Footer handled by app-public-footer component ────────────────────────

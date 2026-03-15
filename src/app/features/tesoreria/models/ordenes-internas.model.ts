@@ -13,7 +13,7 @@ export interface CiudadanoPoblado {
 export interface ServicioPoblado {
   _id: string;
   nombre: string;
-  costoBase: number;
+  costo: number;
 }
 
 export interface UsuarioPoblado {
