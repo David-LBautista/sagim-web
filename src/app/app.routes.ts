@@ -5,15 +5,21 @@ import { MainLayoutComponent } from './core/layout/main-layout/main-layout.compo
 import { PublicLayoutComponent } from './public/layout/public-layout.component';
 import { environment } from '../environments/environment';
 
-/** Activa el portal público en la raíz solo cuando se accede via subdominio municipio */
-const isPublicSubdomain: CanMatchFn = () => {
+/** Detecta si el hostname actual es un subdominio de municipio */
+function detectPublicSubdomain(): boolean {
   if (!environment.useSubdomain) return false;
   const parts = window.location.hostname.split('.');
   const subdomain = parts[0];
   const reserved = ['www', 'app', 'sagim', 'localhost'];
   // laperla.sagim.com.mx → 4 partes, subdominio no reservado
   return parts.length >= 4 && !reserved.includes(subdomain);
-};
+}
+
+/** Activa el portal público en la raíz solo cuando se accede via subdominio municipio */
+const isPublicSubdomain: CanMatchFn = () => detectPublicSubdomain();
+
+/** Rutas de admin/login solo disponibles en el dominio principal (no en subdominios) */
+const isAdminDomain: CanMatchFn = () => !detectPublicSubdomain();
 
 /** Rutas hijas compartidas del portal público */
 const PUBLIC_PORTAL_CHILDREN: Routes = [
@@ -65,11 +71,13 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    canMatch: [isAdminDomain],
     loadChildren: () =>
       import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
   {
     path: '',
+    canMatch: [isAdminDomain],
     component: MainLayoutComponent,
     canActivate: [authGuard, onboardingCompleteGuard],
     children: [
@@ -223,6 +231,7 @@ export const routes: Routes = [
   },
   {
     path: 'no-autorizado',
+    canMatch: [isAdminDomain],
     loadComponent: () =>
       import('./features/pages/no-autorizado/no-autorizado.page').then(
         (m) => m.NoAutorizadoPage,
@@ -231,6 +240,7 @@ export const routes: Routes = [
   // ── Onboarding (sin MainLayout) ─────────────────────────────────────────
   {
     path: 'onboarding',
+    canMatch: [isAdminDomain],
     loadChildren: () =>
       import('./features/onboarding/onboarding.routes').then(
         (m) => m.ONBOARDING_ROUTES,
@@ -254,6 +264,19 @@ export const routes: Routes = [
     component: PublicLayoutComponent,
     children: PUBLIC_PORTAL_CHILDREN,
   },
+  // Fallback: en subdominio, cualquier ruta desconocida vuelve al portal
+  {
+    path: '',
+    canMatch: [isPublicSubdomain],
+    redirectTo: '/',
+    pathMatch: 'full',
+  },
+  {
+    path: '**',
+    canMatch: [isPublicSubdomain],
+    redirectTo: '/',
+  },
+  // Fallback: en dominio admin, ir a login
   {
     path: '',
     redirectTo: '/login',
